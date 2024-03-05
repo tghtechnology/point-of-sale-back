@@ -1,0 +1,28 @@
+@api=http://localhost:3000/descuento
+
+POST {{api}}
+Content-Type: application/json
+
+{
+  "nombre": "Oferta de invierno",
+  "tipo_descuento": "%",
+  "valor":45,
+  "estado":true 
+}
+###
+GET {{api}}/1
+###
+PUT {{api}}/2
+Content-Type: application/json
+
+{
+  "nombre": "Oferta de invierno",
+  "tipo_descuento": "$",
+  "valor":40,
+  "estado":true 
+}
+###
+GEt {{api}}
+
+###
+DELETE {{api}}/1
