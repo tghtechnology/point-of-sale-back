@@ -6,7 +6,7 @@ import routerArticulo from "./Routes/ArticuloRoute"
 import routerCategoria from "./Routes/CategoriaRoute"
 import morgan from "morgan";
 
-const app= express(); 
+const app= express();  
 
 app.use(cors());
 app.use(morgan("dev"));

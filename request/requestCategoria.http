@@ -1,0 +1,8 @@
+@api=http://localhost:3000
+POST {{api}}/crearC
+Content-Type: application/json
+
+{
+  "nombre": "Oferta de invierno",
+  "color":"rojo"
+}

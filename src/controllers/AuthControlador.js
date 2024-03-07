@@ -29,18 +29,15 @@ export const crearUsuario=async (req, res)=>{
           return res.status(400).json({ error: "La contraseña debe tener al menos 8 caracteres" });
       }
       //Encriptado de contraseña
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-        const pais=req.body.pais
+        
         //Validacion con el pais ingresado
         if(!validarNombrePais(pais)){
             return res.status(400).json({ error: "Pais inválido" });
         }
-        const [results] = await connection.execute(
-          "INSERT INTO usuarios(nombre, email, password, pais,estado) VALUES (?, ?,?,?,?)",
-          [req.body.nombre, req.body.email, hashedPassword, pais,true]
-        );
-          
+        const {nombre,email,password,pais}=req.body
+        
         // Construcción del objeto de nuevo usuario
         const newUsuario = {
             id: results.insertId, 

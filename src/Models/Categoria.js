@@ -8,3 +8,4 @@ class Categoria {
 }
 
 //module.exports(Categoria)
+export default Categoria

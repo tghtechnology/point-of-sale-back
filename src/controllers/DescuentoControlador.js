@@ -1,21 +1,19 @@
-import {connect} from "../database";
+//import {connect} from "../database";
+import {crearDescuento as agregarDescuento} from "../Services/DescuentoServicio"
 //Creacion de un nuevo descuento
 export const crearDescuento = async (req, res) => {
     try {
-        
+        const {nombre,tipo_descuento,valor}=req.body
         //Opciones de tipos de descuento que se deben ingresar
         const tiposValidos = ['%', '$'];
         //En el caso se ingrese otro tipo
-        if (!tiposValidos.includes(req.body.tipo_descuento)) {
+        if (!tiposValidos.includes(tipo_descuento)) {
             return res.status(400).json({ message: 'Tipo de descuento no válido' });
         }
-
-        //Variables
-        let valor = req.body.valor;
         let valor_calculado
 
         // En el caso que se ingrese porcentaje(%)
-        if (req.body.tipo_descuento === '%') {
+        if (tipo_descuento === '%') {
             //Verifica si se ingreso un valor numerico
             if (isNaN(valor)) {
                 return res.status(400).json({ message: 'El valor debe ser numérico' });
@@ -25,7 +23,7 @@ export const crearDescuento = async (req, res) => {
         }
         
         // En el caso que se ingrese un monto($)
-        else if (req.body.tipo_descuento === '$') {
+        else if (tipo_descuento === '$') {
             //Verifica si se ingreso un valor numerico
             if (isNaN(valor)) {
                 return res.status(400).json({ message: 'El valor debe ser numérico' });
@@ -33,19 +31,12 @@ export const crearDescuento = async (req, res) => {
             //Se mantiene el valor tal y como se ingreso
             valor_calculado = parseFloat(valor);
         } 
-
-        // Insertar el descuento en la base de datos
-        const connection = await connect();
-        const [results] = await connection.execute(
-            "INSERT INTO descuento(nombre, tipo_descuento, valor,valor_calculado, estado) VALUES(?,?,?,?,?)",
-            [req.body.nombre, req.body.tipo_descuento, valor,valor_calculado, true]
-        );
-
+        const id=await agregarDescuento(nombre,tipo_descuento,valor,valor_calculado)
         // Devolver el descuento creado con su estado
         const newDescuento = {
-            id: results.insertId,
-            nombre: req.body.nombre,
-            tipo_descuento: req.body.tipo_descuento,
+            id: id,
+            nombre: nombre,
+            tipo_descuento: tipo_descuento,
             valor: valor,
             valor_calculado: valor_calculado,
             estado: true
