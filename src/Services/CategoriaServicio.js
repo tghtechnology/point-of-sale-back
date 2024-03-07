@@ -1,9 +1,7 @@
 import { connect } from "../database";
+const Categoria = require('../Models/Categoria')
 
-const crearCategoria = require('../Models/Categoria')
-
-export const crearCategoria = async (nombre, color) => {
-
+const crearCategoria = async (nombre, color) => {
   const connection = await connect();
   const [results] = await connection.execute(
     "INSERT INTO categoria (nombre, color, estado) VALUES (?, ?, true)",

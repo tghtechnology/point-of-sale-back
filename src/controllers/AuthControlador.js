@@ -37,8 +37,8 @@ export const crearUsuario=async (req, res)=>{
             return res.status(400).json({ error: "Pais inválido" });
         }
         const [results] = await connection.execute(
-          "INSERT INTO usuarios(nombre, email, password, pais) VALUES (?, ?,?,?)",
-          [req.body.nombre, req.body.email, hashedPassword, pais]
+          "INSERT INTO usuarios(nombre, email, password, pais,estado) VALUES (?, ?,?,?,?)",
+          [req.body.nombre, req.body.email, hashedPassword, pais,true]
         );
           
         // Construcción del objeto de nuevo usuario
@@ -47,7 +47,8 @@ export const crearUsuario=async (req, res)=>{
             nombre: req.body.nombre,
             email: req.body.email,
             pais: pais,
-            password: hashedPassword 
+            password: hashedPassword,
+            estado:true
       };
         res.json(newUsuario);
       } catch (error) {
