@@ -1,18 +1,16 @@
-import { connect } from "../database";
+//import { connect } from "../database";
+const CategoriaServicio = require('../Services/CategoriaServicio')
+
+
 
 //Crear nueva categoría
 export const crearCategoria = async (req, res) => {
-  try {
-    const connection = await connect();
+  try{
     const { nombre, color } = req.body;
-
-    const [results] = await connection.execute(
-      "INSERT INTO categoria (nombre, color, estado) VALUES (?, ?, true)",
-      [nombre, color]
-    );
+    const id_categoria = await crearCategoria(nombre, color);
 
     const nuevaCategoria = {
-      id: results.insertId,
+      id: id_categoria,
       nombre,
       color
     };
@@ -23,18 +21,20 @@ export const crearCategoria = async (req, res) => {
     res.status(500).json({ mensaje: 'Error al crear la categoría.' });
   }
 };
+module.exports = { crearCategoria };
 
 //Listar categorías existentes
 export const listarCategorias = async (req, res) => {
   try {
     const connection = await connect();
-    const [results] = await connection.execute("SELECT id, nombre, color FROM categoria WHERE estado = true");
+    const [results] = await connection.execute("SELECT * FROM categoria WHERE estado = true");
     res.status(200).json(results);
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al obtener la lista de categorías.' });
   }
 };
+
 
 //Obtener una categoría por su ID
 export const obtenerCategoriaPorId = async (req, res) => {

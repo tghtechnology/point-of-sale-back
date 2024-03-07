@@ -1,5 +1,5 @@
-import { crearUsuario,login,enviarPIN,verificarPIN,cambiarPassword,listaPaises,logout } from '../controllers/UsuarioControlador';
-import { verificarContrasena, eliminarTemporalmente, restaurarCuenta, eliminarCuentasVencidas, eliminarPermanentemente} from "../controllers/UsuarioControlador"
+import { crearUsuario,login,listaPaises,logout } from '../controllers/AuthControlador';
+import { enviarPIN,verificarPIN,cambiarPassword,verificarContrasena, eliminarTemporalmente, restaurarCuenta, eliminarCuentasVencidas, eliminarPermanentemente} from "../controllers/UsuarioControlador"
 import { Router } from 'express';
 
 const routerUsuario = Router();
