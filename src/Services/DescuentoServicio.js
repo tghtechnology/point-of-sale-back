@@ -8,13 +8,11 @@ const crearDescuento=async(nombre,tipo_descuento,valor)=>{
         return res.status(400).json({ message: 'Tipo de descuento no válido' });
     }
     let valor_calculado=valor
-
     // En el caso que se ingrese porcentaje(%)
     if (tipo_descuento === '%') {
         // Convierte el valor a un porcentaje decimal
         valor_calculado = parseFloat(valor) / 100;
     }
-    
     // En el caso que se ingrese un monto($)
     else if (tipo_descuento === '$') {
         //Se mantiene el valor tal y como se ingreso
@@ -80,7 +78,12 @@ const modificarDescuento = async (id, nombre, tipo_descuento, valor, estado) => 
 };
 const obtenerDescuentos=async()=>{
     const connection = await connect();
-    const [rows] = await connection.execute("SELECT * FROM descuento");
+    const [rows] = await connection.execute("SELECT * FROM descuento WHERE estado = true");
+    return rows;
+};
+const obtenerDescuentosEliminados=async()=>{
+    const connection = await connect();
+    const [rows] = await connection.execute("SELECT * FROM descuento WHERE estado = false");
     return rows;
 };
 const cambiarEstadoDescuento = async (id, nuevoEstado) => {
@@ -94,7 +97,6 @@ const cambiarEstadoDescuento = async (id, nuevoEstado) => {
         if (result.affectedRows === 0) {
             throw new Error('Descuento no encontrado');
         }
-    
 };
 
 module.exports={
@@ -103,5 +105,6 @@ module.exports={
     obtenerDescuentoById,
     modificarDescuento,
     obtenerDescuentos,
-    cambiarEstadoDescuento
+    cambiarEstadoDescuento,
+    obtenerDescuentosEliminados
 }

@@ -4,9 +4,9 @@ POST {{api}}
 Content-Type: application/json
 
 {
-  "nombre": "Oferta de invierno",
-  "tipo_descuento": "%",
-  "valor":10
+  "nombre": "Oferta",
+  "tipo_descuento": "$",
+  "valor":50
 }
 ###
 GET {{api}}/14
@@ -20,10 +20,10 @@ Content-Type: application/json
   "valor":35
 }
 ###
-GEt {{api}}
+GET {{api}}
 
 ###
-DELETE {{api}}/4
+DELETE {{api}}/2
 
 ###
 PUT {{api}}/4/cambiar-estado
@@ -32,3 +32,4 @@ Content-Type: application/json
 {
   "estado": false
 }
+

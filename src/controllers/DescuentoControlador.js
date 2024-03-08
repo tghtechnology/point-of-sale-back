@@ -84,3 +84,12 @@ export const obtenerDescuentos = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+export const obtenerDescuentosEliminados =async (req,res)=>{
+    try{
+        const descuentos=await DescuentoServicio.obtenerDescuentosEliminados();
+        res.status(200).json(descuentos);
+
+    }catch(error){
+        res.status(500).json({error: error.message});
+    }
+}
