@@ -82,7 +82,7 @@ export const modificarDescuento = async (id, nombre, tipo_descuento, valor, esta
 };
 const obtenerDescuentos=async()=>{
     const connection = await connect();
-    const [rows] = await connection.execute("SELECT * FROM descuento");
+    const [rows] = await connection.execute("SELECT * FROM escuento");
     return rows;
 };
 export const cambiarEstadoDescuento = async (id, nuevoEstado) => {
