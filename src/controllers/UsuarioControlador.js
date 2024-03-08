@@ -9,7 +9,7 @@ let temporaryEmail = "";
 
 export const enviarPIN = async (req, res) => {
   try {
-    // Conexión a la base de datos
+    // Conexión a la base de datos 
     const connection = await connect();
 
     // Búsqueda del usuario por su correo electrónico en la base de datos

@@ -1,50 +1,28 @@
 import {connect} from "../database";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-
-//Importacion de la libreria i18n-iso-countries
-const paises = require("i18n-iso-countries");
-
-//Solicitud del archivo que contiene los paises en español
-paises.registerLocale(require("i18n-iso-countries/langs/es.json"))
-
-//Lista de los nombres de todos los paises del mundo en español
-export const listaPaises=async(req,res)=>{
-    const listaPaises=Object.values(paises.getNames('es', {select: "official"}))
-    res.json(listaPaises)
-}
-
-//Validacion si el pais existe segun a la lista
-function validarNombrePais(pais) {
-    const lista = paises.getNames('es');
-    return Object.values(lista).includes(pais);
+import * as UsuarioServicio from "../Services/UsuarioServicio"
+import { obtenerListaPaises } from "../helpers/helperPais";
+export const listaPaises = async (req, res) => {
+  try {
+    // Obtiene la lista de todos los países
+    const listaPaises = obtenerListaPaises();
+    res.json(listaPaises);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-
+};
 //Creacion de usuario con sus requerimientos o validaciones
 export const crearUsuario=async (req, res)=>{
     try {
-        const connection = await connect();
-        //Contraseña debe tener minimo numero de caracteres
-        if (req.body.password.length < 8) {
-          return res.status(400).json({ error: "La contraseña debe tener al menos 8 caracteres" });
-      }
-      //Encriptado de contraseña
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        
-        //Validacion con el pais ingresado
-        if(!validarNombrePais(pais)){
-            return res.status(400).json({ error: "Pais inválido" });
-        }
         const {nombre,email,password,pais}=req.body
-        
+        const id=await UsuarioServicio.crearUsuario(nombre,email,password,pais);
         // Construcción del objeto de nuevo usuario
         const newUsuario = {
-            id: results.insertId, 
-            nombre: req.body.nombre,
-            email: req.body.email,
+            id: id, 
+            nombre: nombre,
+            email: email,
             pais: pais,
-            password: hashedPassword,
             estado:true
       };
         res.json(newUsuario);

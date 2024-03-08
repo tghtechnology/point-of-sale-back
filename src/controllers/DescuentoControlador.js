@@ -3,7 +3,6 @@ import * as DescuentoServicio from "../Services/DescuentoServicio"
 export const crearDescuento = async (req, res) => {
     try {
         const {nombre,tipo_descuento,valor}=req.body
-        
         const id=await DescuentoServicio.crearDescuento(nombre,tipo_descuento,valor)
         // Devolver el descuento creado con su estado
         const newDescuento = {
