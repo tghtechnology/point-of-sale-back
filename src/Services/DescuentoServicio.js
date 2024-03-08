@@ -37,7 +37,7 @@ const eliminarDescuento =async (id)=>{
 
 const obtenerDescuentoById=async (id) => {
     const connection = await connect();
-    const [rows] = await connection.execute("SELECT * FROM descuento WHERE id = ? AND estado = true", [id]);
+    const [rows] = await connection.execute("SELECT * FROM descuento WHERE id = ?", [id]);
   return rows[0];
 }
 
@@ -80,7 +80,7 @@ export const modificarDescuento = async (id, nombre, tipo_descuento, valor, esta
 };
 const obtenerDescuentos=async()=>{
     const connection = await connect();
-    const [rows] = await connection.execute("SELECT * FROM descuento WHERE estado = true");
+    const [rows] = await connection.execute("SELECT * FROM descuento");
     return rows;
 };
 export const cambiarEstadoDescuento = async (id, nuevoEstado) => {

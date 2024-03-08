@@ -9,7 +9,7 @@ Content-Type: application/json
   "valor":10
 }
 ###
-GET {{api}}/1
+GET {{api}}/14
 ###
 PUT {{api}}/1
 Content-Type: application/json
@@ -23,7 +23,7 @@ Content-Type: application/json
 GEt {{api}}
 
 ###
-DELETE {{api}}/15
+DELETE {{api}}/4
 
 ###
 PUT {{api}}/4/cambiar-estado

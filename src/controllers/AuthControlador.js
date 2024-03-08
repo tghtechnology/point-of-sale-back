@@ -132,7 +132,7 @@ export const enviarPIN = async (req, res) => {
       return res.status(404).json({ error: "¡Email no encontrado!" });
     }
     // Generación de un PIN aleatorio de 6 dígitos
-    temporaryPIN = Math.floor(100000 + Math.random() * 900000);
+    temporaryPIN = String(Math.floor(100000 + Math.random() * 900000));
 
     // Almacenar temporalmente el correo electrónico
     temporaryEmail = req.body.email;
