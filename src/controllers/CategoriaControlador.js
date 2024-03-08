@@ -26,7 +26,7 @@ export const crearCategoria = async (req, res) => {
 //Listar categorías existentes
 export const listarCategorias = async (req, res) => {
   try {
-    
+    await 
     res.status(200).json(todasCategorias);
   } catch (error) {
     console.error(error);

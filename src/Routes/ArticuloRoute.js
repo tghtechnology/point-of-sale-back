@@ -9,4 +9,4 @@ router.get('/listarUnoA/:id',obtenerArticuloPorId);
 router.put('/actualizarA/:id', actualizarArticulo)
 router.delete('/eliminarA/:id', eliminarArticulo)
 
-export default router;
+export default router; 
