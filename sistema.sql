@@ -37,6 +37,25 @@ CREATE TABLE `categoria` (
 -- Dumping data for table `categoria`
 --
 
+DROP TABLE IF EXISTS `articulo`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `articulo` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(255) NOT NULL,
+  `tipo_venta` varchar(255) NOT NULL,
+  `precio` decimal(10,2) DEFAULT NULL,
+  `coste` decimal(10,2) NOT NULL,
+  `ref` varchar(255),
+  `representacion` varchar(255) NOT NULL,
+  `id_categoria` int,
+  `estado` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`)
+  CONSTRAINT `fk_categoria_articulo` FOREIGN KEY (`id_categoria`) REFERENCES `Categoria`(`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
 LOCK TABLES `categoria` WRITE;
 /*!40000 ALTER TABLE `categoria` DISABLE KEYS */;
 /*!40000 ALTER TABLE `categoria` ENABLE KEYS */;
