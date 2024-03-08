@@ -1,6 +1,5 @@
 import {connect} from "../database";
 import bcrypt from "bcrypt"
-import jwt from "jsonwebtoken"
 import nodemailer from "nodemailer"
 
 
@@ -10,7 +9,7 @@ let temporaryEmail = "";
 
 export const enviarPIN = async (req, res) => {
   try {
-    // Conexión a la base de datos
+    // Conexión a la base de datos 
     const connection = await connect();
 
     // Búsqueda del usuario por su correo electrónico en la base de datos
@@ -271,7 +270,7 @@ export const verificarContrasena = async (req, res) => {
 
     if (results.length === 0) {
       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
-    }
+    } 
 
     const hashedPasswordFromDatabase = results[0].password;
     const match = await bcrypt.compare(passwordFromRequest, hashedPasswordFromDatabase);
