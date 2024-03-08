@@ -2,7 +2,7 @@ import {connect} from "../database"
 import { validarNombrePais } from "../helpers/helperPais";
 import bcrypt from "bcrypt"
 
-export const crearUsuario = async (nombre, email, password, pais) => {
+const crearUsuario = async (nombre, email, password, pais) => {
     // Validación del país
     if (!validarNombrePais(pais)) {
       throw new Error("País inválido");

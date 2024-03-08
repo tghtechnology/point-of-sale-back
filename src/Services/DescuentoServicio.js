@@ -41,7 +41,7 @@ const obtenerDescuentoById=async (id) => {
   return rows[0];
 }
 
-export const modificarDescuento = async (id, nombre, tipo_descuento, valor, estado) => {
+const modificarDescuento = async (id, nombre, tipo_descuento, valor, estado) => {
         const connection = await connect();
         const tiposValidos = ['%', '$'];
         // Validar tipo de descuento
@@ -83,7 +83,7 @@ const obtenerDescuentos=async()=>{
     const [rows] = await connection.execute("SELECT * FROM descuento");
     return rows;
 };
-export const cambiarEstadoDescuento = async (id, nuevoEstado) => {
+const cambiarEstadoDescuento = async (id, nuevoEstado) => {
         const connection = await connect();
         // Actualizar solo el estado del descuento en la base de datos
         const [result] = await connection.execute(
