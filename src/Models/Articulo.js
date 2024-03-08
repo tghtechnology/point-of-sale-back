@@ -12,4 +12,4 @@ class Articulo {
     }
 }
 
-module.exports(Articulo)
+//module.exports(Articulo)

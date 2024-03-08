@@ -1,5 +1,4 @@
-import { connect } from "../database";
-import { crearCategoria } from "./CategoriaControlador"
+import * as ArticuloServicio from "../Services/ArticuloServicio"
 
 
 //Crear nuevo artículo
