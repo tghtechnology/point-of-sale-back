@@ -27,10 +27,12 @@ const crearDescuento=async(nombre,tipo_descuento,valor)=>{
     return results;
 }
 const eliminarDescuento =async (id)=>{
-    const connection =  await connect();
-  const result = await connection.execute("DELETE FROM descuento WHERE id = ?", [
-    id
-  ]);
+    const connection = await connect();
+        // Actualizar solo el estado del descuento en la base de datos
+        await connection.execute(
+            'UPDATE descuento SET estado = false WHERE id = ?',
+            [id]
+        );
 }
 
 const obtenerDescuentoById=async (id) => {
@@ -84,7 +86,6 @@ const obtenerDescuentos=async()=>{
     return rows;
 };
 export const cambiarEstadoDescuento = async (id, nuevoEstado) => {
-    try {
         const connection = await connect();
         // Actualizar solo el estado del descuento en la base de datos
         const [result] = await connection.execute(
@@ -95,9 +96,7 @@ export const cambiarEstadoDescuento = async (id, nuevoEstado) => {
         if (result.affectedRows === 0) {
             throw new Error('Descuento no encontrado');
         }
-    } catch (error) {
-        throw new Error('Error al cambiar el estado del descuento: ' + error.message);
-    }
+    
 };
 
 module.exports={
