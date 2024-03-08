@@ -44,12 +44,10 @@ const obtenerDescuentoById=async (id) => {
 export const modificarDescuento = async (id, nombre, tipo_descuento, valor, estado) => {
         const connection = await connect();
         const tiposValidos = ['%', '$'];
-
         // Validar tipo de descuento
         if (!tiposValidos.includes(tipo_descuento)) {
             throw new Error('Tipo de descuento no válido');
         }
-
         // Calcular valor calculado
         let nuevoValorCalculado = valor;
         if (tipo_descuento === '%') {
@@ -77,7 +75,7 @@ export const modificarDescuento = async (id, nombre, tipo_descuento, valor, esta
             nombre, tipo_descuento, valor, nuevoValorCalculado, nuevoEstado, id
         ]);
 
-        return true; // Operación exitosa
+        return true;
     
 };
 const obtenerDescuentos=async()=>{
@@ -88,7 +86,6 @@ const obtenerDescuentos=async()=>{
 export const cambiarEstadoDescuento = async (id, nuevoEstado) => {
     try {
         const connection = await connect();
-
         // Actualizar solo el estado del descuento en la base de datos
         const [result] = await connection.execute(
             'UPDATE descuento SET estado = ? WHERE id = ?',
