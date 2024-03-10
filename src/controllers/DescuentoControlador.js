@@ -35,7 +35,11 @@ export const obtenerDescuentoById=async (req, res)=>{
     try{
         const id=req.params.id;
         const descuento=await DescuentoServicio.obtenerDescuentoById(id);
+        if (descuento){
         res.status(200).json(descuento);
+        }else{
+            res.status(404).json({ mensaje: 'Descuento no encontrado' });
+        }
     }catch(error) {
         res.status(500).json({ error: error.message });
     }
@@ -68,20 +72,24 @@ export const obtenerDescuentos = async (req, res) => {
         res.status(500).json({error: error.message});
     }
   };
+  //Cambio de estado 
   export const cambiarEstadoDescuento = async (req, res) => {
     try {
         const { id } = req.params;
         const { estado } = req.body;
-
-        console.log('Estado recibido:', estado); // Imprimir el estado recibido
-
-        // Llama al servicio para cambiar el estado del descuento
+        console.log('Estado recibido:', estado); 
         await DescuentoServicio.cambiarEstadoDescuento(id, estado);
-
-        // Si todo salió bien, responde con un código 204 (No Content)
         res.sendStatus(204);
     } catch (error) {
-        // Si hay un error, responde con un código 500 (Internal Server Error) y el mensaje de error
         res.status(500).json({ error: error.message });
     }
 };
+export const obtenerDescuentosEliminados =async (req,res)=>{
+    try{
+        const descuentos=await DescuentoServicio.obtenerDescuentosEliminados();
+        res.status(200).json(descuentos);
+
+    }catch(error){
+        res.status(500).json({error: error.message});
+    }
+}
