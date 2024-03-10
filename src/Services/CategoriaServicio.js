@@ -9,34 +9,36 @@ const crearCategoria = async (nombre, color) => {
  
   return results; 
 }
+
+
 const listarCategorias = async ()=>{
   const connection = await connect();
    const [results] = await connection.execute(
-    "SELECT * FROM categoria WHERE estado = true", [id]
+    "SELECT id, nombre, color FROM categoria WHERE estado = true"
     );
    return results;
 }
 
-const listarCategoriaPorId = async () => {
+const listarCategoriaPorId = async (id) => {
   const connection = await connect();
   const [results] = await connection.execute(
-    "SELECT * FROM categoria WHERE id = ?",
+    "SELECT id, nombre, color FROM categoria WHERE id = ? AND estado = true",[id]
   )
   return results;
 }
 
-const modificarCategoria = async (id, nombre, color, estado) => {
+const modificarCategoria = async (id, nombre, color) => {
   const connection = await connect();
 
-  await connection.query("UPDATE categoria SET nombre = ?, color = ? WHERE id = ? AND estado = true" ,
-  [nombre, color, estado, id])
-  return true;
+  const [results] = await connection.query("UPDATE categoria SET nombre = ?, color = ? WHERE id = ? AND estado = true" ,
+  [nombre, color, id])
+  return results;
 }
 
 const eliminarCategoria = async (id) => {
   const connection = await connect();
   await connection.execute(
-    'UPDATE descuento SET estado = false WHERE id = ?',[id]
+    'UPDATE categoria SET estado = false WHERE id = ?',[id]
   );
 }
 

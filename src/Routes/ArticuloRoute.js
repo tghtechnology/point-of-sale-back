@@ -3,10 +3,10 @@ import { Router } from 'express';
 
 const router = Router();
 
-router.get('/listarA',listarArticulos);
-router.post('/crearA',crearArticulo);
-router.get('/listarUnoA/:id',obtenerArticuloPorId);
-router.put('/actualizarA/:id', actualizarArticulo)
-router.delete('/eliminarA/:id', eliminarArticulo)
+router.get('/articulo/listar',listarArticulos);
+router.post('/articulo/crear',crearArticulo);
+router.get('/articulo/listar/:id',obtenerArticuloPorId);
+router.put('/articulo/actualizar/:id', actualizarArticulo)
+router.delete('/articulo/eliminar/:id', eliminarArticulo)
 
 export default router; 

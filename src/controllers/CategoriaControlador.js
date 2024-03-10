@@ -5,10 +5,10 @@ import * as CategoriaServicio from "../Services/CategoriaServicio"
 export const crearCategoria = async (req, res) => {
   try{
     const { nombre, color } = req.body;
-    const id = await DescuentoServicio.crearDescuento(nombre,color)
+    const id = await CategoriaServicio.crearCategoria(nombre,color)
 
     const nuevaCategoria = {
-      id: id,
+      id: id.insertId,
       nombre: nombre,
       color: color,
     };
@@ -40,7 +40,7 @@ export const obtenerCategoriaPorId = async (req, res) => {
     const categoria = await CategoriaServicio.listarCategoriaPorId(id);
     res.status(200).json(categoria);
 
-    if (results.length === 0) {
+    if (categoria.length === 0) {
       return res.status(404).json({ mensaje: 'Categoría no encontrada.' });
     }
   } catch (error) {
@@ -54,13 +54,18 @@ export const actualizarCategoria = async (req, res) => {
   try {
     const id=req.params.id;
     const{nombre,color}=req.body
-    const resultado =await CategoriaServicio.modificarCategoria(id,nombre,color);
+    const categoria = await CategoriaServicio.modificarCategoria(id,nombre,color);
 
-    if (resultado) {
-      res.sendStatus(200).json({ message: 'Descuento actualizado' });
-    } else {
-      res.status(404).json({ message: 'Descuento no encontrado' });
+    const categoriaActualizada = {
+      id: id.insertId,
+      nombre: nombre,
+      color: color,
+    };
+
+    if (!categoria) {
+      res.status(404).json({ message: 'Categoría no encontrada' });
     }
+    res.status(200).json(categoriaActualizada); 
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al actualizar la categoría' });
@@ -72,7 +77,7 @@ export const eliminarCategoria = async (req, res) => {
   try {
     const id = req.params.id;
     await CategoriaServicio.eliminarCategoria(id);
-    res.status(200).json({ mensaje: 'Categoría eliminada' });
+    res.status(200).json({ mensaje: 'Categoría eliminada correctamente' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al eliminar la categoría.' });

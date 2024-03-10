@@ -1,0 +1,34 @@
+@api=http://localhost:3000
+
+
+GET {{api}}/articulo/listar
+###
+POST {{api}}/articulo/crear
+Content-Type: application/json
+
+{
+  "nombre": "Refrigeradora",
+  "tipo_venta":"Peso",
+  "precio": 12.50,
+  "coste": 60.99,
+  "ref": 10550,
+  "representacion": "imagen",
+  "id_categoria": 10
+}
+###
+GET {{api}}/articulo/listar/10
+###
+PUT {{api}}/articulo/actualizar/10
+Content-Type: application/json
+
+{
+  "nombre": "Refrigeradora",
+  "tipo_venta":"Unidad",
+  "precio": 12.50,
+  "coste": 60.99,
+  "ref": 10550,
+  "representacion": "imagen",
+  "id_categoria": 10
+}
+###
+DELETE {{api}}/articulo/eliminar/23

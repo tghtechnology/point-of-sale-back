@@ -1,8 +1,24 @@
 @api=http://localhost:3000
-POST {{api}}/crearC
+
+
+GET {{api}}/categoria/listar
+###
+POST {{api}}/categoria/crear
 Content-Type: application/json
 
 {
-  "nombre": "Oferta de invierno",
-  "color":"rojo"
+  "nombre": "Prendas de vestir",
+  "color":"Rojo"
 }
+###
+GET {{api}}/categoria/listar/11
+###
+PUT {{api}}/categoria/actualizar/11
+Content-Type: application/json
+
+{
+  "nombre": "Cocina",
+  "color":"Verde"
+}
+###
+DELETE {{api}}/categoria/eliminar/13
