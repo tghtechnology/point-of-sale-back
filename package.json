@@ -20,7 +20,9 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "mysql2": "^3.9.2",
-    "nodemailer": "^6.9.11"
+    "nodemailer": "^6.9.12",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
