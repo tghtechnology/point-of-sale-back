@@ -75,7 +75,7 @@ export const enviarTokenCambioPassword = async (email) => {
       { expiresIn: "1h" }
     );
 
-    const resetPasswordLink = `https://ejemplo/cambiar-pass?token=${token}`;
+    const resetPasswordLink = `https://${process.env.URL}/cambiar-pass?token=${token}`;
 
     const transporter = nodemailer.createTransport({
       service: process.env.EMAIL_SERVICE,
