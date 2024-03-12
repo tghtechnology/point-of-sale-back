@@ -4,8 +4,8 @@ import * as CategoriaServicio from "../Services/CategoriaServicio"
 
 const prisma = new PrismaClient();
 
+//Crear un nuevo artículo
 const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representacion, id_categoria, categoriaNueva) => {
-    const connection = await connect();
   
     let idCategoria;
   
@@ -18,6 +18,7 @@ const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representac
       idCategoria = id_categoria;
     }
 
+    //Se crea el nuevo artículo
     const articulo = await prisma.articulo.create({
       data: {
         nombre: nombre,
@@ -26,53 +27,188 @@ const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representac
         coste: coste,
         ref: ref,
         representacion: representacion,
-        id_categoria: idCategoria,
+        id_categoria: Array.isArray(idCategoria) ? idCategoria[0] : idCategoria,
         estado: true
       }
     })
-  
-    
-    return articulo;
+
+  // Consultar la categoría 
+  const categoria = await prisma.categoria.findUnique({
+    where: {
+      id: articulo.id_categoria
+    },
+    select: {
+      id: true,
+      nombre: true,
+      color: true
+    }
+  });
+
+  //Agregar información de categoría a artículo
+  articulo.categoria = categoria;
+
+  return articulo;
   };
 
+//Listar todos los artículos
 const listarArticulos = async ()=>{
-    const connection = await connect();
 
+    //Busca todos los artículos con estado true
     const articulos = await prisma.articulo.findMany({
       where: {
         estado: true
+      },
+      include: { //Incluye la información de categoría
+        categoria: {
+          select: {
+            id: true,
+            nombre: true,
+            color: true
+          }
+        }
       }
     })
-    return articulos;
+
+    //Formato del JSON de respuesta
+    const articulosFormato = articulos.map((articulo) => {
+      return {
+        id: articulo.id,
+        nombre: articulo.nombre,
+        tipo_venta: articulo.tipo_venta,
+        precio: articulo.precio,
+        coste: articulo.coste,
+        ref: articulo.ref,
+        representacion: articulo.representacion,
+        categoria: {
+          id: articulo.categoria.id,
+          nombre: articulo.categoria.nombre,
+          color: articulo.categoria.color
+        },
+      };
+    });
+
+    return articulosFormato;
+}
+
+//Listar un artículo con id
+const listarArticuloPorId = async (id) => {
+
+    //Buscar artículo con el ID único
+    const articulo = await prisma.articulo.findUnique({
+      where: {
+        id: parseInt(id),
+        estado: true
+      },
+      include: { //Incluye la información de categoría
+        categoria: {
+          select: {
+            id: true,
+            nombre: true,
+            color: true
+          }
+        }
+      }
+    })
+
+  // Consultar la categoría 
+  const categoria = await prisma.categoria.findUnique({
+    where: {
+      id: articulo.id_categoria,
+    },
+    select: {
+      id: true,
+      nombre: true,
+      color: true
+    }
+  });
+
+  //Agregar información de categoría a artículo
+  articulo.categoria = categoria;
+
+  //Formato del JSON de la respuesta
+  const articuloFormato = {
+      id: articulo.id,
+      nombre: articulo.nombre,
+      tipo_venta: articulo.tipo_venta,
+      precio: articulo.precio,
+      coste: articulo.coste,
+      ref: articulo.ref,
+      representacion: articulo.representacion,
+      categoria: {
+        id: articulo.categoria.id,
+        nombre: articulo.categoria.nombre,
+        color: articulo.categoria.color
+    }
+  };
+
+  return articuloFormato;
   }
 
-  const listarArticuloPorId = async (id) => {
-    const connection = await connect();
-    const [results] = await connection.execute(
-      "SELECT id, nombre, tipo_venta, precio, coste, ref, representacion, id_categoria FROM articulo WHERE id = ? AND estado = true", [id])
+//Modificar un artículo 
+const modificarArticulo = async (id, nombre, tipo_venta, precio, coste, ref, representacion, id_categoria, categoriaNueva, nombreCategoria, colorCategoria) => {
 
-  const articulo = results[0];
-
-  const [categoriaResults] = await connection.execute(
-    "SELECT id, nombre, color FROM categoria WHERE id = ? AND estado = true", [articulo.id_categoria]);
-
-  articulo.categoria = categoriaResults[0];
-    return articulo;
-  }
-
-  const modificarArticulo = async (id, nombre, tipo_venta, precio, coste, ref, representacion, id_categoria) => {
-    const connection = await connect();
+    let idCategoria;
   
-    const [results] = await connection.query("UPDATE articulo SET nombre = ?, tipo_venta = ?, precio = ?, coste = ?, ref = ?, representacion = ?, id_categoria = ? WHERE id = ? AND estado = true" ,
-    [nombre, tipo_venta, precio, coste, ref, representacion, id_categoria, id])
-    return results;
+    //Llama a la función de crearCategoria desde el formulario de Articulo
+    if (categoriaNueva) {
+      // Crear una nueva categoría desde artículo
+      const nuevaCategoria = await CategoriaServicio.crearCategoria(nombreCategoria, colorCategoria);
+      idCategoria = nuevaCategoria.insertId;
+    } else {
+      // Si la categoría ya existe
+      idCategoria = id_categoria;
+    }
+
+    //Actualiza el nuevo artículo mientras estado true
+    const nuevoArticulo = await prisma.articulo.update({
+      where: {
+        id: parseInt(id),
+        estado: true
+      },
+      data: {
+        nombre: nombre,
+        tipo_venta: tipo_venta,          
+        precio: precio,
+        coste: coste,
+        ref: ref,
+        representacion: representacion,
+        id_categoria: Array.isArray(idCategoria) ? idCategoria[0] : idCategoria,
+        estado: true
+      }
+    })
+
+  //Buscar información de categoría con id ingresado
+  const categoria = await prisma.categoria.findUnique({
+    where: {
+      id: nuevoArticulo.id_categoria
+    },
+    select: {
+      id: true,
+      nombre: true,
+      color: true
+    }
+  });
+
+  //Agregar información de categoría a artículo
+  nuevoArticulo.categoria = categoria;
+
+  return nuevoArticulo;
   }
 
-  const eliminarArticulo = async (id) => {
-    const connection = await connect();
-    await connection.execute(
-      'UPDATE articulo SET estado = false WHERE id = ?',[id]
-    );
+//Eliminar un artículo
+const eliminarArticulo = async (id) => {
+
+  //Establece el estado a false
+  const articulo = await prisma.articulo.update({
+      where: {
+        id: parseInt(id),
+        estado: true
+      },
+      data: {
+        estado: false
+      }
+    })
+    return articulo
   }
 
 

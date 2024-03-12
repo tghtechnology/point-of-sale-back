@@ -71,7 +71,7 @@ export const actualizarArticulo = async (req, res) => {
     const articulo = await ArticuloServicio.modificarArticulo(id, nombre, tipo_venta, precio, coste, ref, representacion, id_categoria);
     const categoria = await CategoriaServicio.listarCategoriaPorId(id_categoria)
 
-    const articuloActualizado = {
+    /*const articuloActualizado = {
       id: id.insertId,
       nombre: nombre,
       tipo_venta: tipo_venta,          
@@ -80,12 +80,12 @@ export const actualizarArticulo = async (req, res) => {
       ref: ref,
       representacion: representacion,
       categoria: Array.isArray(categoria) ? categoria[0] : categoria
-  };
+  };*/
 
     if (!articulo) {
       res.status(404).json({ mensaje: 'No se encontró el artículo' });
     }
-      res.status(200).json(articuloActualizado);
+      res.status(200).json(articulo);
     } catch (error) {
       console.error(error);
       res.status(500).json({ mensaje: 'Error al obtener el artículo' });
