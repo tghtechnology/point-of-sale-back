@@ -1,5 +1,8 @@
 import { connect } from "../database";
+import { PrismaClient } from "@prisma/client";
 import * as CategoriaServicio from "../Services/CategoriaServicio"
+
+const prisma = new PrismaClient();
 
 const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representacion, id_categoria, categoriaNueva) => {
     const connection = await connect();
@@ -14,21 +17,33 @@ const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representac
       // Si la categoría ya existe
       idCategoria = id_categoria;
     }
+
+    const articulo = await prisma.articulo.create({
+      data: {
+        nombre: nombre,
+        tipo_venta: tipo_venta,          
+        precio: precio,
+        coste: coste,
+        ref: ref,
+        representacion: representacion,
+        id_categoria: idCategoria,
+        estado: true
+      }
+    })
   
-    const [results] = await connection.execute(
-      "INSERT INTO articulo (nombre, tipo_venta, precio, coste, ref, representacion, id_categoria, estado) VALUES (?, ?, ?, ?, ?, ?, ?, true)",
-      [nombre, tipo_venta, precio, coste, ref, representacion, idCategoria]
-    );
-  
-    return results;
+    
+    return articulo;
   };
 
 const listarArticulos = async ()=>{
     const connection = await connect();
-    const [results] = await connection.execute(
-        "SELECT id, nombre, tipo_venta, precio, coste, ref, representacion, id_categoria FROM articulo WHERE estado = true"
-    );
-    return results;
+
+    const articulos = await prisma.articulo.findMany({
+      where: {
+        estado: true
+      }
+    })
+    return articulos;
   }
 
   const listarArticuloPorId = async (id) => {

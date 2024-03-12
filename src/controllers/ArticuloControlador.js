@@ -10,9 +10,9 @@ export const crearArticulo = async (req, res) => {
     const categoria = await CategoriaServicio.listarCategoriaPorId(id_categoria)
       //Crear nueva categoría si se desea
       //if (!categoriaExistente) {
-    const id = await ArticuloServicio.crearArticulo(nombre, tipo_venta, precio, coste, ref, representacion, id_categoria)
+    const nuevoArticulo = await ArticuloServicio.crearArticulo(nombre, tipo_venta, precio, coste, ref, representacion, id_categoria)
   
-    const nuevoArticulo = {
+    /*const nuevoArticulo = {
         id: id.insertId,
         nombre: nombre,
         tipo_venta: tipo_venta,          
@@ -21,7 +21,7 @@ export const crearArticulo = async (req, res) => {
         ref: ref,
         representacion: representacion,
         categoria: Array.isArray(categoria) ? categoria[0] : categoria
-    };
+    };*/
   
       res.status(201).json(nuevoArticulo);
   } catch (error) {
