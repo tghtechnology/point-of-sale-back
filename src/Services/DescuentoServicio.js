@@ -108,18 +108,12 @@ const obtenerDescuentos=async()=>{
 
 const obtenerDescuentosEliminados=async()=>{
     const connection=await connect();
-    try{ 
         const descuentoseliminados= await prisma.descuento.findMany({
             where: {
             estado: false
             }
-      });
-      return descuentoseliminados;
-    }
-    catch(error){
-      console.log(error)
-    }
-      
+        });
+      return descuentoseliminados;      
 };
 const cambiarEstadoDescuento = async (id, nuevoEstado) => {
         const connection = await connect();
