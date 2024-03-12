@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import routerUsuario from "./Routes/UsuarioRouter";
+import routerAuth from "./Routes/AuthRouter";
 import routerDescuento from "./Routes/DescuentoRouter"
 import routerArticulo from "./Routes/ArticuloRoute"
 import routerCategoria from "./Routes/CategoriaRoute"
@@ -16,6 +17,6 @@ app.use(routerUsuario)
 app.use(routerDescuento)
 app.use(routerArticulo)
 app.use(routerCategoria)
-
+app.use(routerAuth)
 
 export default app
