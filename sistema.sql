@@ -30,11 +30,21 @@ CREATE TABLE `categoria` (
   `color` varchar(255) NOT NULL,
   `estado` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `categoria`
+--
+
+LOCK TABLES `categoria` WRITE;
+/*!40000 ALTER TABLE `categoria` DISABLE KEYS */;
+/*!40000 ALTER TABLE `categoria` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+--
+-- Table structure for table `articulo`
 --
 
 DROP TABLE IF EXISTS `articulo`;
@@ -43,7 +53,7 @@ DROP TABLE IF EXISTS `articulo`;
 CREATE TABLE `articulo` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nombre` varchar(255) NOT NULL,
-  `tipo_venta` varchar(255) NOT NULL,
+  `tipo_venta` enum('Peso','Unidad') NOT NULL,
   `precio` decimal(10,2) DEFAULT NULL,
   `coste` decimal(10,2) NOT NULL,
   `ref` varchar(255),
@@ -52,40 +62,44 @@ CREATE TABLE `articulo` (
   `estado` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_categoria_articulo` FOREIGN KEY (`id_categoria`) REFERENCES `Categoria`(`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Dumping data for table `articulo`
+--
 
-LOCK TABLES `categoria` WRITE;
-/*!40000 ALTER TABLE `categoria` DISABLE KEYS */;
-/*!40000 ALTER TABLE `categoria` ENABLE KEYS */;
+LOCK TABLES `articulo` WRITE;
+/*!40000 ALTER TABLE `empleados` DISABLE KEYS */;
+/*!40000 ALTER TABLE `empleados` ENABLE KEYS */;
 UNLOCK TABLES;
+
 
 --
 -- Table structure for table `descuento`
 --
 
-DROP TABLE IF EXISTS descuento;
+DROP TABLE IF EXISTS `descuento`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE descuento (
-  id int NOT NULL AUTO_INCREMENT,
-  nombre varchar(255) NOT NULL,
-  tipo_descuento enum('%','$') NOT NULL,
-  valor decimal(10,2) NOT NULL,
-  valor_calculado decimal(10,2) NOT NULL,
-  estado tinyint NOT NULL,
-  PRIMARY KEY (id)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `descuento` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(255) NOT NULL,
+  `tipo_descuento` enum('%','$') NOT NULL,
+  `valor` decimal(10,2) NOT NULL,
+  `valor_calculado` decimal(10,2) NOT NULL,
+  `estado` tinyint NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table descuento
+-- Dumping data for table `descuento`
 --
 
-LOCK TABLES descuento WRITE;
-/*!40000 ALTER TABLE descuento DISABLE KEYS */;
-/*!40000 ALTER TABLE descuento ENABLE KEYS */;
+LOCK TABLES `descuento` WRITE;
+/*!40000 ALTER TABLE `descuento` DISABLE KEYS */;
+/*!40000 ALTER TABLE `descuento` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
@@ -106,7 +120,7 @@ CREATE TABLE `empleados` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `pin` (`pin`),
   UNIQUE KEY `correo` (`correo`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -117,6 +131,35 @@ LOCK TABLES `empleados` WRITE;
 /*!40000 ALTER TABLE `empleados` DISABLE KEYS */;
 /*!40000 ALTER TABLE `empleados` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+--
+-- Table structure for table `reset_tokens`
+--
+
+DROP TABLE IF EXISTS `reset_tokens`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `reset_tokens` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `token` varchar(255) NOT NULL,
+  `expiracion` datetime NOT NULL,
+  `usuario_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_usuario_reset_token` (`usuario_id`),
+  CONSTRAINT `fk_usuario_reset_token` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `reset_tokens`
+--
+
+LOCK TABLES `reset_tokens` WRITE;
+/*!40000 ALTER TABLE `reset_tokens` DISABLE KEYS */;
+/*!40000 ALTER TABLE `reset_tokens` ENABLE KEYS */;
+UNLOCK TABLES;
+
 
 --
 -- Table structure for table `sesiones`
@@ -133,7 +176,7 @@ CREATE TABLE `sesiones` (
   PRIMARY KEY (`id`),
   KEY `usuario_id` (`usuario_id`),
   CONSTRAINT `sesiones_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -144,6 +187,7 @@ LOCK TABLES `sesiones` WRITE;
 /*!40000 ALTER TABLE `sesiones` DISABLE KEYS */;
 /*!40000 ALTER TABLE `sesiones` ENABLE KEYS */;
 UNLOCK TABLES;
+
 
 --
 -- Table structure for table `usuarios`
@@ -162,7 +206,7 @@ CREATE TABLE `usuarios` (
   `eliminado_temporal_fecha` TIMESTAMP DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -173,8 +217,10 @@ LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
+
+
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
