@@ -1,5 +1,3 @@
-import {connect} from "../database";
-import bcrypt from "bcrypt"
 import * as UsuarioServicio from "../Services/UsuarioServicio"
 import { obtenerListaPaises } from "../helpers/helperPais";
 export const listaPaises = async (req, res) => {
@@ -15,24 +13,12 @@ export const listaPaises = async (req, res) => {
 export const crearUsuario=async (req, res)=>{
     try {
         const {nombre,email,password,pais}=req.body
-        const id=await UsuarioServicio.crearUsuario(nombre,email,password,pais);
-        // Construcción del objeto de nuevo usuario
-        const newUsuario = {
-            id: id, 
-            nombre: nombre,
-            email: email,
-            pais: pais,
-            estado:true
-      };
+        const newUsuario=await UsuarioServicio.crearUsuario(nombre,email,password,pais);
         res.json(newUsuario);
       } catch (error) {
         console.error(error);
       }
 };
-
-
-
-
 
 /**
  * Controladores de Verificar contraseña, eliminar cuenta temporalmente y permanentemente, restaurar cuenta

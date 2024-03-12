@@ -1,6 +1,9 @@
 import {connect} from "../database"
 import { validarNombrePais } from "../helpers/helperPais";
 import bcrypt from "bcrypt"
+import { PrismaClient } from "@prisma/client";
+//Inicialización de prisma
+const prisma = new PrismaClient();
 
 const crearUsuario = async (nombre, email, password, pais) => {
     // Validación del país
@@ -11,10 +14,16 @@ const crearUsuario = async (nombre, email, password, pais) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     // Creación del nuevo usuario en la base de datos
     const connection = await connect();
-    const [result] = await connection.execute(
-      "INSERT INTO usuarios (nombre, email, password, pais, estado) VALUES (?, ?, ?, ?, ?)",
-      [nombre, email, hashedPassword, pais, true]
-    );
+    const newUsuario=await prisma.usuario.create({
+      data:{
+            nombre: nombre,
+            email: email,
+            pais: pais,
+            password:hashedPassword,
+            estado:true
+      }
+    })
+    return newUsuario
 }; 
 
 //Función para verificar contraseña antes de eliminar
