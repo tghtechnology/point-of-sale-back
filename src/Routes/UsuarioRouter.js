@@ -9,7 +9,7 @@ routerUsuario.get('/listaPaises',listaPaises)
 routerUsuario.post("/verificar/:id", verificarContrasena)
 routerUsuario.post("/eliminar-temporal/:id", eliminarTemporalmente)
 routerUsuario.post("/restaurar-cuenta/:id", restaurarCuenta)
-routerUsuario.post("/eliminar_cuenta-vencida/:id", eliminarCuentasVencidas)
+routerUsuario.post("/eliminar-cuenta-vencida/:id", eliminarCuentasVencidas)
 routerUsuario.post("/eliminar-permanente/:id", eliminarPermanentemente)
 
 export default routerUsuario;  
