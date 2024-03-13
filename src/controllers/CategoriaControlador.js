@@ -5,13 +5,7 @@ import * as CategoriaServicio from "../Services/CategoriaServicio"
 export const crearCategoria = async (req, res) => {
   try{
     const { nombre, color } = req.body;
-    const id = await CategoriaServicio.crearCategoria(nombre,color)
-
-    const nuevaCategoria = {
-      id: id.insertId,
-      nombre: nombre,
-      color: color,
-    };
+    const nuevaCategoria = await CategoriaServicio.crearCategoria(nombre,color)
 
     res.status(201).json(nuevaCategoria);
   } catch (error) {
@@ -56,16 +50,10 @@ export const actualizarCategoria = async (req, res) => {
     const{nombre,color}=req.body
     const categoria = await CategoriaServicio.modificarCategoria(id,nombre,color);
 
-    const categoriaActualizada = {
-      id: id.insertId,
-      nombre: nombre,
-      color: color,
-    };
-
     if (!categoria) {
       res.status(404).json({ message: 'Categoría no encontrada' });
     }
-    res.status(200).json(categoriaActualizada); 
+    res.status(200).json(categoria); 
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al actualizar la categoría' });
@@ -83,4 +71,11 @@ export const eliminarCategoria = async (req, res) => {
     res.status(500).json({ mensaje: 'Error al eliminar la categoría.' });
   }
 };
-module.exports = { crearCategoria,listarCategorias, obtenerCategoriaPorId, actualizarCategoria, eliminarCategoria };
+
+
+module.exports = { 
+  crearCategoria,listarCategorias, 
+  obtenerCategoriaPorId, 
+  actualizarCategoria, 
+  eliminarCategoria 
+};

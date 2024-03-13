@@ -1,57 +1,75 @@
 import {connect } from "../database"
+import { PrismaClient } from "@prisma/client";
+
+//Inicialización de prisma
+const prisma= new PrismaClient();
+
 const crearDescuento=async(nombre,tipo_descuento,valor)=>{    
     const connection=await connect()
     //Opciones de tipos de descuento que se deben ingresar
-    const tiposValidos = ['%', '$'];
+    const tiposValidos = ['porcentaje', 'monto'];
     //En el caso se ingrese otro tipo
     if (!tiposValidos.includes(tipo_descuento)) {
         return res.status(400).json({ message: 'Tipo de descuento no válido' });
     }
     let valor_calculado=valor
     // En el caso que se ingrese porcentaje(%)
-    if (tipo_descuento === '%') {
+    if (tipo_descuento === 'porcentaje') {
         // Convierte el valor a un porcentaje decimal
         valor_calculado = parseFloat(valor) / 100;
     }
     // En el caso que se ingrese un monto($)
-    else if (tipo_descuento === '$') {
+    else if (tipo_descuento === 'monto') {
         //Se mantiene el valor tal y como se ingreso
         valor_calculado = parseFloat(valor);
     } 
-    const [results] = await connection.execute(
-        "INSERT INTO descuento(nombre, tipo_descuento, valor,valor_calculado, estado) VALUES(?,?,?,?,?)",
-        [nombre, tipo_descuento, valor,valor_calculado, true]
-    );
-    return results;
+    const newDescuento = await prisma.descuento.create({
+        data:{
+            nombre: nombre,
+            tipo_descuento: tipo_descuento,
+            valor: valor,
+            valor_calculado:valor_calculado,
+            estado: true
+        }
+    })
+    return newDescuento;
 }
 const eliminarDescuento =async (id)=>{
     const connection = await connect();
         // Actualizar solo el estado del descuento en la base de datos
-        await connection.execute(
-            'UPDATE descuento SET estado = false WHERE id = ?',
-            [id]
-        );
+        const descuento= await prisma.descuento.update({
+            where: {
+              id: Number(id)
+            },
+            data:{
+                estado : false
+            }
+          })
 }
 
 const obtenerDescuentoById=async (id) => {
     const connection = await connect();
-    const [rows] = await connection.execute("SELECT * FROM descuento WHERE id = ?", [id]);
-  return rows[0];
+    const descuento= await prisma.descuento.findFirst({
+        where: {
+          id: Number(id)
+        }
+      })
+      return descuento;
 }
 
 const modificarDescuento = async (id, nombre, tipo_descuento, valor, estado) => {
         const connection = await connect();
-        const tiposValidos = ['%', '$'];
+        const tiposValidos = ['porcentaje', 'monto'];
         // Validar tipo de descuento
         if (!tiposValidos.includes(tipo_descuento)) {
             throw new Error('Tipo de descuento no válido');
         }
         // Calcular valor calculado
         let nuevoValorCalculado = valor;
-        if (tipo_descuento === '%') {
+        if (tipo_descuento === 'porcentaje') {
             nuevoValorCalculado = parseFloat(valor) / 100;
         }
-        if (tipo_descuento === '$') {
+        if (tipo_descuento === 'monto') {
             nuevoValorCalculado = parseFloat(valor);
         }
 
@@ -59,44 +77,55 @@ const modificarDescuento = async (id, nombre, tipo_descuento, valor, estado) => 
         let nuevoEstado;
         if (estado !== undefined) {
             nuevoEstado = estado;
-        } else {
-            // Si no se proporciona, mantener el estado existente
-            const [existingResult] = await connection.query("SELECT estado FROM descuento WHERE id = ?", [id]);
-            if (existingResult.length === 0) {
-                throw new Error('Descuento no encontrado');
-            }
-            nuevoEstado = existingResult[0].estado;
-        }
+        } 
 
         // Actualizar descuento en la base de datos
-        await connection.query("UPDATE descuento SET nombre = ?, tipo_descuento = ?, valor = ?, valor_calculado = ?, estado = ? WHERE id = ?", [
-            nombre, tipo_descuento, valor, nuevoValorCalculado, nuevoEstado, id
-        ]);
+        const descuento= await prisma.descuento.update({
+            where: {
+              id: Number(id)
+            },
+            data:{
+                nombre:nombre,
+                tipo_descuento:tipo_descuento,
+                valor:valor,
+                valor_calculado:nuevoValorCalculado,
+                estado:nuevoEstado
+            }
+          })
 
         return true;
     
 };
 const obtenerDescuentos=async()=>{
     const connection = await connect();
-    const [rows] = await connection.execute("SELECT * FROM descuento WHERE estado = true");
-    return rows;
-};
+    const descuentos= await prisma.descuento.findMany({
+        where: {
+          estado: true
+        }
+      })
+      return descuentos;
+}
+
 const obtenerDescuentosEliminados=async()=>{
-    const connection = await connect();
-    const [rows] = await connection.execute("SELECT * FROM descuento WHERE estado = false");
-    return rows;
+    const connection=await connect();
+        const descuentoseliminados= await prisma.descuento.findMany({
+            where: {
+            estado: false
+            }
+        });
+      return descuentoseliminados;      
 };
 const cambiarEstadoDescuento = async (id, nuevoEstado) => {
         const connection = await connect();
         // Actualizar solo el estado del descuento en la base de datos
-        const [result] = await connection.execute(
-            'UPDATE descuento SET estado = ? WHERE id = ?',
-            [nuevoEstado, id]
-        );
-
-        if (result.affectedRows === 0) {
-            throw new Error('Descuento no encontrado');
-        }
+         const descuento= await prisma.descuento.update({
+            where: {
+              id: Number(id)
+            },
+            data:{
+                estado : nuevoEstado
+            }
+          })
 };
 
 module.exports={

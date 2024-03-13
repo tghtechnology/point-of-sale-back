@@ -3,16 +3,7 @@ import * as DescuentoServicio from "../Services/DescuentoServicio"
 export const crearDescuento = async (req, res) => {
     try {
         const {nombre,tipo_descuento,valor}=req.body
-        const id=await DescuentoServicio.crearDescuento(nombre,tipo_descuento,valor)
-        // Devolver el descuento creado con su estado
-        const newDescuento = {
-            id: id,
-            nombre: nombre,
-            tipo_descuento: tipo_descuento,
-            valor: valor,
-            estado: true
-        };
-
+        const newDescuento=await DescuentoServicio.crearDescuento(nombre,tipo_descuento,valor)
         res.status(201).json(newDescuento);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -86,8 +77,8 @@ export const obtenerDescuentos = async (req, res) => {
 };
 export const obtenerDescuentosEliminados =async (req,res)=>{
     try{
-        const descuentos=await DescuentoServicio.obtenerDescuentosEliminados();
-        res.status(200).json(descuentos);
+        const descuentoseliminados=await DescuentoServicio.obtenerDescuentosEliminados();
+        res.status(200).json(descuentoseliminados);
 
     }catch(error){
         res.status(500).json({error: error.message});

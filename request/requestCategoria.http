@@ -11,9 +11,9 @@ Content-Type: application/json
   "color":"Rojo"
 }
 ###
-GET {{api}}/categoria/listar/11
+GET {{api}}/categoria/listar/1
 ###
-PUT {{api}}/categoria/actualizar/11
+PUT {{api}}/categoria/actualizar/1
 Content-Type: application/json
 
 {
@@ -21,4 +21,4 @@ Content-Type: application/json
   "color":"Verde"
 }
 ###
-DELETE {{api}}/categoria/eliminar/13
+DELETE {{api}}/categoria/eliminar/2

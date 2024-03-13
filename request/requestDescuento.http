@@ -5,31 +5,31 @@ Content-Type: application/json
 
 {
   "nombre": "Oferta",
-  "tipo_descuento": "$",
-  "valor":50
+  "tipo_descuento": "monto",
+  "valor":100
 }
 ###
-GET {{api}}/14
+GET {{api}}/2
 ###
 PUT {{api}}/2
 Content-Type: application/json
 
 {
-  "nombre": "Oferta de invierno",
-  "tipo_descuento": "%",
-  "valor":35
+  "nombre": "Oferta de verano",
+  "tipo_descuento": "porcentaje",
+  "valor":70
 }
 ###
 GET {{api}}
 
 ###
-DELETE {{api}}/2
+DELETE {{api}}/7
 
 ###
-PUT {{api}}/4/cambiar-estado
+PUT {{api}}/2/cambiar-estado
 Content-Type: application/json
 
 {
-  "estado": false
+  "estado": true
 }
 

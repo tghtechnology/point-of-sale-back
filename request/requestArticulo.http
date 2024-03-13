@@ -11,24 +11,24 @@ Content-Type: application/json
   "tipo_venta":"Peso",
   "precio": 12.50,
   "coste": 60.99,
-  "ref": 10550,
+  "ref": "16573",
   "representacion": "imagen",
-  "id_categoria": 10
+  "id_categoria": 1
 }
 ###
-GET {{api}}/articulo/listar/10
+GET {{api}}/articulo/listar/2
 ###
-PUT {{api}}/articulo/actualizar/10
+PUT {{api}}/articulo/actualizar/2
 Content-Type: application/json
 
 {
-  "nombre": "Refrigeradora",
+  "nombre": "Sofa azul",
   "tipo_venta":"Unidad",
   "precio": 12.50,
   "coste": 60.99,
-  "ref": 10550,
+  "ref": "10550",
   "representacion": "imagen",
-  "id_categoria": 10
+  "id_categoria": 1
 }
 ###
-DELETE {{api}}/articulo/eliminar/23
+DELETE {{api}}/articulo/eliminar/7
