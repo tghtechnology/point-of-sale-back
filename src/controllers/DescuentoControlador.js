@@ -77,8 +77,8 @@ export const obtenerDescuentos = async (req, res) => {
 };
 export const obtenerDescuentosEliminados =async (req,res)=>{
     try{
-        const descuentos=await DescuentoServicio.obtenerDescuentosEliminados();
-        res.status(200).json(descuentos);
+        const descuentoseliminados=await DescuentoServicio.obtenerDescuentosEliminados();
+        res.status(200).json(descuentoseliminados);
 
     }catch(error){
         res.status(500).json({error: error.message});
