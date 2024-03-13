@@ -1,45 +1,98 @@
 import { connect } from "../database";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 const crearCategoria = async (nombre, color) => {
-  const connection = await connect();
-  const [results] = await connection.execute(
-    "INSERT INTO categoria (nombre, color, estado) VALUES (?, ?, true)",
-    [nombre, color]
-  ); 
  
-  return results; 
+  const categoria = await prisma.categoria.create({
+    data: {
+      nombre: nombre,
+      color: color,
+      estado: true
+    }
+  })
+
+  const categoriaFormato = {
+    id: categoria.id,
+    nombre: categoria.nombre,
+    color: categoria.color
+  }
+  return categoriaFormato; 
 }
 
 
 const listarCategorias = async ()=>{
-  const connection = await connect();
-   const [results] = await connection.execute(
-    "SELECT id, nombre, color FROM categoria WHERE estado = true"
-    );
-   return results;
+  
+  //Busca todos los artículos con estado true
+  const categorias = await prisma.categoria.findMany({
+    where: {
+      estado: true
+    },
+  })
+
+  const categoriasFormato = categorias.map((categoria) => {
+    return {
+      id: categoria.id,
+      nombre: categoria.nombre,
+      color: categoria.color,
+    };
+  });
+   return categoriasFormato;
 }
 
 const listarCategoriaPorId = async (id) => {
-  const connection = await connect();
-  const [results] = await connection.execute(
-    "SELECT id, nombre, color FROM categoria WHERE id = ? AND estado = true",[id]
-  )
-  return results;
+
+  const categoria = await prisma.categoria.findUnique({
+    where: {
+      id: parseInt(id),
+      estado: true
+    },
+  })
+  
+  const categoriaFormato = {
+    id: categoria.id,
+    nombre: categoria.nombre,
+    color: categoria.color
+};
+
+return categoriaFormato;
 }
 
 const modificarCategoria = async (id, nombre, color) => {
-  const connection = await connect();
+  
+  const categoria = await prisma.categoria.update({
+    where: {
+      id: parseInt(id),
+      estado: true
+    },
+    data: {
+      nombre: nombre,
+      color: color,
+      estado: true
+    }
+  })
 
-  const [results] = await connection.query("UPDATE categoria SET nombre = ?, color = ? WHERE id = ? AND estado = true" ,
-  [nombre, color, id])
-  return results;
+  const categoriaFormato = {
+    id: categoria.id,
+    nombre: categoria.nombre,
+    color: categoria.color
+};
+  return categoriaFormato;
 }
 
 const eliminarCategoria = async (id) => {
-  const connection = await connect();
-  await connection.execute(
-    'UPDATE categoria SET estado = false WHERE id = ?',[id]
-  );
+  
+  const categoria = await prisma.categoria.update({
+    where: {
+      id: parseInt(id),
+      estado: true
+    },
+    data: {
+      estado: false
+    }
+  })
+  return categoria
 }
 
 

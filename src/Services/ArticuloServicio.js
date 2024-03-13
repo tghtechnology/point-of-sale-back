@@ -1,4 +1,3 @@
-import { connect } from "../database";
 import { PrismaClient } from "@prisma/client";
 import * as CategoriaServicio from "../Services/CategoriaServicio"
 
