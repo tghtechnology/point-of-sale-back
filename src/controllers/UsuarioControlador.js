@@ -32,7 +32,7 @@ export const verificarContrasena = async (req, res) => {
     const { password } = req.body;
     const match = await UsuarioServicio.verificarContrasena(id, password)
     
-    if (!match) {
+    if (match == null) {
       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
     } 
     if (match) {

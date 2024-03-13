@@ -23,7 +23,7 @@ Content-Type: application/json
 
 //Pruebas de Eliminar cuenta
 ###
-POST {{api}}/verificar/13
+POST {{api}}/verificar/1
 Content-Type: application/json
 
 {

@@ -31,9 +31,21 @@ const verificarContrasena = async (id, password) => {
   const connection = await connect();
   
   const passwordFromRequest = password;
-  const [results] = await connection.execute("SELECT password FROM usuarios WHERE id = ?", [id]);
+  const contrasena = await prisma.usuario.findUnique({
+    where: {
+      id: parseInt(id),
+      estado: true
+    },
+    select: {
+      password: true
+    }
+  })
 
-  const hashedPasswordFromDatabase = results[0].password;
+  if(contrasena == null) {
+    return null
+  }
+
+  const hashedPasswordFromDatabase = contrasena.password;
   const match = await bcrypt.compare(passwordFromRequest, hashedPasswordFromDatabase); //Comparación de contraseña ingresada y de la BD
 
   return match;
@@ -44,18 +56,38 @@ const eliminarTemporalmente = async (id) => {
   const connection = await connect();
 
   //Verificar la existencia de un registro con la ID ingresada
-  const [idResult] = await connection.execute("SELECT id, estado FROM usuarios WHERE id = ?", [id]);
+  const idResult = await prisma.usuario.findUnique({
+    where: {
+      id: parseInt(id),
+      estado: true
+    },
+    select: {
+      id: true,
+      estado: true
+    }
+  })
   if (!idResult || idResult.length === 0) {
     return null; 
   }
 
   //Verificar que la cuenta no esté ya eliminada
-  const { estado } = idResult[0];
+  const { estado } = idResult;
   if (estado == 0) {
     return false
   }
 
-  const [results] = await connection.execute("UPDATE usuarios SET estado = false, eliminado_temporal_fecha = CURRENT_TIMESTAMP WHERE id = ?", [id]);
+  const results = await prisma.usuario.update({
+    where: {
+      id: parseInt(id),
+    },
+    data: {
+      estado: false,
+      eliminado_temporal_fecha: {
+        set: new Date() 
+      }
+    }
+  })
+
   return results;
 }
 
