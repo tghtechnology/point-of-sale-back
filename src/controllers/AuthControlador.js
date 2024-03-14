@@ -15,8 +15,13 @@ export const verificarSesion = async (req, res, next) => {
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
+
     const token = await AuthService.login(email, password);
-    return res.json({ token });
+    if(token) {
+      return res.json({token})
+    } else if (token == true){
+      return res.status(401).json({ message: "Ya se inició sesión anteriormente"})
+    }
   } catch (error) {
     console.error("Error al autenticar al usuario:", error.message);
     return res.status(401).json({ error: "Nombre de usuario o contraseña incorrectos" });
@@ -24,7 +29,7 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
+  const token = req.headers.authorization.split(" ")[1];   
   try {
     await AuthService.logout(token);
     return res.json({ message: "Sesión cerrada exitosamente" });

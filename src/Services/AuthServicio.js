@@ -6,11 +6,73 @@ import getVerificationEmailTemplate from "../helpers/helperPlantilla";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
+//Lógica para iniciar sesión
+export const login = async (email, password) => {
+    const connection = await connect();
+    const results = await prisma.usuario.findMany({
+      where: {
+        email: email
+      },
+    })
+  
+    if (results.length === 0) {
+      throw new Error("Nombre de usuario o contraseña incorrectos");
+    }
+
+    const usuario = results[0];
+
+    const match = await bcrypt.compare(password, usuario.password);
+    if (!match) {
+      throw new Error("Nombre de usuario o contraseña incorrectos");
+    }
+
+    const existingSessions = await prisma.sesion.findMany({
+      where: {
+        usuario_id: usuario.id
+      },
+    })
+  
+    if (existingSessions.length > 0) {
+      return true
+    }
+    
+    const token = jwt.sign(
+      { id: usuario.id, email: usuario.email },
+      "secreto_del_token",
+      { expiresIn: "24h" }
+    );
+
+    const expiracion = new Date();
+    expiracion.setHours(expiracion.getHours() + 24);
+    await prisma.sesion.create({
+      data: {
+        usuario_id: usuario.id,
+        token: token,
+        expiracion: expiracion
+      }
+    })
+    return token;
+};
+
+//Lógica para cerrar sesión
+export const logout = async (token) => {
+    const decodedToken = jwt.verify(token, "secreto_del_token"); // Decodifica el token para obtener el ID de usuario
+    // Conexión a la base de datos
+    const connection = await connect(); // Establece una conexión a la base de datos
+
+    // Eliminación del token de sesión del usuario
+    await connection.execute(
+      "DELETE FROM sesion WHERE usuario_id = ? AND token = ?", // Consulta SQL para eliminar el token de sesión de la base de datos
+      [decodedToken.id, token] // Valores a utilizar en la consulta SQL
+    );
+};
+
+
 // Función para enviar un correo electrónico al usuario con un enlace para cambiar la contraseña
 export const enviarCorreoCambioPass = async (email) => {
   try {
     // Verificar si el correo electrónico existe en la base de datos
-    const verificar = await prisma.sesiones.post({
+    const verificar = await prisma.sesion.post({
       data: {
         correo: email,
       },
@@ -79,10 +141,8 @@ export const cambiarPassword = async (token, newPassword) => {
     );
 
     // Conectar a la base de datos
-    const connection = await connect();
-
     // Buscar al usuario en la base de datos
-    const buscarUser = await prisma.sesiones.get({
+    const buscarUser = await prisma.sesion.get({
       where: {
         correo: decodedToken.email,
       },
@@ -97,7 +157,7 @@ export const cambiarPassword = async (token, newPassword) => {
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
     // Actualizar la contraseña del usuario en la base de datos
-    const actualizarPass = await prisma.sesiones.update({
+    const actualizarPass = await prisma.sesion.update({
       where: {
         correo: decodedToken.email,
       },
@@ -120,10 +180,9 @@ export const cambiarPassword = async (token, newPassword) => {
 export const eliminarTokensExpirados = async () => {
   try {
     // Conectar a la base de datos
-    const connection = await connect();
 
     // Eliminar tokens de sesión expirados
-    const eliminarTokenSesion = await prisma.token.deleteMany({
+    const eliminarTokenSesion = await prisma.resetToken.deleteMany({
       where: {
         expiracion: {
           lt: new Date(),
@@ -132,16 +191,18 @@ export const eliminarTokensExpirados = async () => {
     });
 
     // Eliminar tokens de cambio de contraseña expirados
-    const eliminarTokenPassword = await prisma.sesiones.deleteMany({
+    const eliminarTokenPassword = await prisma.sesion.deleteMany({
       where: {
-        correo: decodedToken.email,
+        expiracion: {
+          lt: new Date(),
+        },
       },
     });
 
     // Verificar si se eliminaron tokens
     if (
-      deletedSessionTokens.affectedRows > 0 ||
-      deletedResetTokens.affectedRows > 0
+      eliminarTokenSesion.affectedRows > 0 ||
+      eliminarTokenPassword.affectedRows > 0
     ) {
       console.log("Tokens expirados eliminados correctamente.");
     }
@@ -152,3 +213,6 @@ export const eliminarTokensExpirados = async () => {
     );
   }
 };
+
+
+

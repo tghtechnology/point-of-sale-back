@@ -57,7 +57,7 @@ model Usuario {
   password String @db.VarChar(255)
   pais String? @db.VarChar(255)
   estado Boolean @db.Bit(1)
-  eliminadoTemporalFecha DateTime?
+  eliminado_temporal_fecha DateTime?
 
   resetTokens ResetToken[]
   sesiones Sesion[]
@@ -90,19 +90,19 @@ model ResetToken {
   id Int @id @default(autoincrement())
   token String @db.VarChar(255)
   expiracion DateTime
-  usuarioId Int @map("usuario_id")
-  usuario Usuario @relation(fields: [usuarioId], references: [id])
+  usuario_id Int @map("usuario_id")
+  usuario Usuario @relation(fields: [usuario_id], references: [id])
 
   @@map("reset_tokens") 
 }
 
 model Sesion {
   id Int @id @default(autoincrement())
-  usuarioId Int @map("usuario_id")
+  usuario_id Int @map("usuario_id")
   token String @db.VarChar(255)
   expiracion DateTime
 
-  usuario Usuario @relation(fields: [usuarioId], references: [id])
+  usuario Usuario @relation(fields: [usuario_id], references: [id])
 
   @@map("sesion") 
 }
