@@ -35,8 +35,8 @@ model Descuento {
 }
 
 enum tipoDescuento {
-  porcentaje
-  monto
+  PORCENTAJE
+  MONTO
 }
 
 model Empleado {

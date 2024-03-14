@@ -67,27 +67,24 @@ export const logout = async (token) => {
     );
 };
 
-
 // Función para enviar un correo electrónico al usuario con un enlace para cambiar la contraseña
 export const enviarCorreoCambioPass = async (email) => {
   try {
     // Verificar si el correo electrónico existe en la base de datos
-    const verificar = await prisma.sesion.post({
-      data: {
-        correo: email,
-      },
+    const correo=await prisma.usuario.findUnique({
+      where: {
+        email: email,
+      }
     });
-
-    if (results.length === 0) {
-      // Si no existe el correo electrónico, enviar un mensaje de error al cliente
-      return "El correo electrónico no existe en nuestra base de datos";
+    if(!correo){
+      return "Usuario no existe"
     }
 
-    const usuario = results[0];
+
 
     // Generar un token para el cambio de contraseña
     const token = jwt.sign(
-      { userId: usuario.id, email },
+      { usuarioId: usuario.id, email },
       process.env.JWT_RESET_SECRET,
       { expiresIn: "1h" }
     );
@@ -107,7 +104,7 @@ export const enviarCorreoCambioPass = async (email) => {
     // Enviar el correo electrónico con el enlace para cambiar la contraseña
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
-      to: email,
+      to: usuario.email,
       subject: "Cambio de Contraseña",
       html: getVerificationEmailTemplate(usuario.nombre, resetPasswordLink),
     });

@@ -39,10 +39,16 @@ export const logout = async (req, res) => {
   }
 };
 
+
+
+
+
+
+
 export const enviarTokenCambioPassword = async (req, res) => {
-  const { email } = req.body;
+  const {email } = req.body;
   try {
-    await AuthService.enviarTokenCambioPassword(email);
+    await AuthService.enviarCorreoCambioPass(email);
     return res.json({ message: "Se ha enviado un correo, si es que existe" });
   } catch (error) {
     console.error("Error al enviar el token de cambio de contraseña:", error.message);
