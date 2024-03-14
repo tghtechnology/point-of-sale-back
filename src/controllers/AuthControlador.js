@@ -13,9 +13,9 @@ export const verificarSesion = async (req, res, next) => {
 };
 
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  
   try {
-
+    const { email, password } = req.body;
     const token = await AuthService.login(email, password);
     if(token) {
       return res.json({token})
@@ -28,9 +28,9 @@ export const login = async (req, res) => {
   }
 };
 
-export const logout = async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];   
+export const logout = async (req, res) => {  
   try {
+    const token = req.headers.authorization.split(" ")[1];
     await AuthService.logout(token);
     return res.json({ message: "Sesión cerrada exitosamente" });
   } catch (error) {
@@ -46,15 +46,29 @@ export const logout = async (req, res) => {
 
 
 export const enviarTokenCambioPassword = async (req, res) => {
-  const {email } = req.body;
-  try {
-    await AuthService.enviarCorreoCambioPass(email);
-    return res.json({ message: "Se ha enviado un correo, si es que existe" });
-  } catch (error) {
-    console.error("Error al enviar el token de cambio de contraseña:", error.message);
-    return res.status(500).json({ error: "Error del servidor" });
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({
+      message: 'El correo electrónico es obligatorio',
+    });
   }
-};
+  try {
+    const mensaje = await AuthService.enviarCorreoCambioPass(email);
+    if (mensaje) {
+      return res.status(404).json({
+        message: mensaje,
+      });
+    }
+    return res.status(200).json({
+      message: 'Se ha enviado un correo electrónico de cambio de contraseña',
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: 'Ocurrió un error. Por favor, inténtalo de nuevo más tarde',
+    });
+  }
+}
 
 export const cambiarPassword = async (req, res) => {
   const { token, newPassword } = req.body;

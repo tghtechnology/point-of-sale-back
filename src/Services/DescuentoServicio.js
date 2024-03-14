@@ -7,19 +7,19 @@ const prisma= new PrismaClient();
 const crearDescuento=async(nombre,tipo_descuento,valor)=>{    
     const connection=await connect()
     //Opciones de tipos de descuento que se deben ingresar
-    const tiposValidos = ['porcentaje', 'monto'];
+    const tiposValidos = ['PORCENTAJE', 'MONTO'];
     //En el caso se ingrese otro tipo
     if (!tiposValidos.includes(tipo_descuento)) {
-        return res.status(400).json({ message: 'Tipo de descuento no válido' });
+        throw new Error('Tipo de descuento no válido');
     }
     let valor_calculado=valor
     // En el caso que se ingrese porcentaje(%)
-    if (tipo_descuento === 'porcentaje') {
+    if (tipo_descuento === 'PORCENTAJE') {
         // Convierte el valor a un porcentaje decimal
         valor_calculado = parseFloat(valor) / 100;
     }
     // En el caso que se ingrese un monto($)
-    else if (tipo_descuento === 'monto') {
+    else if (tipo_descuento === 'MONTO') {
         //Se mantiene el valor tal y como se ingreso
         valor_calculado = parseFloat(valor);
     } 
@@ -59,17 +59,17 @@ const obtenerDescuentoById=async (id) => {
 
 const modificarDescuento = async (id, nombre, tipo_descuento, valor, estado) => {
         const connection = await connect();
-        const tiposValidos = ['porcentaje', 'monto'];
+        const tiposValidos = ['PORCENTAJE', 'MONTO'];
         // Validar tipo de descuento
         if (!tiposValidos.includes(tipo_descuento)) {
             throw new Error('Tipo de descuento no válido');
         }
         // Calcular valor calculado
         let nuevoValorCalculado = valor;
-        if (tipo_descuento === 'porcentaje') {
+        if (tipo_descuento === 'PORCENTAJE') {
             nuevoValorCalculado = parseFloat(valor) / 100;
         }
-        if (tipo_descuento === 'monto') {
+        if (tipo_descuento === 'MONTO') {
             nuevoValorCalculado = parseFloat(valor);
         }
 

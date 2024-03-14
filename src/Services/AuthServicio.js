@@ -61,27 +61,29 @@ export const logout = async (token) => {
     const connection = await connect(); // Establece una conexión a la base de datos
 
     // Eliminación del token de sesión del usuario
-    await connection.execute(
-      "DELETE FROM sesion WHERE usuario_id = ? AND token = ?", // Consulta SQL para eliminar el token de sesión de la base de datos
-      [decodedToken.id, token] // Valores a utilizar en la consulta SQL
-    );
+    await prisma.sesion.deleteMany({
+      where: {
+        usuario_id: decodedToken.id,
+        token: token,
+      },
+    });
 };
 
 // Función para enviar un correo electrónico al usuario con un enlace para cambiar la contraseña
 export const enviarCorreoCambioPass = async (email) => {
-  try {
     // Verificar si el correo electrónico existe en la base de datos
-    const correo=await prisma.usuario.findUnique({
+    const usuario=await prisma.usuario.findUnique({
       where: {
-        email: email,
+        email:email,
+      },
+      select:{
+        id:true,
+        nombre:true
       }
     });
-    if(!correo){
-      return "Usuario no existe"
+    if(!usuario){
+      throw new Error("Correo no encontrado");
     }
-
-
-
     // Generar un token para el cambio de contraseña
     const token = jwt.sign(
       { usuarioId: usuario.id, email },
@@ -100,22 +102,17 @@ export const enviarCorreoCambioPass = async (email) => {
         pass: process.env.EMAIL_PASSWORD,
       },
     });
-
     // Enviar el correo electrónico con el enlace para cambiar la contraseña
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
-      to: usuario.email,
+      to: email,
       subject: "Cambio de Contraseña",
       html: getVerificationEmailTemplate(usuario.nombre, resetPasswordLink),
     });
 
     // Si todo está bien, no enviamos ningún mensaje de éxito al cliente
     return;
-  } catch (error) {
-    console.error("Error al enviar el correo electrónico:", error);
-    // No enviamos mensajes de error específicos al cliente, solo una respuesta genérica
-    return "Ocurrió un error. Por favor, inténtelo de nuevo más tarde";
-  }
+  
 };
 
 // Función para cambiar la contraseña del usuario a través de un enlace con token
