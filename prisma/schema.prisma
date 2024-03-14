@@ -104,6 +104,6 @@ model Sesion {
 
   usuario Usuario @relation(fields: [usuarioId], references: [id])
 
-  @@map("sesiones") 
+  @@map("sesion") 
 }
 
