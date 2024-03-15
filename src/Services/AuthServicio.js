@@ -87,7 +87,7 @@ export const enviarCorreoCambioPass = async (email) => {
     // Generar un token para el cambio de contraseña
     const token = jwt.sign(
       { usuarioId: usuario.id, email },
-      process.env.JWT_RESET_SECRET,
+      "secreto_del_token_para_cambio_password",
       { expiresIn: "1h" }
     );
 
@@ -126,7 +126,7 @@ export const enviarCorreoCambioPass = async (email) => {
 };
 
 // Función para cambiar la contraseña del usuario a través de un enlace con token
-export const cambiarPassword = async (token, newPassword) => {
+export const cambiarPassword = async (token, password) => {
   try {
     // Verificar si el token está vacío
     if (!token) {
@@ -134,7 +134,7 @@ export const cambiarPassword = async (token, newPassword) => {
     }
 
     // Verificar si la nueva contraseña cumple con los requisitos mínimos
-    if (newPassword.length < 8) {
+    if (password.length < 8) {
       throw new Error("La nueva contraseña debe tener al menos 8 caracteres");
     }
 
@@ -144,26 +144,25 @@ export const cambiarPassword = async (token, newPassword) => {
       "secreto_del_token_para_cambio_password"
     );
 
-    // Conectar a la base de datos
     // Buscar al usuario en la base de datos
-    const buscarUser = await prisma.sesion.get({
+    const buscarUser = await prisma.usuario.findUnique({
       where: {
-        correo: decodedToken.email,
+        email: decodedToken.email,
       },
     });
 
     // Verificar si el usuario existe
-    if (results.length === 0) {
-      throw new Error("Usuario no encontrado");
+    if(!buscarUser){
+      throw new Error("Correo no encontrado");
     }
 
     // Encriptar la nueva contraseña
-    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    const hashedNewPassword = await bcrypt.hash(password, 10);
 
     // Actualizar la contraseña del usuario en la base de datos
-    const actualizarPass = await prisma.sesion.update({
+    const actualizarPass = await prisma.usuario.update({
       where: {
-        correo: decodedToken.email,
+        email: decodedToken.email,
       },
       data: {
         password: hashedNewPassword,

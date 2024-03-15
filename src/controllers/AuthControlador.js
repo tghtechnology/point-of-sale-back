@@ -39,12 +39,6 @@ export const logout = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
 export const enviarTokenCambioPassword = async (req, res) => {
   const { email } = req.body;
   if (!email) {
@@ -71,9 +65,9 @@ export const enviarTokenCambioPassword = async (req, res) => {
 }
 
 export const cambiarPassword = async (req, res) => {
-  const { token, newPassword } = req.body;
+  const { token, password } = req.body;
   try {
-    const message = await AuthService.cambiarPassword(token, newPassword);
+    const message = await AuthService.cambiarPassword(token, password);
     return res.json({ message });
   } catch (error) {
     console.error("Error al cambiar la contraseña:", error.message);
