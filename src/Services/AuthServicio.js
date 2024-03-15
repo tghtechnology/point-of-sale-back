@@ -145,14 +145,14 @@ export const cambiarPassword = async (token, password) => {
     );
 
     // Buscar al usuario en la base de datos
-    const buscarUser = await prisma.usuario.findUnique({
+    const usuario = await prisma.usuario.findUnique({
       where: {
         email: decodedToken.email,
       },
     });
 
     // Verificar si el usuario existe
-    if(!buscarUser){
+    if(!usuario){
       throw new Error("Correo no encontrado");
     }
 
@@ -168,6 +168,22 @@ export const cambiarPassword = async (token, password) => {
         password: hashedNewPassword,
       },
     });
+
+     // Verificar si el usuario tiene una sesión activa
+     const activeSessions = await prisma.sesion.findMany({
+      where: {
+        usuario_id: usuario.id,
+       expiracion: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    // Si el usuario tiene una sesión activa, cerrarla
+    if (activeSessions.length > 0) {
+      await logout(activeSessions[0].token);
+    }
+
 
     // Retornar un mensaje de éxito
     return "¡Contraseña actualizada exitosamente!";
