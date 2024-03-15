@@ -91,9 +91,20 @@ export const enviarCorreoCambioPass = async (email) => {
       { expiresIn: "1h" }
     );
 
+    //Creacion de registro en resetTokens
+    const expiracion = new Date();
+    expiracion.setHours(expiracion.getHours() + 1);
+    await prisma.resetToken.create({
+      data: {
+        token: token,
+        expiracion: expiracion, 
+        usuario_id: usuario.id,
+      },
+    });
+
     // Generar el enlace para cambiar la contraseña
     const resetPasswordLink = `https://${process.env.URL}/cambiar-pass?token=${token}`;
-
+ 
     // Configurar el transporte de correo electrónico
     const transporter = nodemailer.createTransport({
       service: process.env.EMAIL_SERVICE,
@@ -102,6 +113,7 @@ export const enviarCorreoCambioPass = async (email) => {
         pass: process.env.EMAIL_PASSWORD,
       },
     });
+
     // Enviar el correo electrónico con el enlace para cambiar la contraseña
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
@@ -109,10 +121,8 @@ export const enviarCorreoCambioPass = async (email) => {
       subject: "Cambio de Contraseña",
       html: getVerificationEmailTemplate(usuario.nombre, resetPasswordLink),
     });
-
     // Si todo está bien, no enviamos ningún mensaje de éxito al cliente
     return;
-  
 };
 
 // Función para cambiar la contraseña del usuario a través de un enlace con token
