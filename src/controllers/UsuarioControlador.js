@@ -76,7 +76,7 @@ export const restaurarCuenta = async (req, res) => {
     } else if (results == false) {
       res.status(400).json({ mensaje: 'La cuenta no está eliminada por lo tanto no puede restaurarse' });
     } else if (results == true) {
-      es.status(400).json({ mensaje: 'La cuenta ya está vencida' });
+      res.status(400).json({ mensaje: 'La cuenta ya está vencida' });
     } else if (results == null) {
       res.status(404).json({ mensaje: 'Usuario no encontrado' });
     }
