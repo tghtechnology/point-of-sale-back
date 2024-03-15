@@ -104,7 +104,7 @@ const obtenerDescuentos=async()=>{
         }
       })
       return descuentos;
-}
+} 
 
 const obtenerDescuentosEliminados=async()=>{
     const connection=await connect();
