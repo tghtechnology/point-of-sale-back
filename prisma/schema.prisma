@@ -98,11 +98,11 @@ model ResetToken {
 
 model Sesion {
   id Int @id @default(autoincrement())
-  usuarioId Int @map("usuario_id")
+  usuario_id Int @map("usuario_id")
   token String @db.VarChar(255)
   expiracion DateTime
 
-  usuario Usuario @relation(fields: [usuarioId], references: [id])
+  usuario Usuario @relation(fields: [usuario_id], references: [id])
 
   @@map("sesiones") 
 }

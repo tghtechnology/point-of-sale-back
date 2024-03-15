@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client";
 //Inicialización de prisma
 const prisma = new PrismaClient();
 
-const crearUsuario = async (nombre, email, password, pais) => {
+export const crearUsuario = async (nombre, email, password, pais) => {
     // Validación del país
     if (!validarNombrePais(pais)) {
       throw new Error("País inválido");
@@ -27,7 +27,7 @@ const crearUsuario = async (nombre, email, password, pais) => {
 }; 
 
 //Función para verificar contraseña antes de eliminar
-const verificarContrasena = async (id, password) => {
+export const verificarContrasena = async (id, password) => {
   const connection = await connect();
   
   const passwordFromRequest = password;
@@ -52,14 +52,14 @@ const verificarContrasena = async (id, password) => {
 }
 
 //Eliminar temporalmente durante 1 semana
-const eliminarTemporalmente = async (id) => {
+export const eliminarTemporalmente = async (id) => {
   const connection = await connect();
 
   //Verificar la existencia de un registro con la ID ingresada
   const idResult = await prisma.usuario.findUnique({
     where: {
       id: parseInt(id),
-      estado: true
+      //estado: true
     },
     select: {
       id: true,
@@ -92,23 +92,38 @@ const eliminarTemporalmente = async (id) => {
 }
 
 //Función para restaurar una cuenta que ha sido eliminada temporalmente
-const restaurarCuenta = async (id) => {
+export const restaurarCuenta = async (id) => {
   const connection = await connect();
 
   //Verificar la existencia de un registro con la ID ingresada
-  const [idResult] = await connection.execute("SELECT id, estado FROM usuarios WHERE id = ?", [id]);
+  const idResult = await prisma.usuario.findUnique({
+    where: {
+      id: parseInt(id),
+    },
+    select: {
+      id: true,
+      estado: true
+    }
+  })
   if (!idResult || idResult.length === 0) {
     return null; 
   }
 
   //Verificar que la cuenta no esté ya restaurada
-  const { estado } = idResult[0];
+  const { estado } = idResult;
   if (estado == 1) {
     return false
   }
 
-  const fecha = await connection.execute("SELECT eliminado_temporal_fecha FROM usuarios WHERE id = ?", [id])
-  const eliminadoTemporalmente = fecha[0].eliminado_temporal_fecha;
+  const fecha = await prisma.usuario.findUnique({
+    where: {
+      id: parseInt(id),
+    },
+    select: {
+      eliminado_temporal_fecha: true
+    }
+  })
+  const eliminadoTemporalmente = fecha.eliminado_temporal_fecha;
 
   // Verificar si ha pasado más de 1 semana
   const unaSemanaEnMiliseg = 7 * 24 * 60 * 60 * 1000;
@@ -119,35 +134,90 @@ const restaurarCuenta = async (id) => {
     return true;
   }
 
-  const [results] = await connection.execute("UPDATE usuarios SET estado = true, eliminado_temporal_fecha = null WHERE id = ?", [id]);
+  const results = await prisma.usuario.update({
+    where: {
+      id: parseInt(id),
+    },
+    data: {
+      estado: true,
+      eliminado_temporal_fecha: null
+    }
+  })
   return results;
 }
 
 //Función para eliminar las cuentas vencidas (pasado 1 semana de haber sido eliminados temporalmente)
-const eliminarCuentasVencidas = async (id) => {
+export const eliminarCuentasVencidas = async (id) => {
   const connection = await connect();
 
   ///Verificar la existencia de un registro con la ID ingresada
-  const [idResult] = await connection.execute("SELECT id FROM usuarios WHERE id = ?", [id]);
-  if (!idResult || idResult.length === 0) {
+  const idResult = await prisma.usuario.findUnique({
+    where: {
+      id: parseInt(id),
+    },
+    select: {
+      id: true,
+    }
+  })
+  if (!idResult) {
     return null; 
   }
 
-  const [results] = await connection.execute("DELETE FROM usuarios WHERE estado = 1 AND eliminado_temporal_fecha <= NOW() - INTERVAL 1 WEEK");
-  return results
+  const fechaUnaSemanaAtras = new Date();
+  fechaUnaSemanaAtras.setDate(fechaUnaSemanaAtras.getDate() - 7);
+
+  const usuarioEliminado = await prisma.usuario.findFirst({
+    where: {
+      id: parseInt(id),
+      estado: false,
+      eliminado_temporal_fecha: {
+        lte: fechaUnaSemanaAtras
+      }
+    }
+  });
+
+  if (usuarioEliminado) {
+  const results = await prisma.usuario.delete({
+    where: {
+      id: parseInt(id),
+    }
+  })
+    return results
+  } else {
+    return false
+  }
+  
 }
 
 //Función para eliminaruna cuenta permanentemente
-const eliminarPermanentemente = async (id) => {
+export const eliminarPermanentemente = async (id) => {
   const connection = await connect();
 
   //Verificar la existencia de un registro con la ID ingresada
-  const [idResult] = await connection.execute("SELECT id FROM usuarios WHERE id = ?", [id]);
-  if (!idResult || idResult.length === 0) {
+  const idResult = await prisma.usuario.findUnique({
+    where: {
+      id: parseInt(id),
+    },
+    select: {
+      id: true,
+      estado: true
+    }
+  })
+  if (!idResult) {
     return null; 
   }
 
-  const [results] = await connection.execute("DELETE FROM usuarios WHERE id = ?", [id]);
+  //Verificar que la cuenta no esté ya restaurada
+  const { estado } = idResult;
+  if (estado == 0) {
+    return false
+  }
+
+  const results = await prisma.usuario.delete({
+    where: {
+      id: parseInt(id),
+    }
+  })
   return results
 }
 
