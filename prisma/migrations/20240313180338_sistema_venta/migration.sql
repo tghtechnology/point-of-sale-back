@@ -1,11 +1,21 @@
 -- CreateTable
+CREATE TABLE `categoria` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `nombre` VARCHAR(255) NOT NULL,
+    `color` VARCHAR(255) NOT NULL,
+    `estado` BIT(1) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `descuento` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `nombre` VARCHAR(255) NOT NULL,
-    `tipo_descuento` ENUM('PORCENTAJE', 'MONTO') NOT NULL,
+    `tipo_descuento` ENUM('porcentaje', 'monto') NOT NULL,
     `valor` DECIMAL(10, 2) NOT NULL,
     `valor_calculado` DECIMAL(10, 2) NOT NULL,
-    `estado` BOOLEAN NOT NULL,
+    `estado` BIT(1) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -17,7 +27,7 @@ CREATE TABLE `empleado` (
     `correo` VARCHAR(255) NOT NULL,
     `telefono` VARCHAR(255) NOT NULL,
     `pin` VARCHAR(255) NOT NULL,
-    `estado` BOOLEAN NOT NULL,
+    `estado` BIT(1) NOT NULL,
 
     UNIQUE INDEX `empleado_correo_key`(`correo`),
     UNIQUE INDEX `empleado_pin_key`(`pin`),
@@ -31,7 +41,7 @@ CREATE TABLE `usuario` (
     `email` VARCHAR(255) NOT NULL,
     `password` VARCHAR(255) NOT NULL,
     `pais` VARCHAR(255) NULL,
-    `estado` BOOLEAN NOT NULL,
+    `estado` BIT(1) NOT NULL,
     `eliminadoTemporalFecha` DATETIME(3) NULL,
 
     UNIQUE INDEX `usuario_email_key`(`email`),
@@ -42,13 +52,13 @@ CREATE TABLE `usuario` (
 CREATE TABLE `articulo` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `nombre` VARCHAR(255) NOT NULL,
-    `tipoVenta` ENUM('Peso', 'Unidad') NOT NULL,
+    `tipo_venta` ENUM('Peso', 'Unidad') NOT NULL,
     `precio` DECIMAL(10, 2) NULL,
     `coste` DECIMAL(10, 2) NOT NULL,
     `ref` VARCHAR(255) NOT NULL,
     `representacion` VARCHAR(255) NOT NULL,
     `id_categoria` INTEGER NULL,
-    `estado` BOOLEAN NOT NULL,
+    `estado` BIT(1) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

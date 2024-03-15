@@ -35,8 +35,8 @@ model Descuento {
 }
 
 enum tipoDescuento {
-  porcentaje
-  monto
+  PORCENTAJE
+  MONTO
 }
 
 model Empleado {
@@ -90,8 +90,8 @@ model ResetToken {
   id Int @id @default(autoincrement())
   token String @db.VarChar(255)
   expiracion DateTime
-  usuarioId Int @map("usuario_id")
-  usuario Usuario @relation(fields: [usuarioId], references: [id])
+  usuario_id Int @map("usuario_id")
+  usuario Usuario @relation(fields: [usuario_id], references: [id])
 
   @@map("reset_tokens") 
 }
@@ -104,6 +104,6 @@ model Sesion {
 
   usuario Usuario @relation(fields: [usuario_id], references: [id])
 
-  @@map("sesiones") 
+  @@map("sesion") 
 }
 
