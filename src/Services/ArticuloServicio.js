@@ -16,6 +16,9 @@ const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representac
       // Si la categoría ya existe
       idCategoria = id_categoria;
     }
+    if (id_categoria == null) {
+      id_categoria = "Sin categoría"
+    }
 
     //Se crea el nuevo artículo
     const articulo = await prisma.articulo.create({

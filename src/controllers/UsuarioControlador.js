@@ -32,7 +32,7 @@ export const verificarContrasena = async (req, res) => {
     const { password } = req.body;
     const match = await UsuarioServicio.verificarContrasena(id, password)
     
-    if (!match) {
+    if (match == null) {
       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
     } 
     if (match) {
@@ -74,9 +74,9 @@ export const restaurarCuenta = async (req, res) => {
     if(results) {
       res.status(200).json({ mensaje: 'Cuenta restaurada' });
     } else if (results == false) {
-      res.status(400).json({ mensaje: 'La cuenta ya ha sido restaurada' });
+      res.status(400).json({ mensaje: 'La cuenta no está eliminada por lo tanto no puede restaurarse' });
     } else if (results == true) {
-      es.status(400).json({ mensaje: 'La cuenta ya está vencida' });
+      res.status(400).json({ mensaje: 'La cuenta ya está vencida' });
     } else if (results == null) {
       res.status(404).json({ mensaje: 'Usuario no encontrado' });
     }
@@ -95,7 +95,9 @@ try {
 
   if (results) {
     res.status(200).json({ mensaje: 'La cuenta ha sido eliminada' });
-  } else if (results === null){
+  } else if (results == false) {
+    res.status(400).json({ mensaje: 'La cuenta no está vencida' });
+  } else if (!results){
     res.status(404).json({ mensaje: 'Usuario no encontrado' });
   } 
 } catch (error) {
@@ -115,6 +117,8 @@ export const eliminarPermanentemente = async (req, res) => {
 
     if (results) {
       res.status(200).json({ mensaje: 'Cuenta eliminada permanentemente' });
+    } else if (results == false) {
+      res.status(400).json({ mensaje: 'La cuenta ya ha sido eliminada temporalmente' });
     } else if (results === null){
       res.status(404).json({ mensaje: 'Usuario no encontrado' });
     } 

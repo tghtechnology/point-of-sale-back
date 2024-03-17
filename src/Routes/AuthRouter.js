@@ -8,7 +8,7 @@ routerAuth.get('/verificarSesion',verificarSesion)
 //SISTEMA DE ACCESO AL USUARIO
 routerAuth.post('/login',login)
 routerAuth.post('/logout',logout)
-routerAuth.post('/enviarTokenCambioPassword',enviarTokenCambioPassword)
+routerAuth.post('/envioCorreo',enviarTokenCambioPassword)
 routerAuth.post('/cambiarPassword',cambiarPassword)
 
 export default routerAuth;

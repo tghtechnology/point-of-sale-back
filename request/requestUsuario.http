@@ -8,6 +8,9 @@ Content-Type: application/json
   "nombre": "Jose",
   "email": "jose341@gmail.com",
   "password": "hola",
+  "nombre": "Estefany",
+  "email": "estefanyt@gmail.com",
+  "password": "holamundo",
   "pais": "Perú"
 }
 ###
@@ -18,22 +21,24 @@ Content-Type: application/json
 
   "email": "jose341@gmail.com",
   "password": "hola"
+  "email": "estefanyt3101@gmail.com",
+  "password": "holamundooooooooooooo"
 }
 
 
 //Pruebas de Eliminar cuenta
 ###
-POST {{api}}/verificar/13
+POST {{api}}/verificar/3
 Content-Type: application/json
 
 {
   "password":"1234"
 }
 ###
-POST {{api}}/eliminar-temporal/50
+POST {{api}}/eliminar-temporal/2
 ###
-POST {{api}}/restaurar-cuenta/50
+POST {{api}}/restaurar-cuenta/3
 ###
-POST {{api}}/eliminar-cuenta-vencida/50
+POST {{api}}/eliminar-cuenta-vencida/1
 ###
-POST {{api}}/eliminar-permanente/50
+POST {{api}}/eliminar-permanente/1

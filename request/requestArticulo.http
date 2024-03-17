@@ -13,7 +13,7 @@ Content-Type: application/json
   "coste": 60.99,
   "ref": "16573",
   "representacion": "imagen",
-  "id_categoria": 1
+  "id_categoria": 3
 }
 ###
 GET {{api}}/articulo/listar/2
