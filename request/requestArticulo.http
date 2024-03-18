@@ -7,13 +7,13 @@ POST {{api}}/articulo/crear
 Content-Type: application/json
 
 {
-  "nombre": "Refrigeradora",
+  "nombre": "Refrigerador",
   "tipo_venta":"Peso",
   "precio": 12.50,
   "coste": 60.99,
   "ref": "16573",
   "representacion": "imagen",
-  "id_categoria": 3
+  "id_categoria": 10
 }
 ###
 GET {{api}}/articulo/listar/2

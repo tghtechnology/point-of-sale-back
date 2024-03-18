@@ -49,6 +49,10 @@ const listarCategoriaPorId = async (id) => {
       estado: true
     },
   })
+
+  if (categoria === null) {
+    return null
+  }
   
   const categoriaFormato = {
     id: categoria.id,

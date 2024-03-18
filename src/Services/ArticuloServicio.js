@@ -26,7 +26,7 @@ const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representac
         coste: coste,
         ref: ref,
         representacion: representacion,
-        id_categoria: Array.isArray(idCategoria) ? idCategoria[0] : idCategoria,
+        categoria: { connect: { id: id_categoria } },
         estado: true
       }
     })
@@ -34,7 +34,7 @@ const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representac
   // Consultar la categoría 
   const categoria = await prisma.categoria.findUnique({
     where: {
-      id: articulo.id_categoria
+      id: idCategoria
     },
     select: {
       id: true,
@@ -44,7 +44,7 @@ const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representac
   });
 
   //Agregar información de categoría a artículo
-  articulo.categoria = categoria;
+  articulo.idCategoria = categoria;
 
   return articulo;
   };
