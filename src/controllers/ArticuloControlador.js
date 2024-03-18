@@ -5,16 +5,16 @@ import * as CategoriaServicio from "../Services/CategoriaServicio"
 //Crear nuevo artículo
 export const crearArticulo = async (req, res) => {
   try {
-    const { nombre, tipo_venta, precio, coste, ref, representacion, id_categoria } = req.body;
+    const { nombre, tipo_venta, precio, coste, ref, representacion, nombre_categoria } = req.body;
       //Obtener(si existe)
-    const categoria = await CategoriaServicio.listarCategoriaPorId(id_categoria)
+    const categoria = await CategoriaServicio.listarCategoriaPorId(nombre_categoria)
 
     if(categoria === null) {
       return res.status(400).json({ mensaje: 'La categoría no existe' });
     }
       //Crear nueva categoría si se desea
       //if (!categoriaExistente) {
-    const nuevoArticulo = await ArticuloServicio.crearArticulo(nombre, tipo_venta, precio, coste, ref, representacion, id_categoria)
+    const nuevoArticulo = await ArticuloServicio.crearArticulo(nombre, tipo_venta, precio, coste, ref, representacion, nombre_categoria)
   
     /*const nuevoArticulo = {
         id: id.insertId,

@@ -41,11 +41,11 @@ const listarCategorias = async ()=>{
    return categoriasFormato;
 }
 
-const listarCategoriaPorId = async (id) => {
+const listarCategoriaPorId = async (nombre) => {
 
   const categoria = await prisma.categoria.findUnique({
     where: {
-      id: parseInt(id),
+      nombre: nombre,
       estado: true
     },
   })
@@ -63,11 +63,11 @@ const listarCategoriaPorId = async (id) => {
 return categoriaFormato;
 }
 
-const modificarCategoria = async (id, nombre, color) => {
+const modificarCategoria = async (nombre, color) => {
   
   const categoria = await prisma.categoria.update({
     where: {
-      id: parseInt(id),
+      nombre: nombre,
       estado: true
     },
     data: {
@@ -85,11 +85,11 @@ const modificarCategoria = async (id, nombre, color) => {
   return categoriaFormato;
 }
 
-const eliminarCategoria = async (id) => {
+const eliminarCategoria = async (nombre) => {
   
   const categoria = await prisma.categoria.update({
     where: {
-      id: parseInt(id),
+      nombre: nombre,
       estado: true
     },
     data: {

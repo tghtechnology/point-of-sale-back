@@ -3,8 +3,9 @@ CREATE TABLE `categoria` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `nombre` VARCHAR(255) NOT NULL,
     `color` VARCHAR(255) NOT NULL,
-    `estado` BIT(1) NOT NULL,
+    `estado` BOOLEAN NOT NULL,
 
+    UNIQUE INDEX `categoria_nombre_key`(`nombre`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -12,10 +13,10 @@ CREATE TABLE `categoria` (
 CREATE TABLE `descuento` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `nombre` VARCHAR(255) NOT NULL,
-    `tipo_descuento` ENUM('porcentaje', 'monto') NOT NULL,
+    `tipo_descuento` ENUM('PORCENTAJE', 'MONTO') NOT NULL,
     `valor` DECIMAL(10, 2) NOT NULL,
     `valor_calculado` DECIMAL(10, 2) NOT NULL,
-    `estado` BIT(1) NOT NULL,
+    `estado` BOOLEAN NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -27,7 +28,7 @@ CREATE TABLE `empleado` (
     `correo` VARCHAR(255) NOT NULL,
     `telefono` VARCHAR(255) NOT NULL,
     `pin` VARCHAR(255) NOT NULL,
-    `estado` BIT(1) NOT NULL,
+    `estado` BOOLEAN NOT NULL,
 
     UNIQUE INDEX `empleado_correo_key`(`correo`),
     UNIQUE INDEX `empleado_pin_key`(`pin`),
@@ -42,7 +43,7 @@ CREATE TABLE `usuario` (
     `password` VARCHAR(255) NOT NULL,
     `pais` VARCHAR(255) NULL,
     `estado` BIT(1) NOT NULL,
-    `eliminadoTemporalFecha` DATETIME(3) NULL,
+    `eliminado_temporal_fecha` DATETIME(3) NULL,
 
     UNIQUE INDEX `usuario_email_key`(`email`),
     PRIMARY KEY (`id`)
@@ -58,7 +59,7 @@ CREATE TABLE `articulo` (
     `ref` VARCHAR(255) NOT NULL,
     `representacion` VARCHAR(255) NOT NULL,
     `id_categoria` INTEGER NULL,
-    `estado` BIT(1) NOT NULL,
+    `estado` BOOLEAN NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -74,7 +75,7 @@ CREATE TABLE `reset_tokens` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `sesiones` (
+CREATE TABLE `sesion` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `usuario_id` INTEGER NOT NULL,
     `token` VARCHAR(255) NOT NULL,
@@ -90,4 +91,4 @@ ALTER TABLE `articulo` ADD CONSTRAINT `articulo_id_categoria_fkey` FOREIGN KEY (
 ALTER TABLE `reset_tokens` ADD CONSTRAINT `reset_tokens_usuario_id_fkey` FOREIGN KEY (`usuario_id`) REFERENCES `usuario`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `sesiones` ADD CONSTRAINT `sesiones_usuario_id_fkey` FOREIGN KEY (`usuario_id`) REFERENCES `usuario`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `sesion` ADD CONSTRAINT `sesion_usuario_id_fkey` FOREIGN KEY (`usuario_id`) REFERENCES `usuario`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

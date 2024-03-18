@@ -4,17 +4,17 @@ import * as CategoriaServicio from "../Services/CategoriaServicio"
 const prisma = new PrismaClient();
 
 //Crear un nuevo artículo
-const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representacion, id_categoria, categoriaNueva) => {
+const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representacion, nombre_categoria, categoriaNueva) => {
   
-    let idCategoria;
+    let NombreCategoria;
   
     if (categoriaNueva) {
       // Crear una nueva categoría desde artículo
-      const nuevaCategoria = await CategoriaServicio.crearCategoria(nombreCategoria, colorCategoria);
-      idCategoria = nuevaCategoria.insertId;
+      const nuevaCategoria = await CategoriaServicio.crearCategoria(nombre_categoria, color_categoria);
+      NombreCategoria = nuevaCategoria.nombre;
     } else {
       // Si la categoría ya existe
-      idCategoria = id_categoria;
+      NombreCategoria = nombre_categoria;
     }
 
     //Se crea el nuevo artículo
@@ -26,7 +26,7 @@ const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representac
         coste: coste,
         ref: ref,
         representacion: representacion,
-        categoria: { connect: { id: id_categoria } },
+        categoria: { connect: { nombre: NombreCategoria } },
         estado: true
       }
     })
@@ -34,7 +34,7 @@ const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representac
   // Consultar la categoría 
   const categoria = await prisma.categoria.findUnique({
     where: {
-      id: idCategoria
+      nombre: NombreCategoria
     },
     select: {
       id: true,
@@ -44,9 +44,25 @@ const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representac
   });
 
   //Agregar información de categoría a artículo
-  articulo.idCategoria = categoria;
+  articulo.NombreCategoria = categoria;
 
-  return articulo;
+  const articuloFormato = {
+      id: articulo.id,
+      nombre: articulo.nombre,
+      tipo_venta: articulo.tipo_venta,
+      precio: articulo.precio,
+      coste: articulo.coste,
+      ref: articulo.ref,
+      representacion: articulo.representacion,
+      //categoria: { connect: { nombre: NombreCategoria } }
+      categoria: {
+        id: articulo.idCategoria,
+        nombre: categoria.nombre,
+        color: categoria.color
+      },
+    };
+
+  return articuloFormato;
   };
 
 //Listar todos los artículos
