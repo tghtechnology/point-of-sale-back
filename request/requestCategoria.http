@@ -7,18 +7,18 @@ POST {{api}}/categoria/crear
 Content-Type: application/json
 
 {
-  "nombre": "Dulces",
+  "nombre": "Electrodomésticos",
   "color":"Verde"
 }
 ###
-GET {{api}}/categoria/listar/Dulces
+GET {{api}}/categoria/listar/Aperititivos
 ###
-PUT {{api}}/categoria/actualizar/Dulces
+PUT {{api}}/categoria/actualizar/Aperititivos
 Content-Type: application/json
 
 {
-  "nombre": "Dulces",
-  "color":"Azul"
+  "nombre": "Botellas",
+  "color":"Verde"
 }
 ###
-DELETE {{api}}/categoria/eliminar/Dulces
+DELETE {{api}}/categoria/eliminar/Abarrotes

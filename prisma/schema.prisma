@@ -73,10 +73,10 @@ model Articulo {
   coste Decimal @db.Decimal(10, 2)
   ref String @db.VarChar(255)
   representacion String     @db.VarChar(255)
-  idCategoria Int? @map("nombre_categoria")
+  nombre_categoria String? @db.VarChar(255) @map("nombre_categoria") @default("Sin categoría")
   estado Boolean
 
-  categoria Categoria? @relation(fields: [idCategoria], references: [id])
+  categoria Categoria? @relation(fields: [nombre_categoria], references: [nombre])
 
   @@map("articulo")
 }

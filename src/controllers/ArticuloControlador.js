@@ -7,9 +7,10 @@ export const crearArticulo = async (req, res) => {
   try {
     const { nombre, tipo_venta, precio, coste, ref, representacion, nombre_categoria } = req.body;
       //Obtener(si existe)
-    const categoria = await CategoriaServicio.listarCategoriaPorId(nombre_categoria)
+    let categoria = await CategoriaServicio.listarCategoriaPorId(nombre_categoria)
 
-    if(categoria === null) {
+    console.log(categoria)
+    if(categoria === false) {
       return res.status(400).json({ mensaje: 'La categoría no existe' });
     }
       //Crear nueva categoría si se desea
@@ -42,9 +43,6 @@ export const listarArticulos = async (req, res) => {
     res.status(200).json(articulos);
   } catch (error) {
     console.error(error);
-    if (error instanceof CustomBadRequestError) {
-      return res.status(400).json({ mensaje: 'Error en la solicitud del cliente.' });
-    }
     res.status(500).json({ mensaje: 'Error al obtener la lista de artículos.' });
   }
 };

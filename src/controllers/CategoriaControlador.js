@@ -46,9 +46,9 @@ export const obtenerCategoriaPorId = async (req, res) => {
 //Actualizar categoría
 export const actualizarCategoria = async (req, res) => {
   try {
-    const id=req.params.id;
+    const nombre_as_id=req.params.id;
     const{nombre,color}=req.body
-    const categoria = await CategoriaServicio.modificarCategoria(id,nombre,color);
+    const categoria = await CategoriaServicio.modificarCategoria(nombre_as_id,nombre,color);
 
     if (!categoria) {
       res.status(404).json({ message: 'Categoría no encontrada' });
@@ -63,8 +63,8 @@ export const actualizarCategoria = async (req, res) => {
 //Eliminar categoría
 export const eliminarCategoria = async (req, res) => {
   try {
-    const id = req.params.id;
-    await CategoriaServicio.eliminarCategoria(id);
+    const nombre_as_id = req.params.id;
+    await CategoriaServicio.eliminarCategoria(nombre_as_id);
     res.status(200).json({ mensaje: 'Categoría eliminada correctamente' });
   } catch (error) {
     console.error(error);

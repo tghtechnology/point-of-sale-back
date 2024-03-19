@@ -28,14 +28,14 @@ const listarCategorias = async ()=>{
   const categorias = await prisma.categoria.findMany({
     where: {
       estado: true
-    },
+    }
   })
 
   const categoriasFormato = categorias.map((categoria) => {
     return {
       id: categoria.id,
       nombre: categoria.nombre,
-      color: categoria.color,
+      color: categoria.color
     };
   });
    return categoriasFormato;
@@ -43,37 +43,45 @@ const listarCategorias = async ()=>{
 
 const listarCategoriaPorId = async (nombre) => {
 
+  /*let SinCategoria = "Sin categoría"
+  if(nombre == undefined) {
+    nombre = SinCategoria
+  }*/
+ 
   const categoria = await prisma.categoria.findUnique({
     where: {
-      nombre: nombre,
+      nombre: nombre === undefined ? "Sin categoría" : nombre,
       estado: true
     },
   })
 
-  if (categoria === null) {
+  /*if (categoria.nombre == undefined) {
     return null
+  }*/
+
+  if (categoria === null) {
+    return false
   }
   
   const categoriaFormato = {
     id: categoria.id,
-    nombre: categoria.nombre,
+    nombre: categoria.nombre ? categoria.nombre : "Sin categoría",
     color: categoria.color
 };
 
 return categoriaFormato;
 }
 
-const modificarCategoria = async (nombre, color) => {
+const modificarCategoria = async (nombre_as_id, nombre, color) => {
   
   const categoria = await prisma.categoria.update({
     where: {
-      nombre: nombre,
+      nombre: nombre_as_id,
       estado: true
     },
     data: {
       nombre: nombre,
-      color: color,
-      estado: true
+      color: color
     }
   })
 
@@ -85,11 +93,11 @@ const modificarCategoria = async (nombre, color) => {
   return categoriaFormato;
 }
 
-const eliminarCategoria = async (nombre) => {
-  
+const eliminarCategoria = async (nombre_as_id) => {
+
   const categoria = await prisma.categoria.update({
     where: {
-      nombre: nombre,
+      nombre: nombre_as_id,
       estado: true
     },
     data: {

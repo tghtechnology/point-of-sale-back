@@ -7,16 +7,16 @@ POST {{api}}/articulo/crear
 Content-Type: application/json
 
 {
-  "nombre": "Sofa",
+  "nombre": "Vestido",
   "tipo_venta":"Peso",
   "precio": 12.50,
   "coste": 60.99,
-  "ref": "16573",
+  "ref": "10056",
   "representacion": "imagen",
-  "nombre_categoria": "Abarrotes"
+  "nombre_categoria": "Electrodomésticos"
 }
 ###
-GET {{api}}/articulo/listar/2
+GET {{api}}/articulo/listar/23
 ###
 PUT {{api}}/articulo/actualizar/2
 Content-Type: application/json
