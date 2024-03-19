@@ -44,20 +44,16 @@ export const logout = async (req, res) => {
 export const enviarTokenCambioPassword = async (req, res) => {
   const { email } = req.body;
   if (!email) {
-    return res.status(400).json({
-      message: 'El correo electrónico es obligatorio',
-    });
+    return res.status(400).json({message: 'El correo electrónico es obligatorio'});
   }
   try {
     const mensaje = await AuthService.enviarCorreoCambioPass(email);
     if (mensaje) {
-      return res.status(404).json({
-        message: mensaje,
-      });
-    }
+      return res.status(404).json({message: mensaje});
+    }else{
     return res.status(200).json({
       message: 'Se ha enviado un correo electrónico de cambio de contraseña',
-    });
+    });}
   } catch (error) {
     console.error(error);
     return res.status(500).json({
@@ -70,7 +66,7 @@ export const cambiarPassword = async (req, res) => {
   const { token, password } = req.body;
   try {
     const message = await AuthService.cambiarPassword(token, password);
-    return res.json({ message });
+    return res.json({ message:"Contraseña actualizada" });
   } catch (error) {
     console.error("Error al cambiar la contraseña:", error.message);
     return res.status(500).json({ error: "Error del servidor" });

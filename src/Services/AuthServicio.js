@@ -54,10 +54,10 @@ export const login = async (email, password) => {
 
 //Lógica para cerrar sesión
 export const logout = async (token) => {
-    const decodedToken = jwt.verify(token, "secreto_del_token"); // Decodifica el token para obtener el ID de usuario
+  //Decodificación de token
+    const decodedToken = jwt.verify(token, "secreto_del_token"); 
     // Conexión a la base de datos
-    const connection = await connect(); // Establece una conexión a la base de datos
-
+    const connection = await connect(); 
     // Eliminación del token de sesión del usuario
     await prisma.sesion.deleteMany({
       where: {
@@ -119,21 +119,14 @@ export const enviarCorreoCambioPass = async (email) => {
       subject: "Cambio de Contraseña",
       html: getVerificationEmailTemplate(usuario.nombre, resetPasswordLink),
     });
-    // Si todo está bien, no enviamos ningún mensaje de éxito al cliente
-    return;
+
 };
 
 // Función para cambiar la contraseña del usuario a través de un enlace con token
 export const cambiarPassword = async (token, password) => {
-  try {
     // Verificar si el token está vacío
     if (!token) {
       throw new Error("Falta el token");
-    }
-
-    // Verificar si la nueva contraseña cumple con los requisitos mínimos
-    if (password.length < 8) {
-      throw new Error("La nueva contraseña debe tener al menos 8 caracteres");
     }
 
     // Descodificar el token
@@ -166,6 +159,14 @@ export const cambiarPassword = async (token, password) => {
         password: hashedNewPassword,
       },
     });
+    
+    await prisma.resetToken.deleteMany({
+      where: {
+        usuario_id: decodedToken.id,
+        token: token,
+      },
+    });
+    
 
      // Verificar si el usuario tiene una sesión activa
      const activeSessions = await prisma.sesion.findMany({
@@ -181,23 +182,12 @@ export const cambiarPassword = async (token, password) => {
     if (activeSessions.length > 0) {
       await logout(activeSessions[0].token);
     }
-
-
-    // Retornar un mensaje de éxito
-    return "¡Contraseña actualizada exitosamente!";
-  } catch (error) {
-    console.error("Error al cambiar la contraseña:", error);
-    throw new Error(
-      "Ocurrió un error. Por favor, inténtelo de nuevo más tarde"
-    );
-  }
 };
 
 // Función para eliminar tokens de sesión expirados y tokens de cambio de contraseña expirados de la base de datos
 export const eliminarTokensExpirados = async () => {
-  try {
     // Conectar a la base de datos
-
+    const db = await connect();
     // Eliminar tokens de sesión expirados
     const eliminarTokenSesion = await prisma.resetToken.deleteMany({
       where: {
@@ -223,12 +213,7 @@ export const eliminarTokensExpirados = async () => {
     ) {
       console.log("Tokens expirados eliminados correctamente.");
     }
-  } catch (error) {
-    console.error("Error al eliminar tokens expirados:", error);
-    throw new Error(
-      "Ocurrió un error. Por favor, inténtelo de nuevo más tarde"
-    );
-  }
+  
 };
 
 
