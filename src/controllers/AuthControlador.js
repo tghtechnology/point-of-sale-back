@@ -13,18 +13,20 @@ export const verificarSesion = async (req, res, next) => {
 };
 
 export const login = async (req, res) => {
-  
   try {
     const { email, password } = req.body;
     const token = await AuthService.login(email, password);
     if(token) {
-      return res.json({token})
-    } else if (token == true){
-      return res.status(401).json({ message: "Ya se inició sesión anteriormente"})
-    }
+      return res.status(200).json({status:"Logged In", token:token})
+    } 
   } catch (error) {
-    console.error("Error al autenticar al usuario:", error.message);
-    return res.status(401).json({ error: "Nombre de usuario o contraseña incorrectos" });
+    if (error.message === "Nombre de usuario o contraseña incorrectos") {
+      return res.status(401).json({ error: "Nombre de usuario o contraseña incorrectos" });
+    } else if (error.message === "Sesión activa encontrada") {
+      return res.status(401).json({ error: "Ya has iniciado sesión",activeSessions: true });
+    } else {
+      return res.status(500).json({ error: "Error interno del servidor" });
+    }
   }
 };
 

@@ -14,7 +14,6 @@ export const login = async (email, password) => {
         email: email
       },
     })
-  
     if (results.length === 0) {
       throw new Error("Nombre de usuario o contraseña incorrectos");
     }
@@ -25,15 +24,14 @@ export const login = async (email, password) => {
     if (!match) {
       throw new Error("Nombre de usuario o contraseña incorrectos");
     }
-
+    //Verificar si existe una sesión activa 
     const existingSessions = await prisma.sesion.findMany({
       where: {
         usuario_id: usuario.id
       },
     })
-  
     if (existingSessions.length > 0) {
-      return true
+      throw new Error("Sesión activa encontrada");
     }
     
     const token = jwt.sign(
@@ -51,7 +49,7 @@ export const login = async (email, password) => {
         expiracion: expiracion
       }
     })
-    return token;
+    return token
 };
 
 //Lógica para cerrar sesión
