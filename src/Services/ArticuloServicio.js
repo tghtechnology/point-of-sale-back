@@ -133,6 +133,10 @@ const listarArticuloPorId = async (id) => {
         }
       }
     })
+    
+    if(articulo == null) {
+      return false
+    }
 
     const categoria = articulo.categoria
     const categoriaFormateada = categoria ? {
@@ -158,9 +162,10 @@ const listarArticuloPorId = async (id) => {
   }
 
 //Modificar un artículo 
-const modificarArticulo = async (id, nombre, tipo_venta, precio, coste, ref, representacion, categoriaNueva, nombre_categoria, color_categoria) => {
+const modificarArticulo = async (id, nombre, tipo_venta, precio, coste, ref, representacion, nombre_categoria, color_categoria, categoriaNueva) => {
 
     let NombreCategoria;
+
   
     //Llama a la función de crearCategoria desde el formulario de Articulo
     if (categoriaNueva) {
@@ -172,7 +177,18 @@ const modificarArticulo = async (id, nombre, tipo_venta, precio, coste, ref, rep
       NombreCategoria = nombre_categoria;
     }
 
-    //Actualiza el nuevo artículo mientras estado true
+    const existeArticulo = await prisma.articulo.findUnique({
+      where: {
+          id: parseInt(id)
+      }
+  });
+
+  // Si no existe el artículo, devuelve false
+  if (!existeArticulo) {
+      return null;
+  }
+
+    //Actualiza el nuevo artículo 
     const nuevoArticulo = await prisma.articulo.update({
       where: {
         id: parseInt(id),
@@ -185,15 +201,17 @@ const modificarArticulo = async (id, nombre, tipo_venta, precio, coste, ref, rep
         coste: coste,
         ref: ref,
         representacion: representacion,
-        nombre_categoria: NombreCategoria,
+        nombre_categoria: nombre_categoria,
         estado: true
       }
     })
 
-  //Buscar información de categoría con id ingresado
+    console.log(nuevoArticulo)
+
+  //Buscar información de categoría con nombre ingresado
   const categoria = await prisma.categoria.findUnique({
     where: {
-      nombre: nuevoArticulo.nombre_categoria
+      nombre: NombreCategoria
     },
     select: {
       id: true,
@@ -201,7 +219,7 @@ const modificarArticulo = async (id, nombre, tipo_venta, precio, coste, ref, rep
       color: true
     }
   });
-  
+
   let categoriaFormateada = categoria
   
     if (categoria) {

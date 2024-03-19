@@ -7,18 +7,18 @@ POST {{api}}/articulo/crear
 Content-Type: application/json
 
 {
-  "nombre": "Vestido",
+  "nombre": "Cocina",
   "tipo_venta":"Peso",
   "precio": 12.50,
   "coste": 60.99,
   "ref": "10056",
   "representacion": "imagen",
-  "nombre_categoria": "Electrodomésticos"
+  "nombre_categoria": "Estufas"
 }
 ###
-GET {{api}}/articulo/listar/23
+GET {{api}}/articulo/listar/4
 ###
-PUT {{api}}/articulo/actualizar/2
+PUT {{api}}/articulo/actualizar/4
 Content-Type: application/json
 
 {
@@ -26,9 +26,9 @@ Content-Type: application/json
   "tipo_venta":"Unidad",
   "precio": 12.50,
   "coste": 60.99,
-  "ref": "10550",
+  "ref": "67777",
   "representacion": "imagen",
-  "id_categoria": 1
+  "nombre_categoria": "Botellas"
 }
 ###
-DELETE {{api}}/articulo/eliminar/7
+DELETE {{api}}/articulo/eliminar/2

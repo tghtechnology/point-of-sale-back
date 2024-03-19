@@ -69,24 +69,15 @@ export const obtenerArticuloPorId = async (req, res) => {
 export const actualizarArticulo = async (req, res) => {
   try {
     const id=req.params.id;
-    const{nombre, tipo_venta, precio, coste, ref, representacion, id_categoria}=req.body
-    const articulo = await ArticuloServicio.modificarArticulo(id, nombre, tipo_venta, precio, coste, ref, representacion, id_categoria);
-    const categoria = await CategoriaServicio.listarCategoriaPorId(id_categoria)
+    const{nombre, tipo_venta, precio, coste, ref, representacion, nombre_categoria}=req.body
+    const articulo = await ArticuloServicio.modificarArticulo(id, nombre, tipo_venta, precio, coste, ref, representacion, nombre_categoria);
+    const categoria = await CategoriaServicio.listarCategoriaPorId(nombre_categoria)
 
-    /*const articuloActualizado = {
-      id: id.insertId,
-      nombre: nombre,
-      tipo_venta: tipo_venta,          
-      precio: precio,
-      coste: coste,
-      ref: ref,
-      representacion: representacion,
-      categoria: Array.isArray(categoria) ? categoria[0] : categoria
-  };*/
-
-    if (!articulo) {
-      res.status(404).json({ mensaje: 'No se encontró el artículo' });
-    }
+    if (articulo == null) {
+      return res.status(404).json({ mensaje: 'No se encontró el artículo' });
+    } else if (categoria === false) {
+      return res.status(400).json({ mensaje: 'La categoría no existe' });
+    } 
       res.status(200).json(articulo);
     } catch (error) {
       console.error(error);
