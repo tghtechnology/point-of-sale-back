@@ -15,10 +15,13 @@ export const verificarSesion = async (req, res, next) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const token = await AuthService.login(email, password);
-    if(token) {
-      return res.status(200).json({status:"Logged In", token:token})
-    } 
+    const result = await AuthService.login(email, password);
+    if(result) {
+      return res.status(200).json({
+        token: result.token,
+        usuario_id: result.usuario_id
+      });
+    }
   } catch (error) {
     if (error.message === "Nombre de usuario o contraseña incorrectos") {
       return res.status(401).json({ error: "Nombre de usuario o contraseña incorrectos" });

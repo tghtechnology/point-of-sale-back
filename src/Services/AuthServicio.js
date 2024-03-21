@@ -42,14 +42,17 @@ export const login = async (email, password) => {
 
     const expiracion = new Date();
     expiracion.setHours(expiracion.getHours() + 24);
-    await prisma.sesion.create({
+    const result=await prisma.sesion.create({
       data: {
         usuario_id: usuario.id,
         token: token,
         expiracion: expiracion
       }
     })
-    return token
+    return {
+      usuario_id: result.usuario_id,
+      token: result.token
+    }
 };
 
 //Lógica para cerrar sesión
