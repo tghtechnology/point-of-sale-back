@@ -5,7 +5,7 @@ import * as CategoriaServicio from "../Services/CategoriaServicio"
 export const crearCategoria = async (req, res) => {
   try{
     const { nombre, color } = req.body;
-    const nuevaCategoria = await CategoriaServicio.crearCategoria(nombre,color)
+    const nuevaCategoria = await CategoriaServicio.crearCategoria(nombre, color)
 
     res.status(201).json(nuevaCategoria);
   } catch (error) {
@@ -30,8 +30,8 @@ export const listarCategorias = async (req, res) => {
 //Obtener una categoría por su ID
 export const obtenerCategoriaPorId = async (req, res) => {
   try {
-    const id = req.params.id;
-    const categoria = await CategoriaServicio.listarCategoriaPorId(id);
+    const text_id = req.params.text_id;
+    const categoria = await CategoriaServicio.listarCategoriaPorId(text_id);
     res.status(200).json(categoria);
 
     if (categoria.length === 0) {
@@ -46,9 +46,9 @@ export const obtenerCategoriaPorId = async (req, res) => {
 //Actualizar categoría
 export const actualizarCategoria = async (req, res) => {
   try {
-    const id=req.params.id;
+    const text_id=req.params.text_id;
     const{nombre,color}=req.body
-    const categoria = await CategoriaServicio.modificarCategoria(id,nombre,color);
+    const categoria = await CategoriaServicio.modificarCategoria(text_id,nombre,color);
 
     if (!categoria) {
       res.status(404).json({ message: 'Categoría no encontrada' });
@@ -63,8 +63,8 @@ export const actualizarCategoria = async (req, res) => {
 //Eliminar categoría
 export const eliminarCategoria = async (req, res) => {
   try {
-    const id = req.params.id;
-    await CategoriaServicio.eliminarCategoria(id);
+    const text_id = req.params.text_id;
+    await CategoriaServicio.eliminarCategoria(text_id);
     res.status(200).json({ mensaje: 'Categoría eliminada correctamente' });
   } catch (error) {
     console.error(error);

@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Categoria {
-  id Int @id @default(autoincrement())
+  text_id String @id
   nombre String @db.VarChar (255) @unique
   color String @db.VarChar (255)
   estado Boolean
@@ -66,17 +66,17 @@ model Usuario {
 }
 
 model Articulo {
-  id Int @id @default(autoincrement())
+  text_id String @id 
   nombre String @db.VarChar(255)
   tipo_venta TipoVenta
   precio Decimal? @db.Decimal(10, 2)
   coste Decimal @db.Decimal(10, 2)
   ref String @db.VarChar(255)
   representacion String     @db.VarChar(255)
-  idCategoria Int? @map("nombre_categoria")
+  nombre_categoria String? @db.VarChar(255) @map("nombre_categoria") @default("Sin categoría")
   estado Boolean
 
-  categoria Categoria? @relation(fields: [idCategoria], references: [id])
+  categoria Categoria? @relation(fields: [nombre_categoria], references: [text_id])
 
   @@map("articulo")
 }

@@ -58,7 +58,7 @@ CREATE TABLE `articulo` (
     `coste` DECIMAL(10, 2) NOT NULL,
     `ref` VARCHAR(255) NOT NULL,
     `representacion` VARCHAR(255) NOT NULL,
-    `id_categoria` INTEGER NULL,
+    `nombre_categoria` VARCHAR(255) NULL DEFAULT 'Sin categoría',
     `estado` BOOLEAN NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -85,7 +85,7 @@ CREATE TABLE `sesion` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `articulo` ADD CONSTRAINT `articulo_id_categoria_fkey` FOREIGN KEY (`id_categoria`) REFERENCES `categoria`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `articulo` ADD CONSTRAINT `articulo_nombre_categoria_fkey` FOREIGN KEY (`nombre_categoria`) REFERENCES `categoria`(`nombre`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `reset_tokens` ADD CONSTRAINT `reset_tokens_usuario_id_fkey` FOREIGN KEY (`usuario_id`) REFERENCES `usuario`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
