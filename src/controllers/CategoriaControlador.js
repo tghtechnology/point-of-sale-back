@@ -34,7 +34,7 @@ export const obtenerCategoriaPorId = async (req, res) => {
     const categoria = await CategoriaServicio.listarCategoriaPorId(text_id);
     res.status(200).json(categoria);
 
-    if (categoria.length === 0) {
+    if (categoria == false) {
       return res.status(404).json({ mensaje: 'Categoría no encontrada.' });
     }
   } catch (error) {

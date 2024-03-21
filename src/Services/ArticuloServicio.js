@@ -215,14 +215,11 @@ const categoriaFormato = {
 const eliminarArticulo = async (text_id) => {
 
   //Establece el estado a false
-  const articulo = await prisma.articulo.update({
+  const articulo = await prisma.articulo.delete({
       where: {
-        id: parseInt(id),
+        text_id: text_id,
         estado: true
       },
-      data: {
-        estado: false
-      }
     })
     return articulo
   }
