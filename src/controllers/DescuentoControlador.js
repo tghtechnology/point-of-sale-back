@@ -44,7 +44,7 @@ export const modificarDescuento = async (req, res) => {
         const resultado =await DescuentoServicio.modificarDescuento(id,nombre,tipo_descuento,valor,estado);
    
         if (resultado) {
-            res.sendStatus(204); // Envía respuesta de éxito
+            res.status(200).json(resultado);
         } else {
             res.status(404).json({ message: 'Descuento no encontrado' });
         }

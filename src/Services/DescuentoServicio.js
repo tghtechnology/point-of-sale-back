@@ -92,8 +92,15 @@ const modificarDescuento = async (id, nombre, tipo_descuento, valor, estado) => 
                 estado:nuevoEstado
             }
           })
+          const updatedDescuento={
+            nombre:descuento.nombre,
+            tipo_descuento:descuento.tipo_descuento,
+            valor:descuento.valor,
+            valor_calculado:descuento.valor_calculado,
+            estado:descuento.estado
+          }
 
-        return descuento;
+        return updatedDescuento;
     
 };
 const obtenerDescuentos=async()=>{

@@ -5,8 +5,8 @@ Content-Type: application/json
 
 {
   "nombre": "Oferta",
-  "tipo_descuento": "MONTO",
-  "valor":100
+  "tipo_descuento": "PORCENTAJE",
+  "valor":50
 }
 ###
 GET {{api}}/2
@@ -16,8 +16,8 @@ Content-Type: application/json
 
 {
   "nombre": "Oferta de verano",
-  "tipo_descuento": "PORCENTAJE",
-  "valor":70
+  "tipo_descuento": "MONTO",
+  "valor":60
 }
 ###
 GET {{api}}

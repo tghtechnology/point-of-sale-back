@@ -186,18 +186,16 @@ export const cambiarPassword = async (token, password) => {
 
 // Función para eliminar tokens de sesión expirados y tokens de cambio de contraseña expirados de la base de datos
 export const eliminarTokensExpirados = async () => {
-    // Conectar a la base de datos
     const db = await connect();
-    // Eliminar tokens de sesión expirados
     const eliminarTokenSesion = await prisma.resetToken.deleteMany({
       where: {
         expiracion: {
           lt: new Date(),
         },
       },
-    });
+    }
+    );
 
-    // Eliminar tokens de cambio de contraseña expirados
     const eliminarTokenPassword = await prisma.sesion.deleteMany({
       where: {
         expiracion: {
@@ -206,7 +204,6 @@ export const eliminarTokensExpirados = async () => {
       },
     });
 
-    // Verificar si se eliminaron tokens
     if (
       eliminarTokenSesion.affectedRows > 0 ||
       eliminarTokenPassword.affectedRows > 0
