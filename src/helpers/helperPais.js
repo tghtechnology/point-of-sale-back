@@ -1,5 +1,3 @@
-/// helpers.js
-
 // Importación de la librería i18n-iso-countries
 const paises = require("i18n-iso-countries");
 

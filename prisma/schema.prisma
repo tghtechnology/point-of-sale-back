@@ -1,0 +1,109 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Categoria {
+  id Int @id @default(autoincrement())
+  nombre String @db.VarChar (255) @unique
+  color String @db.VarChar (255)
+  estado Boolean
+  articulos Articulo[]
+
+  @@map("categoria")
+}
+
+model Descuento {
+  id Int @id @default(autoincrement())
+  nombre String @db.VarChar (255)
+  tipo_descuento tipoDescuento
+  valor Decimal @db.Decimal(10,2)
+  valor_calculado Decimal @db.Decimal(10,2)
+  estado Boolean
+
+  @@map("descuento")
+}
+
+enum tipoDescuento {
+  PORCENTAJE
+  MONTO
+}
+
+model Empleado {
+  id Int @id @default(autoincrement())
+  nombre String @db.VarChar(255)
+  correo String @db.VarChar(255) @unique
+  telefono String @db.VarChar(255)
+  pin String @db.VarChar(255) @unique
+  estado Boolean
+
+  @@map("empleado")
+}
+
+model Usuario {
+  id Int @id @default(autoincrement())
+  nombre String @db.VarChar(255)
+  email String @db.VarChar(255) @unique
+  password String @db.VarChar(255)
+  pais String? @db.VarChar(255)
+  estado Boolean @db.Bit(1)
+  eliminado_temporal_fecha DateTime?
+
+  resetTokens ResetToken[]
+  sesiones Sesion[]
+
+  @@map("usuario")
+}
+
+model Articulo {
+  id Int @id @default(autoincrement())
+  nombre String @db.VarChar(255)
+  tipo_venta TipoVenta
+  precio Decimal? @db.Decimal(10, 2)
+  coste Decimal @db.Decimal(10, 2)
+  ref String @db.VarChar(255)
+  representacion String     @db.VarChar(255)
+  idCategoria Int? @map("nombre_categoria")
+  estado Boolean
+
+  categoria Categoria? @relation(fields: [idCategoria], references: [id])
+
+  @@map("articulo")
+}
+
+enum TipoVenta {
+  Peso
+  Unidad
+}
+
+model ResetToken {
+  id Int @id @default(autoincrement())
+  token String @db.VarChar(255)
+  expiracion DateTime
+  usuario_id Int @map("usuario_id")
+  usuario Usuario @relation(fields: [usuario_id], references: [id])
+
+  @@map("reset_tokens") 
+}
+
+model Sesion {
+  id Int @id @default(autoincrement())
+  usuario_id Int @map("usuario_id")
+  token String @db.VarChar(255)
+  expiracion DateTime
+
+  usuario Usuario @relation(fields: [usuario_id], references: [id])
+
+  @@map("sesion") 
+}
+
