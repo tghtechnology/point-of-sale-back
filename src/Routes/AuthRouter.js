@@ -9,6 +9,6 @@ routerAuth.get('/verificarSesion',verificarSesion)
 routerAuth.post('/login',login)
 routerAuth.post('/logout',logout)
 routerAuth.post('/envioCorreo',enviarTokenCambioPassword)
-routerAuth.post('/cambiarPassword',cambiarPassword)
+routerAuth.post('/cambiarPassword/:token',cambiarPassword)
 
 export default routerAuth;

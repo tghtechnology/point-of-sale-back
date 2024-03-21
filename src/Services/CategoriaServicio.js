@@ -8,7 +8,7 @@ const crearCategoria = async (nombre, color) => {
   const categoria = await prisma.categoria.create({
     data: {
       text_id: nombre,
-      nombre: nombre,
+      nombre: nombre, 
       color: color,
       estado: true
     }
