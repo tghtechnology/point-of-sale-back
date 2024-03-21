@@ -7,6 +7,7 @@ const crearCategoria = async (nombre, color) => {
  
   const categoria = await prisma.categoria.create({
     data: {
+      text_id: nombre,
       nombre: nombre,
       color: color,
       estado: true
@@ -14,7 +15,6 @@ const crearCategoria = async (nombre, color) => {
   })
 
   const categoriaFormato = {
-    id: categoria.id,
     nombre: categoria.nombre,
     color: categoria.color
   }
@@ -33,7 +33,6 @@ const listarCategorias = async ()=>{
 
   const categoriasFormato = categorias.map((categoria) => {
     return {
-      id: categoria.id,
       nombre: categoria.nombre,
       color: categoria.color
     };
@@ -41,11 +40,16 @@ const listarCategorias = async ()=>{
    return categoriasFormato;
 }
 
-const listarCategoriaPorId = async (nombre) => {
+const listarCategoriaPorId = async (text_id) => {
+
+  let sinCat = "Sin categoría"
+  if(text_id == sinCat) {
+    return null
+  }
 
   const categoria = await prisma.categoria.findUnique({
     where: {
-      nombre: nombre,
+      text_id: text_id,
       estado: true
     },
   })
@@ -55,19 +59,18 @@ const listarCategoriaPorId = async (nombre) => {
   }
   
   const categoriaFormato = {
-    id: categoria.id,
-    nombre: categoria.nombre ? categoria.nombre : "Sin categoría",
+    nombre: categoria.nombre,
     color: categoria.color
 };
 
 return categoriaFormato;
 }
 
-const modificarCategoria = async (nombre_as_id, nombre, color) => {
+const modificarCategoria = async (text_id, nombre, color) => {
   
   const categoria = await prisma.categoria.update({
     where: {
-      nombre: nombre_as_id,
+      text_id: text_id,
       estado: true
     },
     data: {
@@ -76,23 +79,21 @@ const modificarCategoria = async (nombre_as_id, nombre, color) => {
     }
   })
 
+  nombre = text_id
+
   const categoriaFormato = {
-    id: categoria.id,
     nombre: categoria.nombre,
     color: categoria.color
 };
   return categoriaFormato;
 }
 
-const eliminarCategoria = async (nombre_as_id) => {
+const eliminarCategoria = async (text_id) => {
 
-  const categoria = await prisma.categoria.update({
+  const categoria = await prisma.categoria.delete({
     where: {
-      nombre: nombre_as_id,
+      text_id: text_id,
       estado: true
-    },
-    data: {
-      estado: false
     }
   })
   return categoria

@@ -4,7 +4,7 @@ import * as CategoriaServicio from "../Services/CategoriaServicio"
 const prisma = new PrismaClient();
 
 //Crear un nuevo artículo
-const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representacion, nombre_categoria, categoriaNueva) => {
+export const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representacion, nombre_categoria, categoriaNueva) => {
   
   let NombreCategoria;
 
@@ -12,62 +12,46 @@ const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representac
     // Crear una nueva categoría desde artículo
     const nuevaCategoria = await CategoriaServicio.crearCategoria(nombre_categoria, color_categoria);
     NombreCategoria = nuevaCategoria.nombre;
-  } else {
-    // Si la categoría ya existe
-    //NombreCategoria = nombre_categoria;
-  }
-
-  /*if(nombre_categoria == "Sin categoría") {
-    NombreCategoria = "Sin categoría"
-  }*/
-
+  } 
   //Se crea el nuevo artículo
   const articulo = await prisma.articulo.create({
     data: {
+      text_id: nombre,
       nombre: nombre,
       tipo_venta: tipo_venta,          
       precio: precio,
       coste: coste,
       ref: ref,
       representacion: representacion,
-      nombre_categoria: nombre_categoria, //NombreCategoria
+      nombre_categoria: nombre_categoria,
       estado: true
     }
   })
 
-// Consultar la categoría 
-const categoria = await prisma.categoria.findUnique({
-  where: {
-    nombre: nombre_categoria //? NombreCategoria : "Sin categoría"
-  },
-  select: {
-    id: true,
-    nombre: true,
-    color: true
-  }
-});
-
-let categoriaFormateada = categoria
-
-  if (categoria) {
-    categoriaFormateada = {
-      id: categoria.id,
-      nombre: categoria.nombre,
-      color: categoria.color
-    };
-  }
+  const categoria = await prisma.categoria.findUnique({
+    where: {
+      text_id: nombre_categoria 
+    },
+    select: {
+      nombre: true,
+      color: true
+    }
+  });
+  
+const categoriaFormato = {
+  nombre: categoria.nombre,
+  color: categoria.color
+}
 
 const articuloFormato = {
-    id: articulo.id,
     nombre: articulo.nombre,
     tipo_venta: articulo.tipo_venta,
     precio: articulo.precio,
     coste: articulo.coste,
     ref: articulo.ref,
     representacion: articulo.representacion,
-    categoria: categoriaFormateada ? categoriaFormateada : "Sin categoría"
+    categoria: categoriaFormato
   };
-
 
 return articuloFormato;
 };
@@ -88,11 +72,11 @@ const listarArticulos = async ()=>{
     const articulosFormato = articulos.map(articulo => {
 
         const categoria = articulo.categoria
-        const categoriaFormateada = categoria !== null ? {
+        const categoriaFormateada = {
           id: categoria.id,
           nombre: categoria.nombre,
           color: categoria.color
-        } : "Sin categoría"
+        } 
 
         return {
         id: articulo.id,
@@ -110,18 +94,18 @@ const listarArticulos = async ()=>{
 }
 
 //Listar un artículo con id
-const listarArticuloPorId = async (id) => {
+const listarArticuloPorId = async (text_id) => {
 
     //Buscar artículo con el ID único
     const articulo = await prisma.articulo.findUnique({
       where: {
-        id: parseInt(id),
+        text_id: text_id,
         estado: true
       },
       include: { //Incluye la información de categoría
         categoria: {
           select: {
-            id: true,
+            text_id: true,
             nombre: true,
             color: true
           }
@@ -129,21 +113,19 @@ const listarArticuloPorId = async (id) => {
       }
     })
     
+    //Validación de existencia de artículo
     if(articulo == null) {
       return false
     }
 
     const categoria = articulo.categoria
-    const categoriaFormateada = categoria ? {
-      id: categoria.id,
+    const categoriaFormateada = {
       nombre: categoria.nombre,
       color: categoria.color
-    } : "Sin categoría"
+    } 
 
   //Formato del JSON de la respuesta
   const articuloFormato = {
-    
-      id: articulo.id,
       nombre: articulo.nombre,
       tipo_venta: articulo.tipo_venta,
       precio: articulo.precio,
@@ -157,14 +139,12 @@ const listarArticuloPorId = async (id) => {
   }
 
 //Modificar un artículo 
-const modificarArticulo = async (id, nombre, tipo_venta, precio, coste, ref, representacion, nombre_categoria, color_categoria, categoriaNueva) => {
+const modificarArticulo = async (text_id, nombre, tipo_venta, precio, coste, ref, representacion, nombre_categoria, color_categoria, categoriaNueva) => {
 
     let NombreCategoria;
 
-  
     //Llama a la función de crearCategoria desde el formulario de Articulo
     if (categoriaNueva) {
-      // Crear una nueva categoría desde artículo
       const nuevaCategoria = await CategoriaServicio.crearCategoria(nombre_categoria, color_categoria);
       NombreCategoria = nuevaCategoria.nombre;
     } else {
@@ -172,24 +152,25 @@ const modificarArticulo = async (id, nombre, tipo_venta, precio, coste, ref, rep
       NombreCategoria = nombre_categoria;
     }
 
-    const existeArticulo = await prisma.articulo.findUnique({
+    const articuloExistente = await prisma.articulo.findUnique({
       where: {
-          id: parseInt(id)
+          text_id: text_id
       }
   });
 
   // Si no existe el artículo, devuelve false
-  if (!existeArticulo) {
+  if (!articuloExistente) {
       return null;
   }
 
     //Actualiza el nuevo artículo 
     const nuevoArticulo = await prisma.articulo.update({
       where: {
-        id: parseInt(id),
+        text_id: text_id,
         estado: true
       },
       data: {
+        text_id: nombre,
         nombre: nombre,
         tipo_venta: tipo_venta,          
         precio: precio,
@@ -201,29 +182,21 @@ const modificarArticulo = async (id, nombre, tipo_venta, precio, coste, ref, rep
       }
     })
 
-    console.log(nuevoArticulo)
-
   //Buscar información de categoría con nombre ingresado
   const categoria = await prisma.categoria.findUnique({
     where: {
-      nombre: NombreCategoria
+      text_id: nombre_categoria 
     },
     select: {
-      id: true,
       nombre: true,
       color: true
     }
   });
-
-  let categoriaFormateada = categoria
   
-    if (categoria) {
-      categoriaFormateada = {
-        id: categoria.id,
-        nombre: categoria.nombre,
-        color: categoria.color
-      };
-    }
+const categoriaFormato = {
+  nombre: categoria.nombre,
+  color: categoria.color
+}
   
   const articuloModificadoFormato = {
       id: nuevoArticulo.id,
@@ -233,18 +206,13 @@ const modificarArticulo = async (id, nombre, tipo_venta, precio, coste, ref, rep
       coste: nuevoArticulo.coste,
       ref: nuevoArticulo.ref,
       representacion: nuevoArticulo.representacion,
-      //categoria: { connect: { nombre: NombreCategoria } }
-      categoria: categoriaFormateada ? categoriaFormateada : "Sin categoría"
+      categoria: categoriaFormato
     };
-
-  //Agregar información de categoría a artículo
-  //nuevoArticulo.categoria = categoria;
-
   return articuloModificadoFormato;
   }
 
 //Eliminar un artículo
-const eliminarArticulo = async (id) => {
+const eliminarArticulo = async (text_id) => {
 
   //Establece el estado a false
   const articulo = await prisma.articulo.update({

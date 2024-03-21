@@ -7,28 +7,28 @@ POST {{api}}/articulo/crear
 Content-Type: application/json
 
 {
-  "nombre": "Cocina",
+  "nombre": "Mouse",
   "tipo_venta":"Peso",
   "precio": 12.50,
   "coste": 60.99,
   "ref": "10056",
   "representacion": "imagen",
-  "categoria": "Sofas"
+  "nombre_categoria": "Dispositivos"
 }
 ###
-GET {{api}}/articulo/listar/4
+GET {{api}}/articulo/listar/Sábana
 ###
-PUT {{api}}/articulo/actualizar/4
+PUT {{api}}/articulo/actualizar/Teclado
 Content-Type: application/json
 
 {
-  "nombre": "Sofa azul",
+  "nombre": "PC",
   "tipo_venta":"Unidad",
   "precio": 12.50,
   "coste": 60.99,
-  "ref": "67777",
+  "ref": "64247",
   "representacion": "imagen",
-  "nombre_categoria": "Botellas"
+  "nombre_categoria": "Dispositivos"
 }
 ###
 DELETE {{api}}/articulo/eliminar/2

@@ -7,18 +7,18 @@ POST {{api}}/categoria/crear
 Content-Type: application/json
 
 {
-  "nombre": "Sofas",
-  "color":"Azul"
+  "nombre": "Dispositivos",
+  "color":"Rojo"
 }
 ###
-GET {{api}}/categoria/listar/Aperititivos
+GET {{api}}/categoria/listar/Sofas
 ###
-PUT {{api}}/categoria/actualizar/Aperititivos
+PUT {{api}}/categoria/actualizar/Sofas
 Content-Type: application/json
 
 {
-  "nombre": "Botellas",
-  "color":"Verde"
+  "nombre": "Sofas",
+  "color":"Marrón"
 }
 ###
-DELETE {{api}}/categoria/eliminar/Abarrotes
+DELETE {{api}}/categoria/eliminar/Botellas
