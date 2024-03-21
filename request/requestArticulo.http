@@ -13,7 +13,7 @@ Content-Type: application/json
   "coste": 60.99,
   "ref": "10056",
   "representacion": "imagen",
-  "nombre_categoria": "Estufas"
+  "categoria": "Sofas"
 }
 ###
 GET {{api}}/articulo/listar/4

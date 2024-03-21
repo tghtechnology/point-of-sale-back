@@ -43,23 +43,14 @@ const listarCategorias = async ()=>{
 
 const listarCategoriaPorId = async (nombre) => {
 
-  /*let SinCategoria = "Sin categoría"
-  if(nombre == undefined) {
-    nombre = SinCategoria
-  }*/
- 
   const categoria = await prisma.categoria.findUnique({
     where: {
-      nombre: nombre === undefined ? "Sin categoría" : nombre,
+      nombre: nombre,
       estado: true
     },
   })
 
-  /*if (categoria.nombre == undefined) {
-    return null
-  }*/
-
-  if (categoria === null) {
+  if (categoria == null) {
     return false
   }
   

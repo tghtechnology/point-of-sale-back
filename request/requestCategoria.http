@@ -7,8 +7,8 @@ POST {{api}}/categoria/crear
 Content-Type: application/json
 
 {
-  "nombre": "Electrodomésticos",
-  "color":"Verde"
+  "nombre": "Sofas",
+  "color":"Azul"
 }
 ###
 GET {{api}}/categoria/listar/Aperititivos

@@ -14,12 +14,12 @@ const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representac
     NombreCategoria = nuevaCategoria.nombre;
   } else {
     // Si la categoría ya existe
-    NombreCategoria = nombre_categoria;
+    //NombreCategoria = nombre_categoria;
   }
 
-  if(NombreCategoria === null) {
+  /*if(nombre_categoria == "Sin categoría") {
     NombreCategoria = "Sin categoría"
-  }
+  }*/
 
   //Se crea el nuevo artículo
   const articulo = await prisma.articulo.create({
@@ -30,7 +30,7 @@ const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representac
       coste: coste,
       ref: ref,
       representacion: representacion,
-      nombre_categoria: NombreCategoria, //NombreCategoria ? NombreCategoria : "No definido",
+      nombre_categoria: nombre_categoria, //NombreCategoria
       estado: true
     }
   })
@@ -38,7 +38,7 @@ const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representac
 // Consultar la categoría 
 const categoria = await prisma.categoria.findUnique({
   where: {
-    nombre: NombreCategoria //? NombreCategoria : "Sin categoría"
+    nombre: nombre_categoria //? NombreCategoria : "Sin categoría"
   },
   select: {
     id: true,
@@ -57,10 +57,6 @@ let categoriaFormateada = categoria
     };
   }
 
-/*else if (NombreCategoria == "No definido"){ 
-  //categoriaFormateada.nombre = "Sin categoría"
-  categoriaFormateada = "Sin categoría"
-}*/
 const articuloFormato = {
     id: articulo.id,
     nombre: articulo.nombre,
@@ -69,7 +65,6 @@ const articuloFormato = {
     coste: articulo.coste,
     ref: articulo.ref,
     representacion: articulo.representacion,
-    //categoria: { connect: { nombre: NombreCategoria } }
     categoria: categoriaFormateada ? categoriaFormateada : "Sin categoría"
   };
 
