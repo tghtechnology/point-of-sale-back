@@ -77,8 +77,8 @@ export const actualizarArticulo = async (req, res) => {
 //Eliminar artículo
 export const eliminarArticulo = async (req, res) => {
   try {
-    const id = req.params.id;
-    await ArticuloServicio.eliminarArticulo(id);
+    const text_id = req.params.text_id;
+    await ArticuloServicio.eliminarArticulo(text_id);
     res.status(200).json({ mensaje: 'Artículo eliminado correctamente' });
   } catch (error) {
     console.error(error);

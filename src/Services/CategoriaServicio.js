@@ -13,6 +13,7 @@ const crearCategoria = async (nombre, color) => {
       estado: true
     }
   })
+  //nombre = categoria.text_id
 
   const categoriaFormato = {
     nombre: categoria.nombre,
@@ -42,11 +43,6 @@ const listarCategorias = async ()=>{
 
 const listarCategoriaPorId = async (text_id) => {
 
-  let sinCat = "Sin categoría"
-  if(text_id == sinCat) {
-    return null
-  }
-
   const categoria = await prisma.categoria.findUnique({
     where: {
       text_id: text_id,
@@ -55,7 +51,7 @@ const listarCategoriaPorId = async (text_id) => {
   })
 
   if (categoria == null) {
-    return false
+    return null
   }
   
   const categoriaFormato = {
@@ -75,11 +71,12 @@ const modificarCategoria = async (text_id, nombre, color) => {
     },
     data: {
       nombre: nombre,
-      color: color
+      color: color,
+      text_id: nombre
     }
   })
 
-  nombre = text_id
+  text_id = nombre
 
   const categoriaFormato = {
     nombre: categoria.nombre,

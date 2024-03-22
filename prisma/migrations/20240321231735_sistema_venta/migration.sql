@@ -1,12 +1,12 @@
 -- CreateTable
 CREATE TABLE `categoria` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `text_id` VARCHAR(191) NOT NULL,
     `nombre` VARCHAR(255) NOT NULL,
     `color` VARCHAR(255) NOT NULL,
     `estado` BOOLEAN NOT NULL,
 
     UNIQUE INDEX `categoria_nombre_key`(`nombre`),
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`text_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -51,7 +51,7 @@ CREATE TABLE `usuario` (
 
 -- CreateTable
 CREATE TABLE `articulo` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `text_id` VARCHAR(191) NOT NULL,
     `nombre` VARCHAR(255) NOT NULL,
     `tipo_venta` ENUM('Peso', 'Unidad') NOT NULL,
     `precio` DECIMAL(10, 2) NULL,
@@ -61,7 +61,7 @@ CREATE TABLE `articulo` (
     `nombre_categoria` VARCHAR(255) NULL DEFAULT 'Sin categoría',
     `estado` BOOLEAN NOT NULL,
 
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`text_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -85,7 +85,7 @@ CREATE TABLE `sesion` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `articulo` ADD CONSTRAINT `articulo_nombre_categoria_fkey` FOREIGN KEY (`nombre_categoria`) REFERENCES `categoria`(`nombre`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `articulo` ADD CONSTRAINT `articulo_nombre_categoria_fkey` FOREIGN KEY (`nombre_categoria`) REFERENCES `categoria`(`text_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `reset_tokens` ADD CONSTRAINT `reset_tokens_usuario_id_fkey` FOREIGN KEY (`usuario_id`) REFERENCES `usuario`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
