@@ -104,7 +104,7 @@ export const enviarCorreoCambioPass = async (email) => {
     });
 
     // Generar el enlace para cambiar la contraseña
-    const resetPasswordLink = `http://${process.env.URL}/cambiarPassword?token=${token}`;
+    const resetPasswordLink = `http://${process.env.URL}/cambiar?token=${token}`;
  
     // Configurar el transporte de correo electrónico
     const transporter = nodemailer.createTransport({
