@@ -51,7 +51,7 @@ const listarCategoriaPorId = async (text_id) => {
   })
 
   if (categoria == null) {
-    return false
+    return null
   }
   
   const categoriaFormato = {
