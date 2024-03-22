@@ -53,6 +53,8 @@ const articuloFormato = {
     categoria: categoriaFormato
   };
 
+console.log(articuloFormato)
+
 return articuloFormato;
 };
 

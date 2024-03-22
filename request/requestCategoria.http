@@ -7,19 +7,18 @@ POST {{api}}/categoria/crear
 Content-Type: application/json
 
 {
-  "text_id":"Dispositivos",
-  "nombre": "Dispositivos",
-  "color":"Rojo"
+  "nombre": "Botella de vino",
+  "color":"Morado"
 }
 ###
-GET {{api}}/categoria/listar/Sofas
+GET {{api}}/categoria/listar/botella_de_vino
 ###
-PUT {{api}}/categoria/actualizar/Sofas
+PUT {{api}}/categoria/actualizar/tratamiento
 Content-Type: application/json
 
 {
-  "nombre": "Sofas",
+  "nombre": "Jabón líquido",
   "color":"Marrón"
 }
 ###
-DELETE {{api}}/categoria/eliminar/Botellas
+DELETE {{api}}/categoria/eliminar/jabn_lquido

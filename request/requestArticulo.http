@@ -7,7 +7,7 @@ POST {{api}}/articulo/crear
 Content-Type: application/json
 
 {
-  "nombre": "Mouse",
+  "nombre": "monitor",
   "tipo_venta":"Peso",
   "precio": 12.50,
   "coste": 60.99,
@@ -22,7 +22,7 @@ PUT {{api}}/articulo/actualizar/Teclado
 Content-Type: application/json
 
 {
-  "nombre": "PC",
+  "nombre": "audifonos",
   "tipo_venta":"Unidad",
   "precio": 12.50,
   "coste": 60.99,
@@ -31,4 +31,4 @@ Content-Type: application/json
   "nombre_categoria": "Dispositivos"
 }
 ###
-DELETE {{api}}/articulo/eliminar/2
+DELETE {{api}}/articulo/eliminar/PC gamer
