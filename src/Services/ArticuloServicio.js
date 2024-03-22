@@ -6,17 +6,18 @@ const prisma = new PrismaClient();
 //Crear un nuevo artículo
 export const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representacion, nombre_categoria, categoriaNueva) => {
   
-  let NombreCategoria;
+  let text_id = stringTransform(nombre)
 
   /*if (categoriaNueva) {
     // Crear una nueva categoría desde artículo
     const nuevaCategoria = await CategoriaServicio.crearCategoria(nombre_categoria, color_categoria);
     NombreCategoria = nuevaCategoria.nombre;
   } */
+
   //Se crea el nuevo artículo
   const articulo = await prisma.articulo.create({
     data: {
-      text_id: nombre,
+      text_id: text_id,
       nombre: nombre,
       tipo_venta: tipo_venta,          
       precio: precio,
@@ -39,11 +40,13 @@ export const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, repr
   });
   
 const categoriaFormato = {
+  text_id: text_id,
   nombre: categoria.nombre,
   color: categoria.color
 }
 
 const articuloFormato = {
+    text_id: text_id,
     nombre: articulo.nombre,
     tipo_venta: articulo.tipo_venta,
     precio: articulo.precio,
@@ -241,6 +244,11 @@ const categoria = prisma.categoria.findUnique({
 })
 return categoria
 }
+
+function stringTransform (nombre) {
+  nombre = nombre.toLowerCase().replace(/\s+/g, "_").replace(/[^\w\s]/g, "")
+  return nombre
+} 
 
 
   module.exports = { 
