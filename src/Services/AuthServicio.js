@@ -125,66 +125,76 @@ export const enviarCorreoCambioPass = async (email) => {
 
 };
 
-// Función para cambiar la contraseña del usuario a través de un enlace con token
+// Cambiar la contraseña del usuario a través de un enlace con token
 export const cambiarPassword = async (token, password) => {
-    // Verificar si el token está vacío
-    if (!token) {
+  // Verificar si el token está vacío
+  if (!token) {
       throw new Error("Falta el token");
-    }
+  }
 
-    // Descodificar el token
-    const decodedToken = jwt.verify(
+  // Descodificar el token
+  const decodedToken = jwt.verify(
       token,
       "secreto_del_token_para_cambio_password"
-    );
-
-    // Buscar al usuario en la base de datos
-    const usuario = await prisma.usuario.findUnique({
+  );
+    //Verificacion de token
+  const resetToken = await prisma.resetToken.findFirst({
       where: {
-        email: decodedToken.email,
+          token: token,
+          expiracion: {
+              gt: new Date(),
+          },
       },
-    });
+  });
 
-    // Verificar si el usuario existe
-    if(!usuario){
-      throw new Error("Correo no encontrado");
-    }
-
-    // Encriptar la nueva contraseña
-    const hashedNewPassword = await bcrypt.hash(password, 10);
-
-    // Actualizar la contraseña del usuario en la base de datos
-    const actualizarPass = await prisma.usuario.update({
+  if (!resetToken) {
+      throw new Error("El token no es válido o ha expirado");
+  }
+  //Busqueda del usuario
+  const usuario = await prisma.usuario.findUnique({
       where: {
-        email: decodedToken.email,
+          id: resetToken.usuario_id,
+      },
+  });
+
+  if (!usuario) {
+      throw new Error("Usuario no encontrado");
+  }
+
+  // Encriptar la nueva contraseña
+  const hashedNewPassword = await bcrypt.hash(password, 10);
+
+  // Actualizar la contraseña del usuario en la base de datos
+  await prisma.usuario.update({
+      where: {
+          id: resetToken.usuario_id,
       },
       data: {
-        password: hashedNewPassword,
+          password: hashedNewPassword,
       },
-    });
-    
-    await prisma.resetToken.deleteMany({
-      where: {
-        usuario_id: decodedToken.id,
-        token: token,
-      },
-    });
-    
+  });
 
-     // Verificar si el usuario tiene una sesión activa
-     const activeSessions = await prisma.sesion.findMany({
+  // Eliminar el token usado de la base de datos después de cambiar la contraseña
+  await prisma.resetToken.deleteMany({
       where: {
-        usuario_id: usuario.id,
-       expiracion: {
-          gt: new Date(),
-        },
+          usuario_id: resetToken.usuario_id,
       },
-    });
+  });
 
-    // Si el usuario tiene una sesión activa, cerrarla
-    if (activeSessions.length > 0) {
+  // Verificar si el usuario tiene una sesión activa
+  const activeSessions = await prisma.sesion.findMany({
+      where: {
+          usuario_id: usuario.id,
+          expiracion: {
+              gt: new Date(),
+          },
+      },
+  });
+
+  // Si el usuario tiene una sesión activa, cerrarla
+  if (activeSessions.length > 0) {
       await logout(activeSessions[0].token);
-    }
+  }
 };
 
 // Función para eliminar tokens de sesión expirados y tokens de cambio de contraseña expirados de la base de datos
