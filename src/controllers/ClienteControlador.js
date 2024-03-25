@@ -1,8 +1,18 @@
 import * as ClienteServicio from "../Services/ClienteServicio"
+import { obtenerListaPaises } from "../helpers/helperPais";
+export const listaPaises = async (req, res) => {
+  try {
+    // Obtiene la lista de todos los países
+    const listaPaises = obtenerListaPaises();
+    res.json(listaPaises);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 export const crearCliente = async (req, res)=>{
     try {
-        const {nombre,email,telefono,direccion, ciudad, region, pais}=req.body
-        const newCliente=await ClienteServicio.crearCliente(nombre,email,telefono,direccion, ciudad, region, pais) ;
+        const {nombre,email,telefono,direccion, ciudad, region, codigo_postal, pais}=req.body
+        const newCliente=await ClienteServicio.crearCliente(nombre,email,telefono,direccion, ciudad, region, codigo_postal, pais) ;
         res.json(newCliente);
       } catch (error) {
         console.error(error);

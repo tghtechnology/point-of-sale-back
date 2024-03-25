@@ -1,0 +1,19 @@
+@api=http://localhost:3000/cliente
+GET {{api}}
+###
+
+###
+POST {{api}}
+Content-Type: application/json
+
+{
+  "nombre": "Luis",
+  "email": "estefanyt3101@gmail.com",
+  "telefono": "921448207",
+  "direccion": "Calle Las Pasionarias",
+  "ciudad": "Lima",
+  "region": "Lima",
+  "codigo_postal":"15313",
+  "pais": "Perú"
+  
+}

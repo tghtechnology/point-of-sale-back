@@ -1,8 +1,9 @@
-import { crearCliente,listarClienteById,listarClientes,editarCliente,eliminarCliente } from "../controllers/ClienteControlador";
+import { crearCliente,listarClienteById,listarClientes,editarCliente,eliminarCliente,listaPaises } from "../controllers/ClienteControlador";
 import { Router } from "express";
 
 const routerCliente = Router();
 
+routerCliente.get('/listaPaises',listaPaises)
 //RUTAS DE CLIENTES
 routerCliente.post('/cliente',crearCliente);
 routerCliente.get('/cliente',listarClientes);
