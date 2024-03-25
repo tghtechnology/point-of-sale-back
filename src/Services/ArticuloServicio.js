@@ -6,17 +6,18 @@ const prisma = new PrismaClient();
 //Crear un nuevo artículo
 export const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, representacion, nombre_categoria, categoriaNueva) => {
   
-  let NombreCategoria;
+  let text_id = stringTransform(nombre)
 
-  if (categoriaNueva) {
+  /*if (categoriaNueva) {
     // Crear una nueva categoría desde artículo
     const nuevaCategoria = await CategoriaServicio.crearCategoria(nombre_categoria, color_categoria);
     NombreCategoria = nuevaCategoria.nombre;
-  } 
+  } */
+
   //Se crea el nuevo artículo
   const articulo = await prisma.articulo.create({
     data: {
-      text_id: nombre,
+      text_id: text_id,
       nombre: nombre,
       tipo_venta: tipo_venta,          
       precio: precio,
@@ -33,17 +34,20 @@ export const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, repr
       text_id: nombre_categoria 
     },
     select: {
+      text_id: text_id,
       nombre: true,
       color: true
     }
   });
   
 const categoriaFormato = {
+  text_id: text_id,
   nombre: categoria.nombre,
   color: categoria.color
 }
 
 const articuloFormato = {
+    text_id: text_id,
     nombre: articulo.nombre,
     tipo_venta: articulo.tipo_venta,
     precio: articulo.precio,
@@ -52,6 +56,8 @@ const articuloFormato = {
     representacion: articulo.representacion,
     categoria: categoriaFormato
   };
+
+console.log(articuloFormato)
 
 return articuloFormato;
 };
@@ -73,13 +79,13 @@ const listarArticulos = async ()=>{
 
         const categoria = articulo.categoria
         const categoriaFormateada = {
-          id: categoria.id,
+          text_id: categoria.text_id,
           nombre: categoria.nombre,
           color: categoria.color
         } 
 
         return {
-        id: articulo.id,
+        text_id: articulo.text_id,
         nombre: articulo.nombre,
         tipo_venta: articulo.tipo_venta,
         precio: articulo.precio,
@@ -120,12 +126,14 @@ const listarArticuloPorId = async (text_id) => {
 
     const categoria = articulo.categoria
     const categoriaFormateada = {
+      text_id: text_id,
       nombre: categoria.nombre,
       color: categoria.color
     } 
 
   //Formato del JSON de la respuesta
   const articuloFormato = {
+      text_id: text_id,
       nombre: articulo.nombre,
       tipo_venta: articulo.tipo_venta,
       precio: articulo.precio,
@@ -140,17 +148,6 @@ const listarArticuloPorId = async (text_id) => {
 
 //Modificar un artículo 
 const modificarArticulo = async (text_id, nombre, tipo_venta, precio, coste, ref, representacion, nombre_categoria, color_categoria, categoriaNueva) => {
-
-    let NombreCategoria;
-
-    //Llama a la función de crearCategoria desde el formulario de Articulo
-    if (categoriaNueva) {
-      const nuevaCategoria = await CategoriaServicio.crearCategoria(nombre_categoria, color_categoria);
-      NombreCategoria = nuevaCategoria.nombre;
-    } else {
-      // Si la categoría ya existe
-      NombreCategoria = nombre_categoria;
-    }
 
     const articuloExistente = await prisma.articulo.findUnique({
       where: {
@@ -170,7 +167,7 @@ const modificarArticulo = async (text_id, nombre, tipo_venta, precio, coste, ref
         estado: true
       },
       data: {
-        text_id: nombre,
+        text_id: text_id = stringTransform(nombre),
         nombre: nombre,
         tipo_venta: tipo_venta,          
         precio: precio,
@@ -188,18 +185,20 @@ const modificarArticulo = async (text_id, nombre, tipo_venta, precio, coste, ref
       text_id: nombre_categoria 
     },
     select: {
+      text_id: text_id,
       nombre: true,
       color: true
     }
   });
   
 const categoriaFormato = {
+  text_id: text_id,
   nombre: categoria.nombre,
   color: categoria.color
 }
   
   const articuloModificadoFormato = {
-      id: nuevoArticulo.id,
+      text_id: nuevoArticulo.text_id,
       nombre: nuevoArticulo.nombre,
       tipo_venta: nuevoArticulo.tipo_venta,
       precio: nuevoArticulo.precio,
@@ -239,6 +238,11 @@ const categoria = prisma.categoria.findUnique({
 })
 return categoria
 }
+
+function stringTransform (nombre) {
+  nombre = nombre.toLowerCase().replace(/\s+/g, "_").replace(/[^\w\s]/g, "")
+  return nombre
+} 
 
 
   module.exports = { 
