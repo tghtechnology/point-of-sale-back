@@ -24,6 +24,7 @@ const crearCliente = async (nombre, email, telefono, direccion, ciudad, region, 
     })
     return newCliente
 }; 
+
 //Listar clientes
 const listarClientes= async()=>{
     const connection = await connect();
@@ -34,6 +35,7 @@ const listarClientes= async()=>{
       })
       return clientes;
 }
+
 //Listar por id
 const obtenerClienteById=async (id) => {
     const connection = await connect();
@@ -44,4 +46,54 @@ const obtenerClienteById=async (id) => {
       })
       return cliente;
 }
-//
+
+//Editar cliente
+const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, region, codigo_postal, pais) => {
+    if (!validarNombrePais(pais)) {
+      throw new Error("País inválido");
+    }
+    const connection = await connect();
+    const cliente=await prisma.descuento.update({
+      where: {
+        id: Number(id)
+      },
+      data:{
+            nombre: nombre,
+            email: email,
+            telefono: telefono,
+            direccion: direccion,
+            ciudad: ciudad,
+            region: region,
+            codigo_postal: codigo_postal,
+            pais: pais,
+            estado:true
+      }
+    })
+    const updatedCliente={
+        nombre:cliente.nombre,
+        email:cliente.email,
+        telefono:cliente.telefono,
+        direccion:cliente.direccion,
+        ciudad:cliente.ciudad,
+        region:cliente.region,
+        codigo_postal:cliente.codigo_postal,
+        pais:cliente.pais,
+        estado:cliente.estado
+    }
+    return updatedCliente
+};
+
+//Eliminar cliente
+const eliminarCliente = async (id) => {
+    const connection = await connect();
+    const cliente=await prisma.descuento.update({
+      where: {
+        id: Number(id)
+      },
+      data:{
+            estado: false
+      }
+    })
+    return cliente
+};
+
