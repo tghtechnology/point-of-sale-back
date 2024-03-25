@@ -107,3 +107,17 @@ model Sesion {
   @@map("sesion") 
 }
 
+model Cliente {
+  id Int @id @default(autoincrement())
+  nombre String @db.VarChar(255)
+  email String @db.VarChar(255) @unique
+  telefono String @db.VarChar(255)
+  direccion String @db.VarChar(255)
+  ciudad String @db.VarChar(255)
+  region String @db.VarChar(255)
+  codigo_postal String @db.VarChar(255)
+  pais String @db.VarChar(255)
+  estado Boolean
+
+  @@map("cliente")
+}

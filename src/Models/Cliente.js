@@ -1,8 +1,8 @@
 class Cliente{
-    constructor(id, nombre, correo, telefono, direccion, ciudad, region, codigo_postal, pais, estado){
+    constructor(id, nombre, email, telefono, direccion, ciudad, region, codigo_postal, pais, estado){
         this.id = id
         this.nombre = nombre
-        this.correo = correo
+        this.email = email
         this.telefono = telefono
         this.direccion = direccion
         this.ciudad = ciudad
