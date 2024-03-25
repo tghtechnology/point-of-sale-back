@@ -84,7 +84,7 @@ const modificarCategoria = async (text_id, nombre, color) => {
   })
 
   const categoriaFormato = {
-    text_id: text_id,
+    text_id: categoria.text_id,
     nombre: categoria.nombre,
     color: categoria.color
 };
