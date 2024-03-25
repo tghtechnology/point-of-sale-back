@@ -94,7 +94,6 @@ const eliminarCliente = async (id) => {
             estado: false
       }
     })
-    return cliente
 };
 module.exports={
     crearCliente,
