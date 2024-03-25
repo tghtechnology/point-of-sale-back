@@ -79,7 +79,7 @@ const modificarCategoria = async (text_id, nombre, color) => {
     data: { 
       nombre: nombre,
       color: color,
-      text_id: text_id = stringTransform(nombre)
+      text_id: stringTransform(nombre)
     }
   })
 

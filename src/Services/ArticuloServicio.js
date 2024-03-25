@@ -192,7 +192,7 @@ const categoriaFormato = {
 }
   
   const articuloModificadoFormato = {
-      text_id: categoria.text_id,
+      text_id: nuevoArticulo.text_id,
       nombre: nuevoArticulo.nombre,
       tipo_venta: nuevoArticulo.tipo_venta,
       precio: nuevoArticulo.precio,
