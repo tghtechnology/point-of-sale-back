@@ -8,12 +8,6 @@ export const crearArticulo = async (nombre, tipo_venta, precio, coste, ref, repr
   
   let text_id = stringTransform(nombre)
 
-  /*if (categoriaNueva) {
-    // Crear una nueva categoría desde artículo
-    const nuevaCategoria = await CategoriaServicio.crearCategoria(nombre_categoria, color_categoria);
-    NombreCategoria = nuevaCategoria.nombre;
-  } */
-
   //Se crea el nuevo artículo
   const articulo = await prisma.articulo.create({
     data: {
