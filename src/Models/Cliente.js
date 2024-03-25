@@ -1,4 +1,4 @@
-class CLiente{
+class Cliente{
     constructor(id, nombre, correo, telefono, direccion, ciudad, region, codigo_postal, pais, estado){
         this.id = id
         this.nombre = nombre
@@ -12,4 +12,4 @@ class CLiente{
         this.estado = estado
     }
 }
-export default CLiente
+export default Cliente
