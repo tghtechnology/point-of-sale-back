@@ -66,8 +66,7 @@ export const enviarTokenCambioPassword = async (req, res) => {
 }
 
 export const cambiarPassword = async (req, res) => {
-  const token=req.params.token;
-  const {password } = req.body;
+  const {token, password } = req.body;
   try {
     const message = await AuthService.cambiarPassword(token, password);
     return res.json({ message:"Contraseña actualizada" });
