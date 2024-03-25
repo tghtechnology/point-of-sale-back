@@ -28,10 +28,10 @@ export const listarClientes = async (req, res) => {
         res.status(500).json({ mensaje: 'Error al obtener la lista de clientes.' });
       }
 }
-export const listarClienteById= async (req, res)=>{
+export const obtenerClienteById= async (req, res)=>{
     try {
         const id = req.params.id;
-        const cliente=await ClienteServicio.listarClienteById(text_id);
+        const cliente=await ClienteServicio.obtenerClienteById(id);
         res.status(200).json(cliente);
       } catch (error) {
         console.error(error);
@@ -41,8 +41,8 @@ export const listarClienteById= async (req, res)=>{
 export const editarCliente=async (req,res) => {
     try {
         const id = req.params.id;
-        const {nombre,email,telefono,direccion, ciudad, region, pais}=req.body
-        const cliente=await ClienteServicio.editarCliente(id,nombre,email,telefono,direccion, ciudad, region, pais);
+        const {nombre,email,telefono,direccion, ciudad, region,codigo_postal, pais}=req.body
+        const cliente=await ClienteServicio.editarCliente(id,nombre,email,telefono,direccion, ciudad, region,codigo_postal, pais);
         res.status(200).json(cliente);
       } catch (error) {
         console.error(error);
