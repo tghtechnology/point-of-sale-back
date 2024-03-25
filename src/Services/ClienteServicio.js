@@ -96,4 +96,10 @@ const eliminarCliente = async (id) => {
     })
     return cliente
 };
-
+module.exports={
+    crearCliente,
+    listarClientes,
+    obtenerClienteById,
+    editarCliente,
+    eliminarCliente
+}
