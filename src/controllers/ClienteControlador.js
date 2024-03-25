@@ -59,3 +59,12 @@ export const eliminarCliente=async(req,res)=>{
         res.status(500).json({ mensaje: 'Error al eliminar el cliente.' });
       }
 }
+export const clientesEliminados=async (req,res)=>{
+  try {
+    const clientesEliminados=await ClienteServicio.clientesEliminados();
+    res.status(200).json(clientesEliminados);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al obtener la lista de clientes eliminados.' });
+  }
+}
