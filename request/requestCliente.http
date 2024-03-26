@@ -8,7 +8,7 @@ Content-Type: application/json
 
 {
   "nombre": "Luis",
-  "email": "estefanyt3101@gmail.com",
+  "email": "luis23@gmail.com",
   "telefono": "921448207",
   "direccion": "Calle Las Pasionarias",
   "ciudad": "Lima",
