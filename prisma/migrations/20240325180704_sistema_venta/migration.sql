@@ -27,11 +27,10 @@ CREATE TABLE `empleado` (
     `nombre` VARCHAR(255) NOT NULL,
     `correo` VARCHAR(255) NOT NULL,
     `telefono` VARCHAR(255) NOT NULL,
-    `pin` VARCHAR(255) NOT NULL,
+    `cargo` VARCHAR(255) NOT NULL,
     `estado` BOOLEAN NOT NULL,
 
     UNIQUE INDEX `empleado_correo_key`(`correo`),
-    UNIQUE INDEX `empleado_pin_key`(`pin`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

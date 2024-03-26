@@ -6,11 +6,11 @@ paises.registerLocale(require("i18n-iso-countries/langs/es.json"));
 
 // Función para validar si un nombre de país es válido
 export const validarNombrePais = (pais) => {
-  const listaPaises = paises.getNames('es');
+  const listaPaises = paises.getNames("es");
   return Object.values(listaPaises).includes(pais);
 };
 
 // Función para obtener la lista de nombres de todos los países disponibles
 export const obtenerListaPaises = () => {
-  return Object.values(paises.getNames('es', { select: "official" }));
+  return Object.values(paises.getNames("es", { select: "official" }));
 };

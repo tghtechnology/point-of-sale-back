@@ -223,8 +223,4 @@ export const eliminarTokensExpirados = async () => {
     ) {
       console.log("Tokens expirados eliminados correctamente.");
     }
-  
 };
-
-
-

@@ -44,7 +44,7 @@ model Empleado {
   nombre String @db.VarChar(255)
   correo String @db.VarChar(255) @unique
   telefono String @db.VarChar(255)
-  pin String @db.VarChar(255) @unique
+  cargo String @db.VarChar(255)
   estado Boolean
 
   @@map("empleado")
