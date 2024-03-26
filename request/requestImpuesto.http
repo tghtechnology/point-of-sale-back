@@ -1,0 +1,26 @@
+@api=http://localhost:3000
+
+
+GET {{api}}/impuesto/listar
+###
+POST {{api}}/impuesto/crear
+Content-Type: application/json
+
+{
+  "nombre": "igv",
+  "tasa": 18,
+  "tipo_impuesto": "Incluido_en_el_precio"
+}
+###
+GET {{api}}/impuesto/listar/2
+###
+PUT {{api}}/impuesto/actualizar/2
+Content-Type: application/json
+
+{
+  "nombre": "igvvvvv",
+  "tasa": 18,
+  "tipo_impuesto": "Incluido_en_el_precio"
+}
+###
+DELETE {{api}}/impuesto/eliminar/15
