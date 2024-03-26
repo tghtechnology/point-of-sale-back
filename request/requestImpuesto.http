@@ -7,20 +7,20 @@ POST {{api}}/impuesto/crear
 Content-Type: application/json
 
 {
-  "nombre": "igv",
-  "tasa": 18,
+  "nombre": "dksamd",
+  "tasa": "osfmks",
   "tipo_impuesto": "Incluido_en_el_precio"
 }
 ###
-GET {{api}}/impuesto/listar/2
+GET {{api}}/impuesto/listar/16
 ###
-PUT {{api}}/impuesto/actualizar/2
+PUT {{api}}/impuesto/actualizar/16
 Content-Type: application/json
 
 {
-  "nombre": "igvvvvv",
-  "tasa": 18,
-  "tipo_impuesto": "Incluido_en_el_precio"
+  "nombre": "nombre",
+  "tasa": 50,
+  "tipo_impuesto": "Incluido_en_el_preckk"
 }
 ###
-DELETE {{api}}/impuesto/eliminar/15
+DELETE {{api}}/impuesto/eliminar/51

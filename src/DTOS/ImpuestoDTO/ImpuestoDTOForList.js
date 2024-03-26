@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-
 const prisma = new PrismaClient();
 
+//Lógica para listar impuestos
 export const toList = async () => {
     const impuestos = await prisma.impuesto.findMany({
         where: {
@@ -17,6 +17,7 @@ export const toList = async () => {
     return impuestos
 }
 
+//Lógica para listar un impuesto
 export const toListById = async (id) => {
     const impuesto = await prisma.impuesto.findUnique({
         where: {
