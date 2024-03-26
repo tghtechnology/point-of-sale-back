@@ -57,7 +57,7 @@ export const login = async (email, password) => {
 
 //Lógica para cerrar sesión
 export const logout = async (token) => {
-  //Decodificación de token
+  
     const decodedToken = jwt.verify(token, "secreto_del_token"); 
     // Conexión a la base de datos
     const connection = await connect(); 
