@@ -41,25 +41,14 @@ export const login = async (req, res) => {
   }
 };
 
-export const logout = async (req, res) => {
+export const logout = async (req, res) => {  
   try {
-    if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
-      return res.status(401).json({ mensaje: "Token de autorización no válido" });
-    }
-    const token = req.headers.authorization.split(' ')[1];
-    const decodedToken = jwt.verify(token, "secreto_del_token");
-    
-    await prisma.sesion.deleteMany({
-      where: {
-        usuario_id: decodedToken.id,
-        token: token
-      }
-    });
-
-    res.status(200).json({ mensaje: "Sesión cerrada exitosamente" });
+    const token = req.headers.authorization.split(" ")[1];
+    await AuthService.logout(token);
+    return res.json({ message: "Sesión cerrada exitosamente" });
   } catch (error) {
-    console.error('Error al cerrar sesión:', error);
-    return res.status(500).json({ mensaje: 'Error interno del servidor' });
+    console.error("Error al cerrar sesión:", error.message);
+    return res.status(500).json({ error: "Error del servidor" });
   }
 };
 

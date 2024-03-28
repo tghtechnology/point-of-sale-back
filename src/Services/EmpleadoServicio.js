@@ -46,13 +46,6 @@ export const listarEmpleadoPorId = async (id) => {
   });
 };
 
-/*export const actualizarEmpleadoPorId = async (id, nuevosDatos) => {
-  return await prisma.empleado.update({
-    where: { id: parseInt(id, 10) },
-    data: nuevosDatos,
-  });
-};*/
-
 export const eliminarEmpleadoPorId = async (id) => {
   return await prisma.empleado.update({
     where: { id: parseInt(id, 10) },

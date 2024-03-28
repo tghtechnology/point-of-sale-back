@@ -53,21 +53,6 @@ export const listarEmpleadoPorId = async (req, res) => {
   }
 };
 
-/*export const actualizarEmpleadoPorId = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const nuevosDatos = req.body;
-    const empleadoActualizado = await EmpleadoServicio.actualizarEmpleadoPorId(
-      id,
-      nuevosDatos
-    );
-    res.json(empleadoActualizado);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: "Error al actualizar el empleado" });
-  }
-};*/
-
 export const eliminarEmpleadoPorId = async (req, res) => {
   try {
     const { id } = req.params;
