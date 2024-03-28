@@ -95,21 +95,11 @@ const eliminarCliente = async (id) => {
       }
     })
 };
-//Lista de clientes eliminados
-const clientesEliminados=async()=>{
-  const connection = await connect();
-  const clientes= await prisma.cliente.findMany({
-      where: {
-        estado: false
-      }
-    })
-    return clientes;
-}
+
 module.exports={
     crearCliente,
     listarClientes,
     obtenerClienteById,
     editarCliente,
-    eliminarCliente,
-    clientesEliminados
+    eliminarCliente
 }
