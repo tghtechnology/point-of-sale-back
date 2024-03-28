@@ -15,23 +15,30 @@ export const crearEmpleado = async (nombre, correo, telefono, cargo) => {
   return empleado;
 };
 
-export const editarEmpleado = async (id, nuevosDatos) => {
-  const idAsNumber = parseInt(id, 10);
-  const { estado: originalEstado, ...updatedDataWithoutEstado } = nuevosDatos;
-
-  const updatedEmpleado = await prisma.empleado.update({
-    where: { id: idAsNumber },
-    data: updatedDataWithoutEstado,
-  });
-
-  return updatedEmpleado;
-};
-
-export const listarEmpleados = async () => {
-  return await prisma.empleado.findMany({
-    where: { estado: true },
-  });
-};
+export const editarEmpleado = async (id, nombre,correo,telefono,cargo) => {
+    // Actualizar empleado en la base de datos
+    const empleado = await prisma.empleado.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        nombre: nombre,
+        correo: correo,
+        telefono: telefono,
+        cargo: cargo,
+        estado: true,
+      },
+    });
+    const updatedEmpleado = {
+      nombre: empleado.nombre,
+      correo: empleado.correo,
+      telefono: empleado.telefono,
+      cargo: empleado.cargo,
+      estado: empleado.estado,
+    };
+  
+    return updatedEmpleado;
+  };
 
 export const listarEmpleadoPorId = async (id) => {
   return await prisma.empleado.findUnique({
@@ -39,12 +46,12 @@ export const listarEmpleadoPorId = async (id) => {
   });
 };
 
-export const actualizarEmpleadoPorId = async (id, nuevosDatos) => {
+/*export const actualizarEmpleadoPorId = async (id, nuevosDatos) => {
   return await prisma.empleado.update({
     where: { id: parseInt(id, 10) },
     data: nuevosDatos,
   });
-};
+};*/
 
 export const eliminarEmpleadoPorId = async (id) => {
   return await prisma.empleado.update({
@@ -53,6 +60,11 @@ export const eliminarEmpleadoPorId = async (id) => {
   });
 };
 
+export const listarEmpleados=async()=>{
+  await prisma.empleado.findMany({
+    where: { estado: true },
+  })
+}
 module.exports = {
   crearEmpleado,
   editarEmpleado,

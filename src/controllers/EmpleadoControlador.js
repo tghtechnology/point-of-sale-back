@@ -19,11 +19,8 @@ export const crearEmpleado = async (req, res) => {
 export const editarEmpleado = async (req, res) => {
   try {
     const { id } = req.params;
-    const nuevosDatos = req.body;
-    const empleadoActualizado = await EmpleadoServicio.editarEmpleado(
-      id,
-      nuevosDatos
-    );
+    const {nombre, correo, telefono, cargo} = req.body;
+    const empleadoActualizado = await EmpleadoServicio.editarEmpleado(id,nombre, correo, telefono, cargo);
     res.json(empleadoActualizado);
   } catch (error) {
     console.error(error);
@@ -56,7 +53,7 @@ export const listarEmpleadoPorId = async (req, res) => {
   }
 };
 
-export const actualizarEmpleadoPorId = async (req, res) => {
+/*export const actualizarEmpleadoPorId = async (req, res) => {
   try {
     const { id } = req.params;
     const nuevosDatos = req.body;
@@ -69,7 +66,7 @@ export const actualizarEmpleadoPorId = async (req, res) => {
     console.error(error);
     res.status(500).json({ mensaje: "Error al actualizar el empleado" });
   }
-};
+};*/
 
 export const eliminarEmpleadoPorId = async (req, res) => {
   try {
