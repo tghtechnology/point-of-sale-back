@@ -59,20 +59,19 @@ export const login = async (email, password) => {
         token: result.token
     };
 };
-
-// Lógica para cerrar sesión
-export const logout = async (token) => {
-    const decodedToken = jwt.verify(token, "secreto_del_token"); 
-    // Conexión a la base de datos
-    const connection = await connect(); 
-    // Eliminación del token de sesión del usuario
-    await prisma.sesion.deleteMany({
-      where: {
-        usuario_id: decodedToken.id,
-        token: token,
-      },
-    });
-};
+  export const logout = async (token) => {
+    //Decodificación de token
+      const decodedToken = jwt.verify(token, "secreto_del_token"); 
+      // Conexión a la base de datos
+      const connection = await connect(); 
+      // Eliminación del token de sesión del usuario
+      await prisma.sesion.deleteMany({
+        where: {
+          usuario_id: decodedToken.id,
+          token: token,
+        },
+      });
+  };
 // Función para enviar un correo electrónico al usuario con un enlace para cambiar la contraseña
 export const enviarCorreoCambioPass = async (email) => {
     const usuario = await prisma.usuario.findUnique({

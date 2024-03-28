@@ -44,7 +44,7 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {  
   try {
     const token = req.headers.authorization.split(" ")[1];
-    await AuthService.logout(token);
+    await AuthServicio.logout(token);
     return res.json({ message: "Sesión cerrada exitosamente" });
   } catch (error) {
     console.error("Error al cerrar sesión:", error.message);
