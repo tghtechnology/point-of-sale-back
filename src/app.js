@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import routerUsuario from "./Routes/UsuarioRouter";
+import routerEmpleado from "./Routes/EmpleadoRouter";
 import routerAuth from "./Routes/AuthRouter";
 import routerDescuento from "./Routes/DescuentoRouter";
 import routerArticulo from "./Routes/ArticuloRoute";
@@ -19,6 +20,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 app.use(routerUsuario);
+app.use(routerEmpleado);
 app.use(routerDescuento);
 app.use(routerArticulo);
 app.use(routerCategoria);

@@ -7,18 +7,18 @@ POST {{api}}/categoria/crear
 Content-Type: application/json
 
 {
-  "nombre": "Botella de gaseosa Coca Cola",
-  "color":"Negro"
+  "nombre": "Almohadas",
+  "color":"Celeste"
 }
 ###
-GET {{api}}/categoria/listar/botella_de_vino
+GET {{api}}/categoria/listar/botellas_de_plstico
 ###
-PUT {{api}}/categoria/actualizar/tratamiento
+PUT {{api}}/categoria/actualizar/laptop_acer
 Content-Type: application/json
 
 {
-  "nombre": "Jabón líquido",
-  "color":"Marrón"
+  "nombre": "Laptop Toshiba",
+  "color":"Azul"
 }
 ###
-DELETE {{api}}/categoria/eliminar/jabn_lquido
+DELETE {{api}}/categoria/eliminar/Caramelos
