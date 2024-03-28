@@ -61,15 +61,15 @@ export const eliminarEmpleadoPorId = async (id) => {
 };
 
 export const listarEmpleados=async()=>{
-  await prisma.empleado.findMany({
+  const empleados=await prisma.empleado.findMany({
     where: { estado: true },
   })
+  return empleados
 }
 module.exports = {
   crearEmpleado,
   editarEmpleado,
   listarEmpleados,
   listarEmpleadoPorId,
-  actualizarEmpleadoPorId,
   eliminarEmpleadoPorId,
 };
