@@ -124,6 +124,6 @@ export const eliminarPermanentemente = async (req, res) => {
     } 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ mensaje: 'Error al eliminar la cuenta permanentemente' });
+    res.status(500).json({ mensaje: 'Error al eliminar la cuenta permanentemente'});
   }
 };

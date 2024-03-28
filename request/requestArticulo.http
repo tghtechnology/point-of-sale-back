@@ -7,28 +7,28 @@ POST {{api}}/articulo/crear
 Content-Type: application/json
 
 {
-  "nombre": "Audifonos",
+  "nombre": "Almohada de Tela",
   "tipo_venta":"Peso",
-  "precio": 12.50,
+  "precio": 19.99,
   "coste": 60.99,
   "ref": "10056",
   "representacion": "imagen",
-  "nombre_categoria": "Dispositivos"
+  "nombre_categoria": ""
 }
 ###
-GET {{api}}/articulo/listar/Audifonos
+GET {{api}}/articulo/listar/almohada_de_lineas
 ###
-PUT {{api}}/articulo/actualizar/Teclado
+PUT {{api}}/articulo/actualizar/almohada_de_corazones
 Content-Type: application/json
 
 {
-  "nombre": "PC",
-  "tipo_venta":"Unidad",
+  "nombre": "Almohada de Corazones",
+  "tipo_venta":"Peso",
   "precio": 12.50,
-  "coste": 60.99,
-  "ref": "64247",
+  "coste": 19.99,
+  "ref": "14834",
   "representacion": "imagen",
-  "nombre_categoria": "Dispositivos"
+  "nombre_categoria": "Portafolios"
 }
 ###
-DELETE {{api}}/articulo/eliminar/PC
+DELETE {{api}}/articulo/eliminar/Portafolio

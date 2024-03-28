@@ -1,0 +1,10 @@
+@api=http://localhost:3000/empleado
+PUT  {{api}}/1
+Content-Type: application/json
+
+{
+  "nombre": "Angelo Lopez",
+  "correo":"ang89@gmail.com",
+  "telefono": "987456321",
+  "cargo": "Gerente"
+}

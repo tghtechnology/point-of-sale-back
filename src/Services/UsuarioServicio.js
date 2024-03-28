@@ -228,9 +228,4 @@ module.exports= { crearUsuario,
                   restaurarCuenta,
                   eliminarCuentasVencidas,
                   eliminarPermanentemente
-                }
-
-
-
-
-
+}

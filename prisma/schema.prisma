@@ -39,12 +39,25 @@ enum tipoDescuento {
   MONTO
 }
 
+model Impuesto {
+  id Int @id @default(autoincrement())
+  nombre String @db.VarChar (255)
+  tasa Decimal @db.Decimal(10,2)
+  tipo_impuesto tipoImpuesto
+  estado Boolean 
+}
+
+enum tipoImpuesto {
+  Incluido_en_el_precio
+  Anadido_al_precio
+}
+
 model Empleado {
   id Int @id @default(autoincrement())
   nombre String @db.VarChar(255)
   correo String @db.VarChar(255) @unique
   telefono String @db.VarChar(255)
-  pin String @db.VarChar(255) @unique
+  cargo String @db.VarChar(255)
   estado Boolean
 
   @@map("empleado")
