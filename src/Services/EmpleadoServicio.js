@@ -1,110 +1,55 @@
 import { PrismaClient } from "@prisma/client";
-//Inicialización de prisma
 const prisma = new PrismaClient();
 
-// Create a new employee
-export const crearEmpleado = async (
-  nombre,
-  correo,
-  telefono,
-  estado,
-  cargo
-) => {
-  const newEmpleado = await prisma.empleado.create({
+export const crearEmpleado = async (nombre, correo, telefono, cargo) => {
+  
+  const empleado = await prisma.empleado.create({
     data: {
-      nombre: nombre,
-      correo: correo,
-      telefono: telefono,
-      estado: estado,
-      cargo: cargo,
+      nombre,
+      correo,
+      telefono,
+      cargo,
+      estado: true,
     },
   });
-  return newEmpleado;
+  return empleado;
 };
 
-// Update an employee
-export const editarEmpleado = async (
-  id,
-  nombre,
-  correo,
-  telefono,
-  estado,
-  cargo
-) => {
-  const empleado = await prisma.empleado.findUnique({
-    where: {
-      id: id,
-    },
+export const editarEmpleado = async (id, nuevosDatos) => {
+  const idAsNumber = parseInt(id, 10);
+  const { estado: originalEstado, ...updatedDataWithoutEstado } = nuevosDatos;
+
+  const updatedEmpleado = await prisma.empleado.update({
+    where: { id: idAsNumber },
+    data: updatedDataWithoutEstado,
   });
 
-  if (!empleado) {
-    return null;
-  }
-
-  return await prisma.empleado.update({
-    where: {
-      id: id,
-    },
-    data: {
-      nombre: nombre || empleado.nombre,
-      correo: correo || empleado.correo,
-      telefono: telefono || empleado.telefono,
-      estado: estado || empleado.estado,
-      cargo: cargo || empleado.cargo,
-    },
-  });
+  return updatedEmpleado;
 };
 
-// Get all employees
 export const listarEmpleados = async () => {
-  return await prisma.empleado.findMany();
+  return await prisma.empleado.findMany({
+    where: { estado: true },
+  });
 };
 
-// Get an employee by ID
 export const listarEmpleadoPorId = async (id) => {
   return await prisma.empleado.findUnique({
-    where: {
-      id: id,
-    },
+    where: { id: parseInt(id, 10) },
   });
 };
 
-// Update an employee by ID
 export const actualizarEmpleadoPorId = async (id, nuevosDatos) => {
-  const empleado = await prisma.empleado.findUnique({
-    where: {
-      id: id,
-    },
-  });
-
-  if (!empleado) {
-    return null;
-  }
-
   return await prisma.empleado.update({
-    where: {
-      id: id,
-    },
+    where: { id: parseInt(id, 10) },
     data: nuevosDatos,
   });
 };
 
-// Delete an employee by ID
 export const eliminarEmpleadoPorId = async (id) => {
-  const empleado = await prisma.empleado.findUnique({
-    where: {
-      id: id,
-    },
-  });
-
-  if (!empleado) {
-    return null;
-  }
-
-  return await prisma.empleado.delete({
-    where: {
-      id: id,
-    },
+  return await prisma.empleado.update({
+    where: { id: parseInt(id, 10) },
+    data: { estado: false },
   });
 };
 

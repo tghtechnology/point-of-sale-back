@@ -55,20 +55,32 @@ export const login = async (email, password) => {
     }
 };
 
-//Lógica para cerrar sesión
-export const logout = async (token) => {
-  //Decodificación de token
-    const decodedToken = jwt.verify(token, "secreto_del_token"); 
-    // Conexión a la base de datos
-    const connection = await connect(); 
-    // Eliminación del token de sesión del usuario
+// Lógica para cerrar sesión
+export const logout = async (req, res) => {
+  try {
+    // Extraer el token del encabezado de autorización
+    const token = req.headers.authorization.split(' ')[1];
+    
+    // Decodificar el token
+    const decodedToken = jwt.verify(token, "secreto_del_token");
+    
+    // Eliminar el token de sesión del usuario de la base de datos
     await prisma.sesion.deleteMany({
       where: {
         usuario_id: decodedToken.id,
         token: token,
       },
     });
+
+    // Enviar una respuesta exitosa
+    res.status(200).json({ mensaje: "Sesión cerrada exitosamente" });
+  } catch (error) {
+    // Manejar errores
+    console.error('Error al cerrar sesión:', error);
+    res.status(500).json({ mensaje: 'Error interno del servidor' });
+  }
 };
+
 
 // Función para enviar un correo electrónico al usuario con un enlace para cambiar la contraseña
 export const enviarCorreoCambioPass = async (email) => {

@@ -10,22 +10,12 @@ import { Router } from "express";
 
 const routerEmpleado = Router();
 
-//CREAR NUEVO EMPLEADO
-routerEmpleado.post("/empleado", crearEmpleado);
-
-//ACTUALIZAR EMPLEADO
-routerEmpleado.put("/:id", editarEmpleado);
-
-//OBTENER TODOS LOS EMPLEADOS
-routerEmpleado.get("/", listarEmpleados);
-
-//OBTENER EMPLEADO POR ID
-routerEmpleado.get("/:id", listarEmpleadoPorId);
-
-//ACTUALIZAR EMPLEADO POR ID
-routerEmpleado.put("/actualizar/:id", actualizarEmpleadoPorId);
-
-//ELIMINAR EMPLEADO POR ID
-routerEmpleado.delete("/:id", eliminarEmpleadoPorId);
+// Rutas para la gestión de empleados
+routerEmpleado.post("/crearEmpleado", crearEmpleado); // Crear un nuevo empleado
+routerEmpleado.put("/editarEmpleado/:id", editarEmpleado); // Editar un empleado
+routerEmpleado.get("/listarEmpleados", listarEmpleados); // Obtener la lista de empleados activos
+routerEmpleado.get("/listarEmpleado/:id", listarEmpleadoPorId); // Obtener un empleado por su ID
+routerEmpleado.patch("/actualizarEmpleado/:id", actualizarEmpleadoPorId); // Actualizar un empleado por su ID
+routerEmpleado.delete("/eliminarEmpleado/:id", eliminarEmpleadoPorId); // Eliminar un empleado por su ID
 
 export default routerEmpleado;
