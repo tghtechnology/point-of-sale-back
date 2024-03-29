@@ -1,122 +1,103 @@
 import * as ArticuloServicio from "../Services/ArticuloServicio";
-import * as CategoriaServicio from "../Services/CategoriaServicio";
 
-//Crear nuevo artículo
 export const crearArticulo = async (req, res) => {
   try {
-    const {
-      nombre,
-      tipo_venta,
-      precio,
-      coste,
-      ref,
-      representacion,
-      nombre_categoria,
-    } = req.body;
+    const { nombre, tipo_venta, precio, ref, representacion, id_categoria} = req.body;
+    const newArticulo = await ArticuloServicio.crearArticulo(nombre, tipo_venta, precio, ref, representacion, id_categoria);
+    res.status(201).json(newArticulo)
 
-    const categoria = await CategoriaServicio.listarCategoriaPorId(
-      nombre_categoria
-    );
-
-    console.log(categoria);
-    if (categoria === false) {
-      return res.status(400).json({ mensaje: "La categoría no existe" });
-    }
-    //Crear nueva categoría si se desea
-    const nuevoArticulo = await ArticuloServicio.crearArticulo(
-      nombre,
-      tipo_venta,
-      precio,
-      coste,
-      ref,
-      representacion,
-      nombre_categoria
-    );
-
-    res.status(201).json(nuevoArticulo);
   } catch (error) {
+    //Manejo bad request
+    if (error.message === "Campo nombre vacío") {
+      return res.status(400).json({ error: "El campo nombre no puede estar vacío" });
+  } else if (error.message === "Campo tipo_venta vacío") {
+      return res.status(400).json({ error: "El campo tipo de venta no puede estar vacío" });
+  } else if (error.message === "Campo precio vacío") {
+    return res.status(400).json({ error: "El campo precio no puede estar vacío" });
+  } else if (error.message === "Campo representación vacío") {
+    return res.status(400).json({ error: "El campo representacion no puede estar vacío" });
+  } else if (error.message === "Precio no es número válido") {
+    return res.status(400).json({ error: "El campo precio solo puede ser un número" });
+  } else if (error.message === "Tipo de venta no válido") {
+  return res.status(400).json({ error: "El tipo de venta no es válido" });
+  } else {
     console.error(error);
-    res.status(500).json({ mensaje: "Error al crear el artículo." });
+    res.status(500).json({ mensaje: 'Error al crear el artículo' });
   }
-};
+}
+}
 
-//Listar artículos existentes
 export const listarArticulos = async (req, res) => {
   try {
     const articulos = await ArticuloServicio.listarArticulos();
+    res.status(200).json(articulos)
 
-    res.status(200).json(articulos);
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ mensaje: "Error al obtener la lista de artículos." });
+    res.status(500).json({ mensaje: 'Error al listar el artículo' });
   }
-};
+}
 
-//Obtener artículo por su ID
 export const obtenerArticuloPorId = async (req, res) => {
   try {
-    const text_id = req.params.text_id;
-    const articulo = await ArticuloServicio.listarArticuloPorId(text_id);
-
-    if (!articulo) {
-      return res.status(404).json({ mensaje: "No se encontró el artículo" });
-    }
-    res.status(200).json(articulo);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: "Error al obtener el artículo" });
-  }
-};
-
-//Actualizar artículo
-export const actualizarArticulo = async (req, res) => {
-  try {
-    const text_id = req.params.text_id;
-    const {
-      nombre,
-      tipo_venta,
-      precio,
-      coste,
-      ref,
-      representacion,
-      nombre_categoria,
-    } = req.body;
-    const articulo = await ArticuloServicio.modificarArticulo(
-      text_id,
-      nombre,
-      tipo_venta,
-      precio,
-      coste,
-      ref,
-      representacion,
-      nombre_categoria
-    );
-    const categoria = await CategoriaServicio.listarCategoriaPorId(
-      nombre_categoria
-    );
+    const id = req.params.id;
+    const articulo = await ArticuloServicio.listarArticuloPorId(id);
 
     if (articulo == null) {
-      return res.status(404).json({ mensaje: "No se encontró el artículo" });
-    } else if (categoria === false) {
-      return res.status(400).json({ mensaje: "La categoría no existe" });
+      return res.status(400).json({ error: "No se encontró el artículo" });
     }
-    res.status(200).json(articulo);
+    res.status (200).json(articulo)
+
   } catch (error) {
     console.error(error);
-    res.status(500).json({ mensaje: "Error al obtener el artículo" });
+    res.status(500).json({ mensaje: 'Error al crear el artículo' });
   }
-};
+}
 
-//Eliminar artículo
+export const actualizarArticulo = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { nombre, tipo_venta, precio, ref, representacion, id_categoria} = req.body
+    const articulo = await ArticuloServicio.modificarArticulo(id, nombre, tipo_venta, precio, ref, representacion, id_categoria);
+
+    if (articulo == null) {
+      return res.status(400).json({ error: "No se encontró el artículo" });
+    }
+    res.status (200).json(articulo)
+
+  } catch (error) {
+    //Manejo bad request
+    if (error.message === "Campo nombre vacío") {
+      return res.status(400).json({ error: "El campo nombre no puede estar vacío" });
+    } else if (error.message === "Campo tipo_venta  vacío") {
+      return res.status(400).json({ error: "El campo tipo de venta no puede estar vacío" });
+    } else if (error.message === "Campo precio vacío") {
+      return res.status(400).json({ error: "El campo precio no puede estar vacío" });
+    } else if (error.message === "Campo representacion vacío") {
+      return res.status(400).json({ error: "El campo representacion no puede estar vacío" });
+    } else if (error.message === "Precio no es un número válido") {
+      return res.status(400).json({ error: "El campo precio solo puede ser un número" });
+    } else if (error.message === "Tipo de venta no válido") {
+      return res.status(400).json({ error: "El tipo de venta no es válido" });
+    } else {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al crear el artículo' });
+    }
+  }
+}
+
 export const eliminarArticulo = async (req, res) => {
   try {
-    const text_id = req.params.text_id;
-    await ArticuloServicio.eliminarArticulo(text_id);
-    res.status(200).json({ mensaje: "Artículo eliminado correctamente" });
+    const id = req.params.id;
+    const articulo = await ArticuloServicio.eliminarArticulo(id);
+    
+    if (articulo == null) {
+      return res.status(400).json({ error: "No se encontró el artículo" });
+    }
+    res.status (200).json({message: 'Artículo eliminado correctamente'})
+
   } catch (error) {
     console.error(error);
-    res.status(500).json({ mensaje: "Error al eliminar el artículo" });
+    res.status(500).json({ mensaje: 'Error al crear el artículo' });
   }
-};
+}

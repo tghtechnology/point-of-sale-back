@@ -7,28 +7,26 @@ POST {{api}}/articulo/crear
 Content-Type: application/json
 
 {
-  "nombre": "Almohada de Tela",
+  "nombre": "Almohada de Rayas",
   "tipo_venta":"Peso",
   "precio": 19.99,
-  "coste": 60.99,
   "ref": "10056",
   "representacion": "imagen",
-  "nombre_categoria": ""
+  "id_categoria": "8"
 }
 ###
-GET {{api}}/articulo/listar/almohada_de_lineas
+GET {{api}}/articulo/listar/2
 ###
-PUT {{api}}/articulo/actualizar/almohada_de_corazones
+PUT {{api}}/articulo/actualizar/2
 Content-Type: application/json
 
 {
   "nombre": "Almohada de Corazones",
   "tipo_venta":"Peso",
   "precio": 12.50,
-  "coste": 19.99,
   "ref": "14834",
   "representacion": "imagen",
-  "nombre_categoria": "Portafolios"
+  "id_categoria": 8
 }
 ###
-DELETE {{api}}/articulo/eliminar/Portafolio
+DELETE {{api}}/articulo/eliminar/8

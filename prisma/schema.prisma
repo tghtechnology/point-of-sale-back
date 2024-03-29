@@ -83,7 +83,6 @@ model Articulo {
   nombre String @db.VarChar(255)
   tipo_venta TipoVenta
   precio Decimal? @db.Decimal(10, 2)
-  coste Decimal @db.Decimal(10, 2)
   ref String @db.VarChar(255)
   representacion String     @db.VarChar(255)
   id_categoria Int? @db.Int @map("id_categoria") //@default("Sin categoría")
