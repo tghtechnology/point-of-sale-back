@@ -8,6 +8,15 @@ export const crearCategoria = async (nombre, color) => {
   if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
   if (!color || color.length < 1) {throw new Error("Campo color vacío")}
 
+  const categoriaExistente = await prisma.categoria.findFirst({
+    where:{
+      nombre: nombre,
+      estado: true
+    }
+  })
+
+  if (categoriaExistente) {throw new Error("Categoría existente")}
+
   const newCategoria = await prisma.categoria.create({
     data: {
       nombre: nombre,
@@ -71,6 +80,16 @@ export const modificarCategoria = async (id, nombre, color) => {
     if (id == undefined) {throw new Error("Campo ID vacío")}
     if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
     if (!color || color.length < 1) {throw new Error("Campo color vacío")}
+
+    //Buscar si existe una categoría con el nombre
+    const categoriaExistenteNombre = await prisma.categoria.findFirst({
+      where:{
+        nombre: nombre,
+        estado: true
+      }
+    })
+  
+    if (categoriaExistenteNombre) {throw new Error("Categoría existente")}
 
     //Buscar si existe una categoría con el id
     const categoriaExistente = await prisma.categoria.findUnique({

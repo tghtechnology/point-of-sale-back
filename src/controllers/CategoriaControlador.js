@@ -12,6 +12,8 @@ export const crearCategoria = async (req, res) => {
       return res.status(400).json({ error: "El campo nombre no puede estar vacío" });
   } else if (error.message === "Campo color vacío") {
       return res.status(400).json({ error: "El campo color no puede estar vacío" });
+  } else if (error.message === "Categoría existente") {
+    return res.status(400).json({ error: "La categoría ya existe" });
   } else {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al crear la categoría' });
@@ -70,6 +72,8 @@ export const actualizarCategoria = async (req, res) => {
       return res.status(400).json({ error: "El campo color no puede estar vacío" });
     } else if (error.message === "Campo color vacío") {
       return res.status(400).json({ error: "El campo color no puede estar vacío" });
+    } else if (error.message === "Categoría existente") {
+      return res.status(400).json({ error: "La categoría ya existe" });
     } else {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al crear la categoría' });
@@ -81,7 +85,7 @@ export const eliminarCategoria = async (req, res) => {
   try {
     const id = req.params.id;
     const categoria = await CategoriaServicio.eliminarCategoria(id);
-    
+
     if (categoria == null) {
       return res.status(400).json({ error: "No se encontró la categoria" });
     }

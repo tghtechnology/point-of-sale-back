@@ -7,11 +7,11 @@ POST {{api}}/categoria/crear
 Content-Type: application/json
 
 {
-  "nombre": "Mantas",
-  "color":"Celeste"
+  "nombre": "Camisas",
+  "color":"Azul"
 }
 ###
-GET {{api}}/categoria/listar/1
+GET {{api}}/categoria/listar/6
 ###
 PUT {{api}}/categoria/actualizar/10
 Content-Type: application/json
@@ -21,4 +21,4 @@ Content-Type: application/json
   "color":"Blanco"
 }
 ###
-DELETE {{api}}/categoria/eliminar/3
+DELETE {{api}}/categoria/eliminar/11
