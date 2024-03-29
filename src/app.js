@@ -6,6 +6,7 @@ import routerDescuento from "./Routes/DescuentoRouter"
 import routerArticulo from "./Routes/ArticuloRoute"
 import routerCategoria from "./Routes/CategoriaRoute"
 import routerCliente from "./Routes/ClienteRouter"
+import routerEmpleado from "./Routes/EmpleadoRouter"
 import morgan from "morgan";
 
 import swaggerJSDoc from "swagger-jsdoc";
@@ -25,6 +26,7 @@ app.use(routerArticulo)
 app.use(routerCategoria)
 app.use(routerAuth)
 app.use(routerCliente)
+app.use(routerEmpleado)
 
 app.use('/docs',swaggerui.serve,swaggerui.setup(specs));
 export default app
