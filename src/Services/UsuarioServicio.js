@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import {login,logout} from "../Services/AuthServicio"
 //Inicialización de prisma
 const prisma = new PrismaClient();
-
+//Registro de usuario
 export const crearUsuario = async (nombre, email, password, pais) => {
     // Validación del país
     if (!validarNombrePais(pais)) {
@@ -23,7 +23,7 @@ export const crearUsuario = async (nombre, email, password, pais) => {
     })
     return newUsuario
 }; 
-
+//Validaciones para eliminar cuenta
 const validarUsuario = async (id, password, token) => {
   const usuario = await prisma.usuario.findUnique({
       where: {
@@ -34,16 +34,13 @@ const validarUsuario = async (id, password, token) => {
           password: true
       }
   });
-
   if (!usuario) {
       throw new Error("Usuario no encontrado");
   }
-
   const match = await bcrypt.compare(password, usuario.password);
   if (!match) {
       throw new Error("Contraseña incorrecta");
   }
-
   if (token) {
       const sesionValida = await prisma.sesion.findFirst({
           where: {
@@ -54,9 +51,9 @@ const validarUsuario = async (id, password, token) => {
           throw new Error("Debe iniciar sesión");
       }
   }
-
   return usuario;
 };
+//Funcion para eliminar sesiones activas
 const eliminarSesionesActivas = async (usuarioId) => {
   const activeSessions = await prisma.sesion.findMany({
       where: { usuario_id: usuarioId, expiracion: { gt: new Date() } }
@@ -64,7 +61,7 @@ const eliminarSesionesActivas = async (usuarioId) => {
 
   if (activeSessions.length > 0) await logout(activeSessions[0].token);
 };
-
+//Eliminar cuenta temporalmente
 export const eliminarTemporalmente = async (id, password, token) => {
   const usuarioverificado= await prisma.usuario.findUnique({
     where: {
@@ -87,14 +84,14 @@ export const eliminarTemporalmente = async (id, password, token) => {
 
   return results;
 };
-
+//Eliminar cuenta permanentemente
 export const eliminarPermanentemente = async (id, password, token) => {
   const usuario=await validarUsuario(id, password, token);
   await eliminarSesionesActivas(usuario.id);
   const results = await prisma.usuario.delete({ where: { id: parseInt(id) } });
   return results;
 };
-
+//Eliminar cuentas al pasar el límite de tiempo
 export const eliminarCuentasVencidas = async (id) => {
   const fechaUnaSemanaAtras = new Date();
   fechaUnaSemanaAtras.setDate(fechaUnaSemanaAtras.getDate() - 7);
@@ -109,7 +106,7 @@ export const eliminarCuentasVencidas = async (id) => {
 
   return results.count > 0;
 };
-
+//Restaurar cuenta
 export const restaurarCuenta = async (id) => {
   const usuario = await prisma.usuario.findUnique({
       where: { id: parseInt(id) },
@@ -123,14 +120,12 @@ export const restaurarCuenta = async (id) => {
   if (!usuario || usuario.estado === 1) {
       return null;
   }
-
   const unaSemanaEnMiliseg = 7 * 24 * 60 * 60 * 1000;
   const fechaEliminacion = new Date(usuario.eliminado_temporal_fecha);
 
   if (Date.now() - fechaEliminacion > unaSemanaEnMiliseg) {
       return true;
   }
-
   const results = await prisma.usuario.update({
       where: { id: parseInt(id) },
       data: { estado: true, eliminado_temporal_fecha: null }

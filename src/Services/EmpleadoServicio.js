@@ -59,10 +59,4 @@ export const listarEmpleados=async()=>{
   })
   return empleados
 }
-module.exports = {
-  crearEmpleado,
-  editarEmpleado,
-  listarEmpleados,
-  listarEmpleadoPorId,
-  eliminarEmpleadoPorId,
-};
+
