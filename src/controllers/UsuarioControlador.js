@@ -33,9 +33,15 @@ export const eliminarTemporalmente = async (req, res) => {
 
     if (results) {
       res.status(200).json({ mensaje: 'Cuenta eliminada con éxito por un plazo de 1 semana' });
-    } }catch (error) {
-      res.status(400).json({ success: false, message: error.message });
-    }
+    } else if (results == false){
+      res.status(400).json({ mensaje: 'La cuenta ya ha sido eliminada temporalmente' });
+    } else if (results === null){
+      res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    } 
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al eliminar la cuenta temporalmente' });
+  }
 };
 
 //Restaurar la cuenta dentro de una semana de eliminación temporal
