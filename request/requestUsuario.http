@@ -19,23 +19,23 @@ Content-Type: application/json
   "password": "123345"
 }
 ###
-POST {{api}}/eliminar-temporal/7
+POST {{api}}/eliminar-temporal/8
 Content-Type: application/json
 
 {
   "password":"123345",
-  "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiZW1haWwiOiJlc3RlZmFueXQzMTAxQGdtYWlsLmNvbSIsImlhdCI6MTcxMTc3MDk5MywiZXhwIjoxNzExODU3MzkzfQ.eCeO4Ddb6WbPO1wbogjBhlQt5_q-WuiEE26nyy3OzBY"
+  "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiZW1haWwiOiJlc3RlZmFueXQzMTAxQGdtYWlsLmNvbSIsImlhdCI6MTcxMTc4MDkwNywiZXhwIjoxNzExODY3MzA3fQ.IZ7vn9nmFwyDIArOpDWM3CWXYcl4VW1kpj0o5Q5L0QA"
 }
 ###
-POST {{api}}/restaurar-cuenta/7
+POST {{api}}/restaurar-cuenta/8
 ###
 POST {{api}}/eliminar-cuenta-vencida/7
 
 ###
-POST {{api}}/eliminar-permanente/7
+POST {{api}}/eliminar-permanente/8
 Content-Type: application/json
 
 {
   "password":"123345",
-  "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiZW1haWwiOiJlc3RlZmFueXQzMTAxQGdtYWlsLmNvbSIsImlhdCI6MTcxMTc2OTE4NSwiZXhwIjoxNzExODU1NTg1fQ.nmU20dcQwYA6hduYZuhu_s7xRBTP1yYUd7ma6oGDTIo"
+  "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiZW1haWwiOiJlc3RlZmFueXQzMTAxQGdtYWlsLmNvbSIsImlhdCI6MTcxMTc4MDk1MSwiZXhwIjoxNzExODY3MzUxfQ.M4VfOppiLk668VF1X3MzpK4RTnZ3jKd5oh5WTjWaR6g"
 }

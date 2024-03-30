@@ -2,7 +2,6 @@ import { validarNombrePais } from "../helpers/helperPais";
 import bcrypt from "bcrypt"
 import { PrismaClient } from "@prisma/client";
 import {login,logout} from "../Services/AuthServicio"
-import {verificarSesion} from "../Middleware/verificarSesion"
 //Inicialización de prisma
 const prisma = new PrismaClient();
 
@@ -27,26 +26,41 @@ export const crearUsuario = async (nombre, email, password, pais) => {
 
 //Eliminar temporalmente una cuenta
 export const eliminarTemporalmente = async (id, password,token) => {
-  // Verificar el token de sesión
-  const usuarioId = await verificarSesion(token);
+  const usuarioverificado= await prisma.usuario.findUnique({
+    where: {
+      id: parseInt(id),
+      estado: false
+    },
+  })
+  if(usuarioverificado){
+    throw new Error("Cuenta eliminada");
+  }
+  const sesionValida = await prisma.sesion.findFirst({
+    where: {
+      token: token
+    }
+  });
+  if (!sesionValida) {
+    throw new Error("Debe iniciar sesión");
+  }
   const usuario = await prisma.usuario.findUnique({
     where: {
       id: parseInt(id),
       estado: true
     },
     select: {
-      password: true,
-      eliminado_temporal_fecha: true
+      password: true
     }
   });
-  if (usuario.eliminado_temporal_fecha) {
-    return null
+
+  if (!usuario) {
+    throw new Error("Usuario no encontrado");
   }
 
-  if (!usuario) return null;
-
   const match = await bcrypt.compare(password, usuario.password);
-  if (!match) return false;
+  if (!match) {
+    throw new Error("Contraseña incorrecta");
+  }
 
   const results = await prisma.usuario.update({
     where: { id: parseInt(id) },
@@ -68,28 +82,37 @@ export const eliminarTemporalmente = async (id, password,token) => {
   if (activeSessions.length > 0) {
       await logout(activeSessions[0].token);
   }
-
     return results;
 };
 
 //Eliminar permanente
 export const eliminarPermanentemente = async (id,password,token) => {
-  // Verificar el token de sesión
-  const usuarioId = await verificarSesion(token);
+  const sesionValida = await prisma.sesion.findFirst({
+    where: {
+      token: token
+    }
+  });
+  if (!sesionValida) {
+    throw new Error("Debe iniciar sesión");
+  }
   const usuario = await prisma.usuario.findUnique({
     where: {
       id: parseInt(id),
       estado: true
     },
     select: {
-      password: true,
+      password: true
     }
   });
 
-  if (!usuario) return null;
+  if (!usuario) {
+    throw new Error("Usuario no encontrado");
+  }
 
   const match = await bcrypt.compare(password, usuario.password);
-  if (!match) return false;
+  if (!match) {
+    throw new Error("Contraseña incorrecta");
+  }
   const activeSessions = await prisma.sesion.findMany({
     where: {
         usuario_id: usuario.id,
