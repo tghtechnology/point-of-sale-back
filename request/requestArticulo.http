@@ -7,28 +7,26 @@ POST {{api}}/articulo/crear
 Content-Type: application/json
 
 {
-  "nombre": "Almohada de Tela",
-  "tipo_venta":"Peso",
-  "precio": 19.99,
-  "coste": 60.99,
-  "ref": "10056",
+  "nombre": "Desktop",
+  "tipo_venta":"Unidad",
+  "precio": 14.50,
+  "ref": "82323",
   "representacion": "imagen",
-  "nombre_categoria": ""
+  "id_categoria": ""
 }
 ###
-GET {{api}}/articulo/listar/almohada_de_lineas
+GET {{api}}/articulo/listar/20
 ###
-PUT {{api}}/articulo/actualizar/almohada_de_corazones
+PUT {{api}}/articulo/actualizar/20
 Content-Type: application/json
 
 {
-  "nombre": "Almohada de Corazones",
+  "nombre": "Almohada de Puntos",
   "tipo_venta":"Peso",
   "precio": 12.50,
-  "coste": 19.99,
   "ref": "14834",
   "representacion": "imagen",
-  "nombre_categoria": "Portafolios"
+  "id_categoria": 8
 }
 ###
-DELETE {{api}}/articulo/eliminar/Portafolio
+DELETE {{api}}/articulo/eliminar/20

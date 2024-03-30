@@ -4,262 +4,229 @@ import * as CategoriaServicio from "../Services/CategoriaServicio";
 const prisma = new PrismaClient();
 
 //Crear un nuevo artículo
-export const crearArticulo = async (
-  nombre,
-  tipo_venta,
-  precio,
-  coste,
-  ref,
-  representacion,
-  nombre_categoria,
-  categoriaNueva
-) => {
-  let text_id = stringTransform(nombre);
+export const crearArticulo = async (nombre, tipo_venta, precio, ref, representacion, id_categoria) => {
 
-  //Se crea el nuevo artículo
-  const articulo = await prisma.articulo.create({
+  //Validación campos vacíos
+  if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
+  if (!tipo_venta || tipo_venta.length < 1) {throw new Error("Campo tipo_venta vacío")}
+  if (!precio || precio.length < 1) {throw new Error("Campo precio vacío")}
+  if (!representacion || representacion.length < 1) {throw new Error("Campo representación vacío")}1
+
+  //Validación tipo de dato de precio
+  if (typeof precio !== 'number' || isNaN(parseFloat(precio)) || !isFinite(precio)) {throw new Error("Precio no es número válido")}
+
+  //Validación tipo de venta
+  const TiposPermitidos = ['Peso', 'Unidad'];
+  if (!TiposPermitidos.includes(tipo_venta)) {throw new Error("Tipo de venta no válido");}
+
+  let categoria = await buscarCategoria(id_categoria);
+
+  console.log(categoria);
+
+  const newArticulo = await prisma.articulo.create({
     data: {
-      text_id: text_id,
       nombre: nombre,
       tipo_venta: tipo_venta,
       precio: precio,
-      coste: coste,
       ref: ref,
       representacion: representacion,
-      nombre_categoria: nombre_categoria,
-      estado: true,
+      id_categoria: parseInt(id_categoria),
+      estado: true
     },
-  });
+  })
 
-  const categoria = await prisma.categoria.findUnique({
-    where: {
-      text_id: nombre_categoria,
-    },
-    select: {
-      text_id: text_id,
-      nombre: true,
-      color: true,
-    },
-  });
-
-  const categoriaFormato = {
-    text_id: text_id,
-    nombre: categoria.nombre,
-    color: categoria.color,
-  };
-
+if (id_categoria == "" || categoria == null) {
+  const articuloSincatFormato = {
+    id: newArticulo.id,
+    nombre: newArticulo.nombre,
+    tipo_venta: newArticulo.tipo_venta,
+    precio: newArticulo.precio,
+    ref: newArticulo.ref,
+    representacion: newArticulo.representacion,
+    categoria: "Sin categoría"
+  }
+  return articuloSincatFormato;
+} else {
   const articuloFormato = {
-    text_id: text_id,
-    nombre: articulo.nombre,
-    tipo_venta: articulo.tipo_venta,
-    precio: articulo.precio,
-    coste: articulo.coste,
-    ref: articulo.ref,
-    representacion: articulo.representacion,
-    categoria: categoriaFormato,
-  };
+    id: newArticulo.id,
+    nombre: newArticulo.nombre,
+    tipo_venta: newArticulo.tipo_venta,
+    precio: newArticulo.precio,
+    ref: newArticulo.ref,
+    representacion: newArticulo.representacion,
+    categoria: categoria
+  }
+  return articuloFormato; 
+}
+  
+}; 
 
-  console.log(articuloFormato);
+export const listarArticulos = async ()=>{
 
-  return articuloFormato;
-};
-
-//Listar todos los artículosS
-const listarArticulos = async () => {
-  //Busca todos los artículos con estado true
   const articulos = await prisma.articulo.findMany({
     where: {
-      estado: true,
+      estado: true
     },
     include: {
-      //Incluye la información de categoría
-      categoria: true,
-    },
-  });
+      categoria: true
+    }
+  })
 
+  // Mapear los artículos a un formato deseado
   const articulosFormato = articulos.map((articulo) => {
-    const categoria = articulo.categoria;
-    const categoriaFormateada = {
-      text_id: categoria.text_id,
-      nombre: categoria.nombre,
-      color: categoria.color,
-    };
+    // Verificar si la categoría está presente y activa
+    const categoria = articulo.categoria && articulo.categoria.estado ? {
+      id: articulo.categoria.id,
+      nombre: articulo.categoria.nombre,
+      color: articulo.categoria.color,
+    } : "Sin categoría";
 
     return {
-      text_id: articulo.text_id,
+      id: articulo.id,
       nombre: articulo.nombre,
       tipo_venta: articulo.tipo_venta,
       precio: articulo.precio,
-      coste: articulo.coste,
       ref: articulo.ref,
       representacion: articulo.representacion,
-      categoria: categoriaFormateada,
+      categoria: categoria,
     };
   });
 
   return articulosFormato;
-};
+}
 
-//Listar un artículo con id
-const listarArticuloPorId = async (text_id) => {
-  //Buscar artículo con el ID único
+export const listarArticuloPorId = async (id) => {
+
   const articulo = await prisma.articulo.findUnique({
     where: {
-      text_id: text_id,
-      estado: true,
+      id: parseInt(id),
+      estado: true
     },
     include: {
-      //Incluye la información de categoría
-      categoria: {
-        select: {
-          text_id: true,
-          nombre: true,
-          color: true,
-        },
-      },
-    },
-  });
+      categoria: true
+    }
+  })
 
-  //Validación de existencia de artículo
-  if (articulo == null) {
-    return false;
-  }
+  //Si el id no existe
+  if (!articulo) {return null}
 
-  const categoria = articulo.categoria;
-  const categoriaFormateada = {
-    text_id: text_id,
-    nombre: categoria.nombre,
-    color: categoria.color,
-  };
+  // Verificar si la categoría está presente y activa
+  const categoria = articulo.categoria && articulo.categoria.estado ? {
+    id: articulo.categoria.id,
+    nombre: articulo.categoria.nombre,
+    color: articulo.categoria.color,
+  } : "Sin categoría";
 
-  //Formato del JSON de la respuesta
   const articuloFormato = {
-    text_id: text_id,
+    id: articulo.id,
     nombre: articulo.nombre,
     tipo_venta: articulo.tipo_venta,
     precio: articulo.precio,
-    coste: articulo.coste,
     ref: articulo.ref,
     representacion: articulo.representacion,
-    categoria: categoriaFormateada,
+    categoria: categoria,
   };
-
   return articuloFormato;
-};
+} 
 
-//Modificar un artículo
-const modificarArticulo = async (
-  text_id,
-  nombre,
-  tipo_venta,
-  precio,
-  coste,
-  ref,
-  representacion,
-  nombre_categoria,
-  color_categoria,
-  categoriaNueva
-) => {
+export const modificarArticulo = async (id, nombre, tipo_venta, precio, ref, representacion, id_categoria) => {
+
+  if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
+  if (!tipo_venta || tipo_venta.length < 1) {throw new Error("Campo tipo_venta vacío")}
+  if (!precio || precio.length < 1) {throw new Error("Campo precio vacío")}
+  if (!representacion || representacion.length < 1) {throw new Error("Campo representación vacío")}
+
+  //Validación tipo de dato de precio
+  if (typeof precio !== 'number' || isNaN(parseFloat(precio)) || !isFinite(precio)) {throw new Error("Precio no es número válido")}
+
+  //Validación tipo de venta
+  const TiposPermitidos = ['Peso', 'Unidad'];
+  if (!TiposPermitidos) {throw new Error("Tipo de venta no válido")}
+
+  //Buscar si existe un artículo con el id
   const articuloExistente = await prisma.articulo.findUnique({
     where: {
-      text_id: text_id,
-    },
-  });
+      id: parseInt(id),
+      estado: true
+    }
+  })
 
-  // Si no existe el artículo, devuelve false
-  if (!articuloExistente) {
-    return null;
+  //Si el id no existe
+  if (!articuloExistente) {return null}
+
+  const categoria = await buscarCategoria(id_categoria);
+
+const articulo = await prisma.articulo.update({
+  where: {
+    id: parseInt(id),
+    estado: true
+  },
+  data: {
+    nombre: nombre,
+    tipo_venta: tipo_venta,
+    precio: precio,
+    ref: ref,
+    representacion: representacion,
+    id_categoria: parseInt(id_categoria),
   }
+})
 
-  //Actualiza el nuevo artículo
-  const nuevoArticulo = await prisma.articulo.update({
-    where: {
-      text_id: text_id,
-      estado: true,
-    },
-    data: {
-      text_id: (text_id = stringTransform(nombre)),
-      nombre: nombre,
-      tipo_venta: tipo_venta,
-      precio: precio,
-      coste: coste,
-      ref: ref,
-      representacion: representacion,
-      nombre_categoria: nombre_categoria,
-      estado: true,
-    },
-  });
-
-  //Buscar información de categoría con nombre ingresado
-  const categoria = await prisma.categoria.findUnique({
-    where: {
-      text_id: nombre_categoria,
-    },
-    select: {
-      text_id: text_id,
-      nombre: true,
-      color: true,
-    },
-  });
-
-  const categoriaFormato = {
-    text_id: text_id,
-    nombre: categoria.nombre,
-    color: categoria.color,
-  };
-
-  const articuloModificadoFormato = {
-    text_id: nuevoArticulo.text_id,
-    nombre: nuevoArticulo.nombre,
-    tipo_venta: nuevoArticulo.tipo_venta,
-    precio: nuevoArticulo.precio,
-    coste: nuevoArticulo.coste,
-    ref: nuevoArticulo.ref,
-    representacion: nuevoArticulo.representacion,
-    categoria: categoriaFormato,
-  };
-  return articuloModificadoFormato;
-};
-
-//Eliminar un artículo
-const eliminarArticulo = async (text_id) => {
-  //Establece el estado a false
-  const articulo = await prisma.articulo.delete({
-    where: {
-      text_id: text_id,
-      estado: true,
-    },
-  });
-  return articulo;
-};
-
-//Función para obtener los datos de categoría por nombre
-const obtenerCategoria = async (nombre_categoria) => {
-  const categoria = prisma.categoria.findUnique({
-    where: {
-      nombre: nombre_categoria,
-    },
-    select: {
-      id: true,
-      nombre: true,
-      color: true,
-    },
-  });
-  return categoria;
-};
-
-function stringTransform(nombre) {
-  nombre = nombre
-    .toLowerCase()
-    .replace(/\s+/g, "_")
-    .replace(/[^\w\s]/g, "");
-  return nombre;
+const articuloFormato = {
+  id: articulo.id,
+  nombre: articulo.nombre,
+  tipo_venta: articulo.tipo_venta,
+  precio: articulo.precio,
+  ref: articulo.ref,
+  representacion: articulo.representacion,
+  categoria: categoria,
 }
 
-module.exports = {
-  crearArticulo,
-  listarArticulos,
-  listarArticuloPorId,
-  modificarArticulo,
-  eliminarArticulo,
-};
+return articuloFormato;
+}
+
+export const eliminarArticulo = async (id) => {
+
+  //Buscar si existe un artículo con el id
+  const articuloExistente = await prisma.articulo.findUnique({
+    where: {
+      id: parseInt(id),
+      estado: true
+    }
+  })
+
+  //Si el id no existe
+  if (!articuloExistente) {return null}
+
+  const articulo = await prisma.articulo.update({
+    where: {
+      id: parseInt(id),
+      estado: true
+    },
+    data: {
+      estado: false
+    }
+  })
+  return articulo
+}
+
+
+//Función para buscar una categoría por id
+const buscarCategoria = async (id_categoria) => {
+
+  if (id_categoria === "") {return null}
+  const categoriaExistente = await prisma.categoria.findUnique({
+    where: {
+      id: parseInt(id_categoria),
+      estado: true
+    }
+  })
+
+  if(!categoriaExistente) {throw new Error("Categoría inexistente")}
+
+  const categoriaFormato = {
+    id: categoriaExistente.id,
+    nombre: categoriaExistente.nombre,
+    color: categoriaExistente.color
+  }
+  return categoriaFormato
+}

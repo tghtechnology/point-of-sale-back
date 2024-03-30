@@ -1,87 +1,102 @@
-//import { connect } from "../database";
 import * as CategoriaServicio from "../Services/CategoriaServicio";
 
-//Crear nueva categoría
 export const crearCategoria = async (req, res) => {
   try {
     const { nombre, color } = req.body;
-    const nuevaCategoria = await CategoriaServicio.crearCategoria(
-      nombre,
-      color
-    );
+    const newCategoria = await CategoriaServicio.crearCategoria(nombre, color);
+    res.status(201).json(newCategoria)
 
-    res.status(201).json(nuevaCategoria);
   } catch (error) {
+    //Manejo bad request
+    if (error.message === "Campo nombre vacío") {
+      return res.status(400).json({ error: "El campo nombre no puede estar vacío" });
+  } else if (error.message === "Campo color vacío") {
+      return res.status(400).json({ error: "El campo color no puede estar vacío" });
+  } else if (error.message === "Categoría existente") {
+    return res.status(400).json({ error: "La categoría ya existe" });
+  } else {
     console.error(error);
-    res.status(500).json({ mensaje: "Error al crear la categoría." });
+    res.status(500).json({ mensaje: 'Error al crear la categoría' });
   }
-};
+  }
+}
 
-//Listar categorías existentes
 export const listarCategorias = async (req, res) => {
   try {
     const categorias = await CategoriaServicio.listarCategorias();
-    res.status(200).json(categorias);
+    res.status(200).json(categorias)
+
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ mensaje: "Error al obtener la lista de categorías." });
+    res.status(500).json({ mensaje: 'Error al crear la categoría' });
   }
-};
+}
 
-//Obtener una categoría por su ID
 export const obtenerCategoriaPorId = async (req, res) => {
   try {
-    const text_id = req.params.text_id;
-    const categoria = await CategoriaServicio.listarCategoriaPorId(text_id);
-    if (categoria == null) {
-      return res.status(404).json({ mensaje: "Categoría no encontrada." });
-    }
-    res.status(200).json(categoria);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: "Error al obtener la categoría." });
-  }
-};
+    const id = req.params.id;
+    const categoria = await CategoriaServicio.listarCategoriaPorId(id);
 
-//Actualizar categoría
+    if (categoria == null) {
+      return res.status(400).json({ error: "No se encontró la categoria" });
+    }
+    res.status (200).json(categoria)
+
+  } catch (error) {
+    //Manejo bad request
+    if (error.message === "Campo ID vacío") {
+      return res.status(400).json({ error: "El campo ID no puede estar vacío" });
+    } else {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al crear la categoría' });
+    }
+  }
+}
+
 export const actualizarCategoria = async (req, res) => {
   try {
-    const text_id = req.params.text_id;
-    const { nombre, color } = req.body;
-    const categoria = await CategoriaServicio.modificarCategoria(
-      text_id,
-      nombre,
-      color
-    );
+    const id = req.params.id;
+    const { nombre, color } = req.body
+    const categoria = await CategoriaServicio.modificarCategoria(id, nombre, color);
 
-    if (!categoria) {
-      res.status(404).json({ message: "Categoría no encontrada" });
+    if (categoria == null) {
+      return res.status(400).json({ error: "No se encontró la categoria" });
     }
-    res.status(200).json(categoria);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: "Error al actualizar la categoría" });
-  }
-};
+    res.status (200).json(categoria)
 
-//Eliminar categoría
+  } catch (error) {
+    //Manejo bad request
+    if (error.message === "Campo ID vacío") {
+      return res.status(400).json({ error: "El campo ID no puede estar vacío" });
+    } else if (error.message === "Campo color vacío") {
+      return res.status(400).json({ error: "El campo color no puede estar vacío" });
+    } else if (error.message === "Campo color vacío") {
+      return res.status(400).json({ error: "El campo color no puede estar vacío" });
+    } else if (error.message === "Categoría existente") {
+      return res.status(400).json({ error: "La categoría ya existe" });
+    } else {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al crear la categoría' });
+    }
+  }
+}
+
 export const eliminarCategoria = async (req, res) => {
   try {
-    const text_id = req.params.text_id;
-    await CategoriaServicio.eliminarCategoria(text_id);
-    res.status(200).json({ mensaje: "Categoría eliminada correctamente" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: "Error al eliminar la categoría." });
-  }
-};
+    const id = req.params.id;
+    const categoria = await CategoriaServicio.eliminarCategoria(id);
 
-module.exports = {
-  crearCategoria,
-  listarCategorias,
-  obtenerCategoriaPorId,
-  actualizarCategoria,
-  eliminarCategoria,
-};
+    if (categoria == null) {
+      return res.status(400).json({ error: "No se encontró la categoria" });
+    }
+    res.status (200).json({message: 'Categoría eliminada correctamente'})
+
+  } catch (error) {
+    if (error.message === "Campo ID vacío") {
+      return res.status(400).json({ error: "El campo ID no puede estar vacío" });
+    } else {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al crear la categoría' });
+    }
+  }
+}
