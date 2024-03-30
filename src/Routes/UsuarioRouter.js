@@ -14,7 +14,6 @@ const routerUsuario = Router();
 routerUsuario.post("/registro", crearUsuario);
 routerUsuario.get("/listaPaises", listaPaises);
 //RUTAS PARA ELIMINACIÓN DE CUENTA
-routerUsuario.post("/verificar/:id", verificarContrasena);
 routerUsuario.post("/eliminar-temporal/:id", eliminarTemporalmente);
 routerUsuario.post("/restaurar-cuenta/:id", restaurarCuenta);
 routerUsuario.post("/eliminar-cuenta-vencida/:id", eliminarCuentasVencidas);

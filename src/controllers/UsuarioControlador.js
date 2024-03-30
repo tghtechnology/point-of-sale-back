@@ -24,45 +24,18 @@ export const crearUsuario=async (req, res)=>{
  * Controladores de Verificar contraseña, eliminar cuenta temporalmente y permanentemente, restaurar cuenta
  */
 
-
-//Verificar contraseña antes de eliminar cuenta
-export const verificarContrasena = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const { password } = req.body;
-    const match = await UsuarioServicio.verificarContrasena(id, password)
-    
-    if (match == null) {
-      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
-    } 
-    if (match) {
-      res.status(200).json({ mensaje: 'Contraseña verificada' });
-    } else {
-      res.status(401).json({ mensaje: 'Contraseña incorrecta' });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: 'Error al verificar la contraseña' });
-  }
-};
-
 //Eliminar temporalmente durante 1 semana
 export const eliminarTemporalmente = async (req, res) => {
   try {
     const id = req.params.id;
-    const results = await UsuarioServicio.eliminarTemporalmente(id)
+    const {password,token} = req.body
+    const results = await UsuarioServicio.eliminarTemporalmente(id, password, token)
 
     if (results) {
       res.status(200).json({ mensaje: 'Cuenta eliminada con éxito por un plazo de 1 semana' });
-    } else if (results == false){
-      res.status(400).json({ mensaje: 'La cuenta ya ha sido eliminada temporalmente' });
-    } else if (results === null){
-      res.status(404).json({ mensaje: 'Usuario no encontrado' });
-    } 
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: 'Error al eliminar la cuenta temporalmente' });
-  }
+    } }catch (error) {
+      res.status(400).json({ success: false, message: error.message });
+    }
 };
 
 //Restaurar la cuenta dentro de una semana de eliminación temporal
@@ -91,7 +64,7 @@ export const restaurarCuenta = async (req, res) => {
 export const eliminarCuentasVencidas = async (req, res) => {
 try {
   const id = req.params.id;
-  const results = await UsuarioServicio.eliminarCuentasVencidas(id)
+  const results = await UsuarioServicio.eliminarCuentasVencidas(id);
 
   if (results) {
     res.status(200).json({ mensaje: 'La cuenta ha sido eliminada' });
@@ -104,16 +77,14 @@ try {
   console.error(error);
 }
 };
-
 // Programar la tarea para ejecutarse periódicamente
 setInterval(eliminarCuentasVencidas, 24 * 60 * 60 * 1000); // Ejecutar cada 24 horas
-
-
 /** Eliminar cuenta permanentemente */
 export const eliminarPermanentemente = async (req, res) => {
   try {
     const id = req.params.id;
-    const results = await UsuarioServicio.eliminarPermanentemente(id)
+    const {password,token} = req.body
+    const results = await UsuarioServicio.eliminarPermanentemente(id,password,token)
 
     if (results) {
       res.status(200).json({ mensaje: 'Cuenta eliminada permanentemente' });

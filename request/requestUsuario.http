@@ -7,7 +7,7 @@ Content-Type: application/json
 {
   "nombre": "Unique",
   "email": "estefanyt3101@gmail.com",
-  "password": "holamundo",
+  "password": "123345",
   "pais": "Perú"
 }
 ###
@@ -16,23 +16,26 @@ Content-Type: application/json
 
 {
   "email": "estefanyt3101@gmail.com",
-  "password": "holamundo"
+  "password": "123345"
 }
-
-
-//Pruebas de Eliminar cuenta
 ###
-POST {{api}}/verificar/3
+POST {{api}}/eliminar-temporal/7
 Content-Type: application/json
 
 {
-  "password":"1234"
+  "password":"123345",
+  "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NywiZW1haWwiOiJlc3RlZmFueXQzMTAxQGdtYWlsLmNvbSIsImlhdCI6MTcxMTc3MDk5MywiZXhwIjoxNzExODU3MzkzfQ.eCeO4Ddb6WbPO1wbogjBhlQt5_q-WuiEE26nyy3OzBY"
 }
 ###
-POST {{api}}/eliminar-temporal/2
+POST {{api}}/restaurar-cuenta/7
 ###
-POST {{api}}/restaurar-cuenta/3
+POST {{api}}/eliminar-cuenta-vencida/7
+
 ###
-POST {{api}}/eliminar-cuenta-vencida/1
-###
-POST {{api}}/eliminar-permanente/1
+POST {{api}}/eliminar-permanente/7
+Content-Type: application/json
+
+{
+  "password":"123345",
+  "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiZW1haWwiOiJlc3RlZmFueXQzMTAxQGdtYWlsLmNvbSIsImlhdCI6MTcxMTc2OTE4NSwiZXhwIjoxNzExODU1NTg1fQ.nmU20dcQwYA6hduYZuhu_s7xRBTP1yYUd7ma6oGDTIo"
+}

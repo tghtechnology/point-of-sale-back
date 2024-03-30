@@ -5,7 +5,7 @@ import { verificarSesion as verificacion } from "../Middleware/verificarSesion";
 
 const prisma = new PrismaClient(); // Inicializa PrismaClient
 
-export const verificarSesion = async (req, res, next) => {
+/*export const verificarSesion = async (req, res, next) => {
   try {
     const token = req.headers.authorization;
     if (!token) {
@@ -18,7 +18,7 @@ export const verificarSesion = async (req, res, next) => {
     console.error("Error al verificar sesión:", error);
     return res.status(401).json({ error: error.message });
   }
-};
+};*/
 
 export const login = async (req, res) => {
   try {

@@ -11,7 +11,8 @@ export const login = async (email, password) => {
     const connection = await connect();
     const results = await prisma.usuario.findMany({
       where: {
-        email: email
+        email: email,
+        estado:true
       },
     })
     if (results.length === 0) {
@@ -225,6 +226,3 @@ export const eliminarTokensExpirados = async () => {
     }
   
 };
-
-
-
