@@ -148,5 +148,3 @@ export const eliminarCategoria = async (id) => {
   })
   return categoria
 }
-
-

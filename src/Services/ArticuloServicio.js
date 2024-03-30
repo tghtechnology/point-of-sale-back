@@ -19,9 +19,6 @@ export const crearArticulo = async (nombre, tipo_venta, precio, ref, representac
   const TiposPermitidos = ['Peso', 'Unidad'];
   if (!TiposPermitidos.includes(tipo_venta)) {throw new Error("Tipo de venta no válido");}
 
-  //Validación categoría
-  //if(id_categoria = "") {id_categoria = "Sin categoría"}
-
   let categoria = await buscarCategoria(id_categoria);
 
   console.log(categoria);
@@ -38,7 +35,7 @@ export const crearArticulo = async (nombre, tipo_venta, precio, ref, representac
     },
   })
 
-if (id_categoria == "") {
+if (id_categoria == "" || categoria == null) {
   const articuloSincatFormato = {
     id: newArticulo.id,
     nombre: newArticulo.nombre,
@@ -75,6 +72,23 @@ export const listarArticulos = async ()=>{
     }
   })
 
+  if (articulos.categoria == undefined) {
+    articulos.categoria = null
+  }
+
+  console.log(articulos.categoria)
+  let categoria = articulos.categoria
+
+  const articulosSincat = await prisma.articulo.updateMany({
+    where: {
+      categoria: undefined
+    },
+    data: {
+      id_categoria: null
+    }
+  })
+  
+
   const articulosFormato = articulos.map((articulo) => {
     return {
       id: articulo.id,
@@ -83,7 +97,7 @@ export const listarArticulos = async ()=>{
       precio: articulo.precio,
       ref: articulo.ref,
       representacion: articulo.representacion,
-      categoria: articulo.categoria? {
+      categoria: articulo.categoria ? {
         id: articulo.categoria.id,
         nombre: articulo.categoria.nombre,
         color: articulo.categoria.color,
@@ -105,6 +119,12 @@ export const listarArticuloPorId = async (id) => {
     }
   })
 
+  if (articulo.categoria == null) {
+    articulo.categoria = null
+  }
+
+  console.log(articulo.categoria)
+
   //Si el id no existe
   if (!articulo) {return null}
 
@@ -115,11 +135,11 @@ export const listarArticuloPorId = async (id) => {
       precio: articulo.precio,
       ref: articulo.ref,
       representacion: articulo.representacion,
-      categoria: {
+      categoria: articulo.categoria ? {
         id: articulo.categoria.id,
         nombre: articulo.categoria.nombre,
         color: articulo.categoria.color,
-      },
+      } : "Sin categoría",
   }
   return articulosFormato;
 } 
@@ -216,7 +236,7 @@ const buscarCategoria = async (id_categoria) => {
     }
   })
 
-  if (!categoriaExistente) { id_categoria = "Sin categoría"}
+  if(!categoriaExistente) {throw new Error("Categoría inexistente")}
 
   const categoriaFormato = {
     id: categoriaExistente.id,

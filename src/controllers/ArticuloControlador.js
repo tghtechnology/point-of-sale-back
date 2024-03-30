@@ -20,6 +20,8 @@ export const crearArticulo = async (req, res) => {
     return res.status(400).json({ error: "El campo precio solo puede ser un número" });
   } else if (error.message === "Tipo de venta no válido") {
   return res.status(400).json({ error: "El tipo de venta no es válido" });
+  } else if (error.message === "Categoría inexistente") {
+    return res.status(400).json({ error: "La categoría no existe" });
   } else {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al crear el artículo' });
@@ -50,7 +52,7 @@ export const obtenerArticuloPorId = async (req, res) => {
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ mensaje: 'Error al crear el artículo' });
+    res.status(500).json({ mensaje: 'Error al listar el artículo' });
   }
 }
 
