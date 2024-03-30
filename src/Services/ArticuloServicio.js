@@ -83,11 +83,11 @@ export const listarArticulos = async ()=>{
       precio: articulo.precio,
       ref: articulo.ref,
       representacion: articulo.representacion,
-      categoria: {
+      categoria: articulo.categoria? {
         id: articulo.categoria.id,
         nombre: articulo.categoria.nombre,
         color: articulo.categoria.color,
-      },
+      }: "Sin categoría",
     };
   });
   return articulosFormato;

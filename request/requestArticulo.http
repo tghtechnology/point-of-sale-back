@@ -7,7 +7,7 @@ POST {{api}}/articulo/crear
 Content-Type: application/json
 
 {
-  "nombre": "Bebedero",
+  "nombre": "Desktop",
   "tipo_venta":"Unidad",
   "precio": 14.50,
   "ref": "82323",
