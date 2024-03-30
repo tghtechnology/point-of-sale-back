@@ -72,24 +72,15 @@ export const listarArticulos = async ()=>{
     }
   })
 
-  if (articulos.categoria == undefined) {
-    articulos.categoria = null
-  }
-
-  console.log(articulos.categoria)
-  let categoria = articulos.categoria
-
-  const articulosSincat = await prisma.articulo.updateMany({
-    where: {
-      categoria: undefined
-    },
-    data: {
-      id_categoria: null
-    }
-  })
-  
-
+  // Mapear los artículos a un formato deseado
   const articulosFormato = articulos.map((articulo) => {
+    // Verificar si la categoría está presente y activa
+    const categoria = articulo.categoria && articulo.categoria.estado ? {
+      id: articulo.categoria.id,
+      nombre: articulo.categoria.nombre,
+      color: articulo.categoria.color,
+    } : "Sin categoría";
+
     return {
       id: articulo.id,
       nombre: articulo.nombre,
@@ -97,13 +88,10 @@ export const listarArticulos = async ()=>{
       precio: articulo.precio,
       ref: articulo.ref,
       representacion: articulo.representacion,
-      categoria: articulo.categoria ? {
-        id: articulo.categoria.id,
-        nombre: articulo.categoria.nombre,
-        color: articulo.categoria.color,
-      }: "Sin categoría",
+      categoria: categoria,
     };
   });
+
   return articulosFormato;
 }
 
@@ -119,29 +107,26 @@ export const listarArticuloPorId = async (id) => {
     }
   })
 
-  if (articulo.categoria == null) {
-    articulo.categoria = null
-  }
-
-  console.log(articulo.categoria)
-
   //Si el id no existe
   if (!articulo) {return null}
 
-  const articulosFormato = {
-      id: articulo.id,
-      nombre: articulo.nombre,
-      tipo_venta: articulo.tipo_venta,
-      precio: articulo.precio,
-      ref: articulo.ref,
-      representacion: articulo.representacion,
-      categoria: articulo.categoria ? {
-        id: articulo.categoria.id,
-        nombre: articulo.categoria.nombre,
-        color: articulo.categoria.color,
-      } : "Sin categoría",
-  }
-  return articulosFormato;
+  // Verificar si la categoría está presente y activa
+  const categoria = articulo.categoria && articulo.categoria.estado ? {
+    id: articulo.categoria.id,
+    nombre: articulo.categoria.nombre,
+    color: articulo.categoria.color,
+  } : "Sin categoría";
+
+  const articuloFormato = {
+    id: articulo.id,
+    nombre: articulo.nombre,
+    tipo_venta: articulo.tipo_venta,
+    precio: articulo.precio,
+    ref: articulo.ref,
+    representacion: articulo.representacion,
+    categoria: categoria,
+  };
+  return articuloFormato;
 } 
 
 export const modificarArticulo = async (id, nombre, tipo_venta, precio, ref, representacion, id_categoria) => {
