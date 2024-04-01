@@ -25,6 +25,9 @@ export const crearUsuario = async (nombre, email, password, pais) => {
 }; 
 //Validaciones para eliminar cuenta
 const validarUsuario = async (id, password, token) => {
+  if (!token) {
+    throw new Error("Token no proporcionado");
+}
     const sesion = await prisma.sesion.findFirst({
       where: {
           token

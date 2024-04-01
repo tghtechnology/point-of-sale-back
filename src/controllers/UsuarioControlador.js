@@ -29,8 +29,10 @@ export const eliminarTemporalmente = async (req, res) => {
   } catch (error) {
     console.error("Error al eliminar:", error);
     if (error.message === "Debe iniciar sesión") {
-      return res.status(400).json({ error: "Token no proporcionado o inválido" });
-    } else if (error.message === "Usuario no encontrado") {
+      return res.status(400).json({ error: "Inicie sesion" });
+    } else if (error.message === "Token no proporcionado") {
+      return res.status(404).json({ error: "Ingrese token" });}
+      else if (error.message === "Usuario no encontrado") {
       return res.status(404).json({ error: "No se encontró el usuario" });
     } else if (error.message === "Contraseña incorrecta") {
       return res.status(404).json({ error: "No coincide la contraseña" });
