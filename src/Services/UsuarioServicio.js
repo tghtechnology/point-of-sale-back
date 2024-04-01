@@ -25,7 +25,6 @@ export const crearUsuario = async (nombre, email, password, pais) => {
 }; 
 //Validaciones para eliminar cuenta
 const validarUsuario = async (id, password, token) => {
-    if(token){
     const sesion = await prisma.sesion.findFirst({
       where: {
           token
@@ -33,7 +32,6 @@ const validarUsuario = async (id, password, token) => {
   });
   if (!sesion) {
       throw new Error("Debe iniciar sesión");
-  }
   }
   const usuario = await prisma.usuario.findUnique({
       where: {
