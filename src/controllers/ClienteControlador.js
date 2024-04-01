@@ -53,7 +53,7 @@ export const eliminarCliente=async(req,res)=>{
     try {
         const id = req.params.id;
         const cliente=await ClienteServicio.eliminarCliente(id);
-        res.status(200).json(cliente);
+        res.status(200).json({message: "Cliente eliminado"});
       } catch (error) {
         console.error(error);
         res.status(500).json({ mensaje: 'Error al eliminar el cliente.' });
