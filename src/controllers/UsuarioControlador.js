@@ -23,15 +23,16 @@ export const crearUsuario=async (req, res)=>{
 //Eliminar temporalmente durante 1 semana
 export const eliminarTemporalmente = async (req, res) => {
   try {
-    const id = req.params.id;
-    const {password,token} = req.body
-    const results = await UsuarioServicio.eliminarTemporalmente(id, password, token)
+    const {usuario_id,password,token} = req.body
+    const results = await UsuarioServicio.eliminarTemporalmente(usuario_id, password, token)
     res.status(200).json({ mensaje: 'Cuenta eliminada con éxito por un plazo de 1 semana' });
   } catch (error) {
     console.error("Error al eliminar:", error);
     if (error.message === "Debe iniciar sesión") {
-      return res.status(400).json({ error: "Token no proporcionado o inválido" });
-    } else if (error.message === "Usuario no encontrado") {
+      return res.status(400).json({ error: "Inicie sesion" });
+    } else if (error.message === "Token no proporcionado") {
+      return res.status(404).json({ error: "Ingrese token" });}
+      else if (error.message === "Usuario no encontrado") {
       return res.status(404).json({ error: "No se encontró el usuario" });
     } else if (error.message === "Contraseña incorrecta") {
       return res.status(404).json({ error: "No coincide la contraseña" });
@@ -81,9 +82,8 @@ setInterval(eliminarCuentasVencidas, 24 * 60 * 60 * 1000); // Ejecutar cada 24 h
 /** Eliminar cuenta permanentemente */
 export const eliminarPermanentemente = async (req, res) => {
   try {
-    const id = req.params.id;
-    const {password,token} = req.body
-    const results = await UsuarioServicio.eliminarPermanentemente(id,password,token)
+    const {usuario_id,password,token} = req.body
+    const results = await UsuarioServicio.eliminarPermanentemente(usuario_id,password,token)
 
     if (results) {
       res.status(200).json({ mensaje: 'Cuenta eliminada permanentemente' });

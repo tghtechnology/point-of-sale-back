@@ -4,7 +4,7 @@ POST {{api}}
 Content-Type: application/json
 
 {
-  "nombre": "Oferta",
+  "nombre": "Oferta navideña",
   "tipo_descuento": "PORCENTAJE",
   "valor":50
 }

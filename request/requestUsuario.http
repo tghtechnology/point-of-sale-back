@@ -10,7 +10,7 @@ Content-Type: application/json
   "password": "123345",
   "pais": "Perú"
 }
-###
+### 
 POST {{api}}/login
 Content-Type: application/json
 
@@ -19,22 +19,6 @@ Content-Type: application/json
   "password": "123345"
 }
 ###
-POST {{api}}/eliminar-temporal/10
-Content-Type: application/json
-
-{
-  "password":"123345",
-  "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImVtYWlsIjoiZXN0ZWZhbnl0MzEwMUBnbWFpbC5jb20iLCJpYXQiOjE3MTE3ODIyNTQsImV4cCI6MTcxMTg2ODY1NH0.rQufZJFwVSPcB5aMwOl0J2Al25qEPJ9AlModF-k_5JQ"}
-###
-POST {{api}}/restaurar-cuenta/10
+POST {{api}}/restaurar-cuenta/15
 ###
 POST {{api}}/eliminar-cuenta-vencida/7
-
-###
-POST {{api}}/eliminar-permanente/10
-Content-Type: application/json
-
-{
-  "password":"123345",
-  "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsImVtYWlsIjoiZXN0ZWZhbnl0MzEwMUBnbWFpbC5jb20iLCJpYXQiOjE3MTE3ODI0MjcsImV4cCI6MTcxMTg2ODgyN30.rk91pEoAKmf4olfF0deI6WfWEZvTR02LBXsRT35fU28"
-}
