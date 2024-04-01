@@ -1,7 +1,9 @@
 import { validarNombrePais } from "../helpers/helperPais";
 import bcrypt from "bcrypt"
 import { PrismaClient } from "@prisma/client";
-import {login,logout} from "../Services/AuthServicio"
+import {logout} from "../Services/AuthServicio"
+import { cuerpoCorreo }from "../helpers/helperEmail";
+import {envioCorreo} from "../Utils/SendEmail"
 //Inicialización de prisma
 const prisma = new PrismaClient();
 //Registro de usuario
@@ -69,14 +71,33 @@ export const eliminarTemporalmente = async (usuario_id, password, token) => {
     where: {
       id: parseInt(usuario_id),
       estado: false
+
     },
   })
   if (usuarioverificado) {
     throw new Error("Cuenta eliminada");
   }
-
   // Validar usuario con el token
   const usuario = await validarUsuario(usuario_id, password, token);
+  //Encontrar el email y nombre del usuario
+  const usuarioInfo = await prisma.usuario.findUnique({
+    where: {
+      id: parseInt(usuario_id)
+    },
+    select: {
+      email: true,
+      nombre:true 
+    }
+  });
+  /*console.log("Dirección de correo electrónico del usuario:", usuarioInfo.email);
+  console.log("Dirección de correo electrónico del usuario:", usuarioInfo.nombre);
+  if (!usuarioInfo.email) {
+    throw new Error("La dirección de correo electrónico del usuario no está definida.");
+  }if (!usuarioInfo.nombre) {
+    throw new Error("El nombre del usuario no está definido.");
+  }*/
+  const cuerpo = cuerpoCorreo(usuarioInfo.nombre);
+  await envioCorreo(usuarioInfo.email,  "Cuenta eliminada temporalmente",cuerpo);
 
   // Eliminar sesiones activas para este usuario
   await eliminarSesionesActivas(usuario_id);
@@ -120,27 +141,22 @@ export const eliminarCuentasVencidas = async (id) => {
 //Restaurar cuenta
 export const restaurarCuenta = async (id) => {
   const usuario = await prisma.usuario.findUnique({
-      where: { id: parseInt(id) },
-      select: {
-          id: true,
-          estado: true,
-          eliminado_temporal_fecha: true
-      }
+    where: { id: parseInt(id) },
+    select: { eliminado_temporal_fecha: true }
   });
-
-  if (!usuario || usuario.estado === 1) {
-      return null;
+  if (!usuario || !usuario.eliminado_temporal_fecha) {
+    return false;
   }
   const unaSemanaEnMiliseg = 7 * 24 * 60 * 60 * 1000;
   const fechaEliminacion = new Date(usuario.eliminado_temporal_fecha);
 
-  if (Date.now() - fechaEliminacion > unaSemanaEnMiliseg) {
-      return true;
-  }
-  const results = await prisma.usuario.update({
+  if (Date.now() - fechaEliminacion <= unaSemanaEnMiliseg) {
+    await prisma.usuario.update({
       where: { id: parseInt(id) },
       data: { estado: true, eliminado_temporal_fecha: null }
-  });
-
-  return results;
+    });
+    return true;
+  } else {
+    return false;
+  }
 };

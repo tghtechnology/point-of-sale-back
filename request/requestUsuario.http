@@ -19,6 +19,6 @@ Content-Type: application/json
   "password": "123345"
 }
 ###
-POST {{api}}/restaurar-cuenta/13
+POST {{api}}/restaurar-cuenta/15
 ###
 POST {{api}}/eliminar-cuenta-vencida/7

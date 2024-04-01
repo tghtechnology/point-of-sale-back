@@ -7,8 +7,8 @@ POST {{api}}
 Content-Type: application/json
 
 {
-  "nombre": "Mario",
-  "email": "marioo@gmail.com",
+  "nombre": "Mario gomez",
+  "email": "mariogomez@gmail.com",
   "telefono": "921448207",
   "direccion": "Calle Las Pasionarias",
   "ciudad": "Lima",
@@ -36,4 +36,4 @@ Content-Type: application/json
   
 }
 ###
-DELETE {{api}}/1
+DELETE {{api}}/2
