@@ -7,9 +7,13 @@ export const crearDescuento = async (req, res) => {
       nombre,
       tipo_descuento,
       valor
-    );
+    ); 
     res.status(201).json(newDescuento);
-  } catch (error) {
+  }
+  catch (error) {
+    if (error.message === "Tipo de descuento no válido") {
+      res.status(401).json({ error: "Ingrese el tipo de descuento válido" });
+    }
     res.status(500).json({ error: error.message });
   }
 };
