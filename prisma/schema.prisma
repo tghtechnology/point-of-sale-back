@@ -69,6 +69,7 @@ model Usuario {
   email String @db.VarChar(255) @unique
   password String @db.VarChar(255)
   pais String? @db.VarChar(255)
+  rol Rol @default(Empleado)
   estado Boolean @db.Bit(1)
   eliminado_temporal_fecha DateTime?
 
@@ -76,6 +77,11 @@ model Usuario {
   sesiones Sesion[]
 
   @@map("usuario")
+}
+
+enum Rol {
+  Propietario
+  Empleado
 }
 
 model Articulo {
@@ -133,3 +139,4 @@ model Cliente {
 
   @@map("cliente")
 }
+
