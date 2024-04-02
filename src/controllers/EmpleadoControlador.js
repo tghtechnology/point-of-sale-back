@@ -67,3 +67,4 @@ export const eliminarEmpleadoPorId = async (req, res) => {
     res.status(500).json({ mensaje: "Error al eliminar el empleado" });
   }
 };
+

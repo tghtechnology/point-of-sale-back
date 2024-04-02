@@ -91,16 +91,16 @@ var verificarContrasena = exports.verificarContrasena = /*#__PURE__*/function ()
             break;
           }
           return _context3.abrupt("return", res.status(404).json({
-            mensaje: "Usuario no encontrado"
+            mensaje: 'Usuario no encontrado'
           }));
         case 8:
           if (match) {
             res.status(200).json({
-              mensaje: "Contraseña verificada"
+              mensaje: 'Contraseña verificada'
             });
           } else {
             res.status(401).json({
-              mensaje: "Contraseña incorrecta"
+              mensaje: 'Contraseña incorrecta'
             });
           }
           _context3.next = 15;
@@ -110,7 +110,7 @@ var verificarContrasena = exports.verificarContrasena = /*#__PURE__*/function ()
           _context3.t0 = _context3["catch"](0);
           console.error(_context3.t0);
           res.status(500).json({
-            mensaje: "Error al verificar la contraseña"
+            mensaje: 'Error al verificar la contraseña'
           });
         case 15:
         case "end":
@@ -138,15 +138,15 @@ var eliminarTemporalmente = exports.eliminarTemporalmente = /*#__PURE__*/functio
           results = _context4.sent;
           if (results) {
             res.status(200).json({
-              mensaje: "Cuenta eliminada con éxito por un plazo de 1 semana"
+              mensaje: 'Cuenta eliminada con éxito por un plazo de 1 semana'
             });
           } else if (results == false) {
             res.status(400).json({
-              mensaje: "La cuenta ya ha sido eliminada temporalmente"
+              mensaje: 'La cuenta ya ha sido eliminada temporalmente'
             });
           } else if (results === null) {
             res.status(404).json({
-              mensaje: "Usuario no encontrado"
+              mensaje: 'Usuario no encontrado'
             });
           }
           _context4.next = 12;
@@ -156,7 +156,7 @@ var eliminarTemporalmente = exports.eliminarTemporalmente = /*#__PURE__*/functio
           _context4.t0 = _context4["catch"](0);
           console.error(_context4.t0);
           res.status(500).json({
-            mensaje: "Error al eliminar la cuenta temporalmente"
+            mensaje: 'Error al eliminar la cuenta temporalmente'
           });
         case 12:
         case "end":
@@ -184,19 +184,19 @@ var restaurarCuenta = exports.restaurarCuenta = /*#__PURE__*/function () {
           results = _context5.sent;
           if (results) {
             res.status(200).json({
-              mensaje: "Cuenta restaurada"
+              mensaje: 'Cuenta restaurada'
             });
           } else if (results == false) {
             res.status(400).json({
-              mensaje: "La cuenta no está eliminada por lo tanto no puede restaurarse"
+              mensaje: 'La cuenta no está eliminada por lo tanto no puede restaurarse'
             });
           } else if (results == true) {
             res.status(400).json({
-              mensaje: "La cuenta ya está vencida"
+              mensaje: 'La cuenta ya está vencida'
             });
           } else if (results == null) {
             res.status(404).json({
-              mensaje: "Usuario no encontrado"
+              mensaje: 'Usuario no encontrado'
             });
           }
           _context5.next = 12;
@@ -206,7 +206,7 @@ var restaurarCuenta = exports.restaurarCuenta = /*#__PURE__*/function () {
           _context5.t0 = _context5["catch"](0);
           console.error(_context5.t0);
           res.status(500).json({
-            mensaje: "Error al restaurar la cuenta"
+            mensaje: 'Error al restaurar la cuenta'
           });
         case 12:
         case "end":
@@ -234,15 +234,15 @@ var eliminarCuentasVencidas = exports.eliminarCuentasVencidas = /*#__PURE__*/fun
           results = _context6.sent;
           if (results) {
             res.status(200).json({
-              mensaje: "La cuenta ha sido eliminada"
+              mensaje: 'La cuenta ha sido eliminada'
             });
           } else if (results == false) {
             res.status(400).json({
-              mensaje: "La cuenta no está vencida"
+              mensaje: 'La cuenta no está vencida'
             });
           } else if (!results) {
             res.status(404).json({
-              mensaje: "Usuario no encontrado"
+              mensaje: 'Usuario no encontrado'
             });
           }
           _context6.next = 11;
@@ -280,15 +280,15 @@ var eliminarPermanentemente = exports.eliminarPermanentemente = /*#__PURE__*/fun
           results = _context7.sent;
           if (results) {
             res.status(200).json({
-              mensaje: "Cuenta eliminada permanentemente"
+              mensaje: 'Cuenta eliminada permanentemente'
             });
           } else if (results == false) {
             res.status(400).json({
-              mensaje: "La cuenta ya ha sido eliminada temporalmente"
+              mensaje: 'La cuenta ya ha sido eliminada temporalmente'
             });
           } else if (results === null) {
             res.status(404).json({
-              mensaje: "Usuario no encontrado"
+              mensaje: 'Usuario no encontrado'
             });
           }
           _context7.next = 12;
@@ -298,7 +298,7 @@ var eliminarPermanentemente = exports.eliminarPermanentemente = /*#__PURE__*/fun
           _context7.t0 = _context7["catch"](0);
           console.error(_context7.t0);
           res.status(500).json({
-            mensaje: "Error al eliminar la cuenta permanentemente"
+            mensaje: 'Error al eliminar la cuenta permanentemente'
           });
         case 12:
         case "end":
