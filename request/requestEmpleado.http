@@ -1,5 +1,5 @@
 @api=http://localhost:3000/empleado
-PUT  {{api}}/1
+POST  {{api}}
 Content-Type: application/json
 
 {

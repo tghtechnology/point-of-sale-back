@@ -11,7 +11,7 @@ const router = Router();
 
 router.get("/categoria/listar", listarCategorias);
 router.post("/categoria/crear", crearCategoria);
-router.get("/categoria/listar/:text_id", obtenerCategoriaPorId);
-router.put("/categoria/actualizar/:text_id", actualizarCategoria);
-router.delete("/categoria/eliminar/:text_id", eliminarCategoria);
+router.get("/categoria/listar/:id", obtenerCategoriaPorId);
+router.put("/categoria/actualizar/:id", actualizarCategoria);
+router.delete("/categoria/eliminar/:id", eliminarCategoria);
 export default router;

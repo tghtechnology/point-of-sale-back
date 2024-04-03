@@ -5,34 +5,20 @@ POST {{api}}/registro
 Content-Type: application/json
 
 {
-  "nombre": "Estefany",
+  "nombre": "Unique",
   "email": "estefanyt3101@gmail.com",
-  "password": "holamundo",
+  "password": "123345",
   "pais": "Perú"
 }
-###
+### 
 POST {{api}}/login
 Content-Type: application/json
 
 {
   "email": "estefanyt3101@gmail.com",
-  "password": "holamundo"
-}
-
-
-//Pruebas de Eliminar cuenta
-###
-POST {{api}}/verificar/3
-Content-Type: application/json
-
-{
-  "password":"1234"
+  "password": "123345"
 }
 ###
-POST {{api}}/eliminar-temporal/2
+POST {{api}}/restaurar-cuenta/15
 ###
-POST {{api}}/restaurar-cuenta/3
-###
-POST {{api}}/eliminar-cuenta-vencida/1
-###
-POST {{api}}/eliminar-permanente/1
+POST {{api}}/eliminar-cuenta-vencida/7

@@ -9,7 +9,7 @@ import { Router } from "express";
 
 const routerAuth = Router();
 //VERIFICAR SESION
-routerAuth.get("/verificarSesion", verificarSesion);
+//routerAuth.get("/verificarSesion", verificarSesion);
 
 //SISTEMA DE ACCESO AL USUARIO
 

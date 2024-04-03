@@ -7,18 +7,18 @@ POST {{api}}/categoria/crear
 Content-Type: application/json
 
 {
-  "nombre": "Almohadas",
-  "color":"Celeste"
+  "nombre": "Utensilios de cocina",
+  "color":"Negro"
 }
 ###
-GET {{api}}/categoria/listar/botellas_de_plstico
+GET {{api}}/categoria/listar/6
 ###
-PUT {{api}}/categoria/actualizar/laptop_acer
+PUT {{api}}/categoria/actualizar/10
 Content-Type: application/json
 
 {
-  "nombre": "Laptop Toshiba",
-  "color":"Azul"
+  "nombre": "Almohadas",
+  "color":"Blanco"
 }
 ###
-DELETE {{api}}/categoria/eliminar/Caramelos
+DELETE {{api}}/categoria/eliminar/21

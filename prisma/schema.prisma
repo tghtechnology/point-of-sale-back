@@ -14,8 +14,8 @@ datasource db {
 }
 
 model Categoria {
-  text_id String @id
-  nombre String @db.VarChar (255) @unique
+  id Int @id @default(autoincrement())
+  nombre String @db.VarChar (255)
   color String @db.VarChar (255)
   estado Boolean
   articulos Articulo[]
@@ -69,6 +69,7 @@ model Usuario {
   email String @db.VarChar(255) @unique
   password String @db.VarChar(255)
   pais String? @db.VarChar(255)
+  rol Rol 
   estado Boolean @db.Bit(1)
   eliminado_temporal_fecha DateTime?
 
@@ -78,18 +79,22 @@ model Usuario {
   @@map("usuario")
 }
 
+enum Rol {
+  Propietario
+  Empleado
+}
+
 model Articulo {
-  text_id String @id 
+  id Int @id @default(autoincrement())
   nombre String @db.VarChar(255)
   tipo_venta TipoVenta
   precio Decimal? @db.Decimal(10, 2)
-  coste Decimal @db.Decimal(10, 2)
   ref String @db.VarChar(255)
   representacion String     @db.VarChar(255)
-  nombre_categoria String? @db.VarChar(255) @map("nombre_categoria") @default("Sin categoría")
+  id_categoria Int? @db.Int @map("id_categoria")
   estado Boolean
 
-  categoria Categoria? @relation(fields: [nombre_categoria], references: [text_id])
+  categoria Categoria? @relation(fields: [id_categoria], references: [id])
 
   @@map("articulo")
 }
@@ -120,3 +125,25 @@ model Sesion {
   @@map("sesion") 
 }
 
+model Cliente {
+  id Int @id @default(autoincrement())
+  nombre String @db.VarChar(255)
+  email String @db.VarChar(255) @unique
+  telefono String @db.VarChar(255)
+  direccion String @db.VarChar(255)
+  ciudad String @db.VarChar(255)
+  region String @db.VarChar(255)
+  codigo_postal String @db.VarChar(255)
+  pais String @db.VarChar(255)
+  estado Boolean
+
+  @@map("cliente")
+}
+
+//model Recibo {
+ // id Int @id @default(autoincrement())
+  //fecha_creacion DateTime @default(now())
+  //id_venta @db.Int @map("id_venta")
+
+  //venta Venta? @relation(fields: [id_venta], references: [id])
+//}
