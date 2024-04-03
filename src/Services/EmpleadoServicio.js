@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { enviarCorreoInvitacion } from "./InvitacionServicio";
 const prisma = new PrismaClient();
 
 export const crearEmpleado = async (nombre, correo, telefono, cargo) => {
@@ -11,6 +12,10 @@ export const crearEmpleado = async (nombre, correo, telefono, cargo) => {
       estado: true,
     },
   });
+
+  // Llamar a la función de enviarCorreoInvitacion con el correo del nuevo empleado
+  await enviarCorreoInvitacion(correo);
+
   return empleado;
 };
 

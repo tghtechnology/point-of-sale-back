@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { enviarInvitacion } from '../controllers/InvitacionControlador';
+import { enviarInvitacion } from "../controllers/InvitacionControlador";
 
-const router = Router();
+const routerInvitacion = Router();
 
 // Ruta para enviar una invitación
-router.post('/enviar-invitacion', enviarInvitacion);
+routerInvitacion.post("/enviar-invitacion", enviarInvitacion);
 
-export default router;
+export default routerInvitacion;
