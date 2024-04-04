@@ -1,0 +1,11 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+// Plantilla de correo electrónico para el cambio de contraseña
+var getVerificationEmailTemplate = function getVerificationEmailTemplate(nombreUsuario, resetPasswordLink) {
+  return "\n  <!DOCTYPE html>\n  <html lang=\"es\">\n  <head>\n      <meta charset=\"UTF-8\">\n      <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n      <title>Restablecer Contrase\xF1a</title>\n      <style>\n        /* Estilos CSS para el correo electr\xF3nico */\n        body {\n          display: flex;\n          justify-content: center;\n          align-items: center;\n          height: 100%;\n          margin: 0;\n          padding: 0;\n          background-color: #f5f5f5;\n        }\n        #panel {\n          width: 60%; /* Ancho del panel */\n          border: 2px solid #808080; /* Borde del panel */\n          padding: 20px; /* Espaciado interno del panel */\n          background-color: white;\n          text-align: center;\n          margin: 0 auto;\n        }\n        button {\n          background-color: #007bff;\n          border: none;\n          color: white;\n          padding: 10px 20px;\n          text-align: center;\n          text-decoration: none;\n          display: inline-block;\n          font-size: 16px;\n          margin: 4px 2px;\n          border-radius: 5px; /* Added border-radius to make the corners rounded */\n          cursor: pointer;\n        }\n        a {\n          text-decoration: none;\n          color: white;\n        }\n      </style>\n  </head>\n  <body>\n      <div id=\"panel\">\n          <p>Hola ".concat(nombreUsuario, ",</p>\n          <p>Para cambiar tu contrase\xF1a, haz clic en el siguiente bot\xF3n:</p>\n          <button id=\"resetButton\"><a style=\"color: white;\" href=\"").concat(resetPasswordLink, "\">Restablecer Contrase\xF1a</a></button>\n      </div>\n  </body>\n  </html>\n  ");
+};
+var _default = exports["default"] = getVerificationEmailTemplate;

@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import getVerificationEmailTemplate from "../helpers/helperPlantilla";
 import { PrismaClient } from "@prisma/client";
+import { restaurarCuenta } from "./UsuarioServicio";
+
 const prisma = new PrismaClient();
 
 //Lógica para iniciar sesión
@@ -17,12 +19,15 @@ export const login = async (email, password) => {
     if (results.length === 0) {
       throw new Error("Nombre de usuario o contraseña incorrectos");
     }
-
     const usuario = results[0];
 
     const match = await bcrypt.compare(password, usuario.password);
     if (!match) {
       throw new Error("Nombre de usuario o contraseña incorrectos");
+    }
+    const cuentaRestaurada = await restaurarCuenta(usuario.id);
+    if (cuentaRestaurada) {
+      console.log("La cuenta fue restaurada exitosamente");
     }
     //Verificar si existe una sesión activa 
     const existingSessions = await prisma.sesion.findMany({
@@ -57,7 +62,7 @@ export const login = async (email, password) => {
 
 //Lógica para cerrar sesión
 export const logout = async (token) => {
-  //Decodificación de token
+  
     const decodedToken = jwt.verify(token, "secreto_del_token"); 
     // Conexión a la base de datos
     const connection = await connect(); 
@@ -225,6 +230,3 @@ export const eliminarTokensExpirados = async () => {
     }
   
 };
-
-
-

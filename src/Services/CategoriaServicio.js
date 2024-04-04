@@ -1,118 +1,150 @@
-import { connect } from "../database";
 import { PrismaClient } from "@prisma/client";
-
 const prisma = new PrismaClient();
 
-const crearCategoria = async (nombre, color) => {
+//Crear una categoría nueva
+export const crearCategoria = async (nombre, color) => {
 
-  let text_id = stringTransform(nombre)
- 
-  const categoria = await prisma.categoria.create({
-    data: {
-      text_id: text_id,
-      nombre: nombre, 
-      color: color,
+  //Validación campos vacíos
+  if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
+  if (!color || color.length < 1) {throw new Error("Campo color vacío")}
+
+  const categoriaExistente = await prisma.categoria.findFirst({
+    where:{
+      nombre: nombre,
       estado: true
     }
   })
-  
+
+  if (categoriaExistente) {throw new Error("Categoría existente")}
+
+  const newCategoria = await prisma.categoria.create({
+    data: {
+      nombre: nombre,
+      color: color,
+      estado: true
+    },
+  })
+
   const categoriaFormato = {
-    text_id: text_id,
-    nombre: categoria.nombre,
-    color: categoria.color
+    id: newCategoria.id,
+    nombre: newCategoria.nombre,
+    color: newCategoria.color
   }
   return categoriaFormato; 
-}
+}; 
 
+export const listarCategorias = async ()=>{
 
-const listarCategorias = async ()=>{
-  
-  //Busca todos los artículos con estado true
-  const categorias = await prisma.categoria.findMany({
+  const allCategorias = await prisma.categoria.findMany({
     where: {
       estado: true
     }
   })
 
-  const categoriasFormato = categorias.map((categoria) => {
+  const categoriasFormato = allCategorias.map((categoria) => {
     return {
-      text_id: categoria.text_id,
+      id: categoria.id,
       nombre: categoria.nombre,
       color: categoria.color
     };
   });
-   return categoriasFormato;
+  return categoriasFormato;
 }
 
-const listarCategoriaPorId = async (text_id) => {
+export const listarCategoriaPorId = async (id) => {
+
+  //Validación campo vacío
+  if (id == undefined) { throw new Error("Campo ID vacío")}
 
   const categoria = await prisma.categoria.findUnique({
     where: {
-      text_id: text_id,
+      id: parseInt(id),
       estado: true
-    },
+    }
   })
 
-  if (categoria == null) {
-    return null
-  }
-  
+  //Si el id no existe
+  if (!categoria) {return null}
+
   const categoriaFormato = {
-    text_id: categoria.text_id,
+    id: categoria.id,
     nombre: categoria.nombre,
     color: categoria.color
-};
-
-return categoriaFormato;
 }
+  return categoriaFormato;
+} 
 
-const modificarCategoria = async (text_id, nombre, color) => {
+export const modificarCategoria = async (id, nombre, color) => {
 
+    //Validación campos vacíos
+    if (id == undefined) {throw new Error("Campo ID vacío")}
+    if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
+    if (!color || color.length < 1) {throw new Error("Campo color vacío")}
+
+    //Buscar si existe una categoría con el nombre
+    const categoriaExistenteNombre = await prisma.categoria.findFirst({
+      where:{
+        nombre: nombre,
+        estado: true
+      }
+    })
   
-  
+    if (categoriaExistenteNombre) {throw new Error("Categoría existente")}
+
+    //Buscar si existe una categoría con el id
+    const categoriaExistente = await prisma.categoria.findUnique({
+      where: {
+        id: parseInt(id),
+        estado: true
+      }
+    })
+
+    //Si el id no existe
+    if (!categoriaExistente) {return null}
+
   const categoria = await prisma.categoria.update({
     where: {
-      text_id: text_id,
+      id: parseInt(id),
       estado: true
     },
-    
-    data: { 
+    data: {
       nombre: nombre,
-      color: color,
-      text_id: stringTransform(nombre)
+      color: color
     }
   })
 
   const categoriaFormato = {
-    text_id: text_id,
+    id: categoria.id,
     nombre: categoria.nombre,
     color: categoria.color
-};
+  }
   return categoriaFormato;
 }
 
-const eliminarCategoria = async (text_id) => {
+export const eliminarCategoria = async (id) => {
 
-  const categoria = await prisma.categoria.delete({
+  //Validación campo vacío
+  if (id == undefined) {throw new Error("Campo ID vacío")}
+
+  //Buscar si existe una categoría con el id
+  const categoriaExistente = await prisma.categoria.findUnique({
     where: {
-      text_id: text_id,
+      id: parseInt(id),
       estado: true
+    }
+  })
+
+  //Si el id no existe
+  if (!categoriaExistente) {return null}
+
+  const categoria = await prisma.categoria.update({
+    where: {
+      id: parseInt(id),
+      estado: true
+    },
+    data: {
+      estado: false
     }
   })
   return categoria
 }
-
-function stringTransform (nombre) {
-  nombre = nombre.toLowerCase().replace(/\s+/g, "_").replace(/[^\w\s]/g, "")
-  return nombre
-} 
-
-
-module.exports = { 
-  crearCategoria, 
-  listarCategorias,
-  listarCategoriaPorId,
-  modificarCategoria,
-  eliminarCategoria
-}
-
