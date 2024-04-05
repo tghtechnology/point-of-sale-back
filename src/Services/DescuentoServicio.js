@@ -32,12 +32,7 @@ const crearDescuento = async (nombre, tipo_descuento, valor) => {
       estado: true,
     },
   });
-  const lista = await prisma.descuento.findMany({
-    where: {
-      estado: true,
-    },
-  });
-  return lista;
+  return newDescuento;
 };
 const eliminarDescuento = async (id) => {
   const connection = await connect();
