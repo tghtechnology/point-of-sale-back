@@ -8,7 +8,7 @@ Content-Type: application/json
 
 {
   "nombre": "Mario gomez",
-  "email": "mariogomez@gmail.com",
+  "email": "hola@gmail.com",
   "telefono": "921448207",
   "direccion": "Calle Las Pasionarias",
   "ciudad": "Lima",
@@ -19,14 +19,14 @@ Content-Type: application/json
 }
 
 ###
-GET {{api}}/1
+GET {{api}}/7
 ###
-PUT {{api}}/1
+PUT {{api}}/7
 Content-Type: application/json
 
 {
   "nombre": "Luis",
-  "email": "lucho456@gmail.com",
+  "email": "mino@gmail.com",
   "telefono": "921448207",
   "direccion": "Calle Las Pasionarias",
   "ciudad": "Lima",
@@ -36,4 +36,4 @@ Content-Type: application/json
   
 }
 ###
-DELETE {{api}}/2
+DELETE {{api}}/7

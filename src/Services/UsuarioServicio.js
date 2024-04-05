@@ -90,13 +90,7 @@ export const eliminarTemporalmente = async (usuario_id, password, token) => {
       nombre:true 
     }
   });
-  /*console.log("Dirección de correo electrónico del usuario:", usuarioInfo.email);
-  console.log("Dirección de correo electrónico del usuario:", usuarioInfo.nombre);
-  if (!usuarioInfo.email) {
-    throw new Error("La dirección de correo electrónico del usuario no está definida.");
-  }if (!usuarioInfo.nombre) {
-    throw new Error("El nombre del usuario no está definido.");
-  }*/
+  
   const cuerpo = cuerpoCorreo(usuarioInfo.nombre);
   await envioCorreo(usuarioInfo.email,  "Cuenta eliminada temporalmente",cuerpo);
 
