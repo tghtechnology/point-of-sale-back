@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 //Creacion de detalle de la venta
 const CrearDetalle=async(cantidad, articuloId, ventaId )=>{
-    const info= await prisma.articulo.findFirst({
+    const info= await prisma.articulo.findUnique({
         where:{
             id:articuloId
         }

@@ -3,7 +3,7 @@ import * as DetalleVentaServicio from "./DetalleVentaServicio";
 
 const prisma = new PrismaClient();
 //Crear venta
-const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId) => {
+const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId, empleadoId) => {
         let subtotal = 0;
         for (const detalle of detalles) {
             const articulo = await prisma.articulo.findUnique({
@@ -49,7 +49,9 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId) => {
                 total: total,
                 tipoPago: tipoPago,
                 impuestoId: impuestoId,
-                descuentoId: descuentoId
+                descuentoId: descuentoId,
+                clienteId: clienteId ,
+                empleadoId: empleadoId
             }
         });
 

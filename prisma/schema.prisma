@@ -61,6 +61,7 @@ model Empleado {
   telefono String @db.VarChar(255)
   cargo String @db.VarChar(255)
   estado Boolean
+  ventas Venta[]
 
   @@map("empleado")
 }
@@ -140,6 +141,7 @@ model Cliente {
   codigo_postal String @db.VarChar(255)
   pais String @db.VarChar(255)
   estado Boolean
+  ventas Venta[]
 
   @@map("cliente")
 }
@@ -164,6 +166,10 @@ model Venta {
   impuestoId  Int?
   descuento   Descuento?    @relation(fields: [descuentoId], references: [id])
   descuentoId Int?
+  cliente      Cliente?  @relation(fields: [clienteId], references: [id])
+  clienteId    Int?
+  empleado     Empleado? @relation(fields: [empleadoId], references: [id])
+  empleadoId   Int?
   @@map("venta")
 }
 enum TipoPago {
