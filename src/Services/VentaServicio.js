@@ -4,7 +4,6 @@ import * as DetalleVentaServicio from "./DetalleVentaServicio";
 const prisma = new PrismaClient();
 //Crear venta
 const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId) => {
-    try {
         let subtotal = 0;
         for (const detalle of detalles) {
             const articulo = await prisma.articulo.findUnique({
@@ -60,10 +59,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId) => {
         }));
 
         return nuevaVenta;
-    } catch (error) {
-        console.error('Error al crear la venta:', error);
-        throw error;
-    }
+    
 };
 
 module.exports = {
