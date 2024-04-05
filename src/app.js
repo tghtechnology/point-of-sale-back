@@ -12,19 +12,20 @@ import routerArticulo from "./Routes/ArticuloRoute";
 import routerCategoria from "./Routes/CategoriaRoute";
 import routerCliente from "./Routes/ClienteRouter";
 import routerEmpleado from "./Routes/EmpleadoRouter";
-import routerInvitacion from "./Routes/InvitacionRouter"
 import router from "./Routes/ImpuestoRouter";
 
-// Remove the duplicate import statement for morgan
-// import morgan from "morgan";
-
+// Configuración de Swagger
 const specs = swaggerJSDoc(options);
+
+// Crear la aplicación Express
 const app = express();
 
+// Middleware
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 
+// Rutas
 app.use(routerUsuario);
 app.use(routerDescuento);
 app.use(routerArticulo);
@@ -32,8 +33,10 @@ app.use(routerCategoria);
 app.use(routerAuth);
 app.use(routerCliente);
 app.use(routerEmpleado);
-app.use(routerInvitacion);
 app.use(router);
 
+// Documentación Swagger
 app.use('/docs', swaggerui.serve, swaggerui.setup(specs));
+
+// Exportar la aplicación
 export default app;

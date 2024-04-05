@@ -1,47 +1,95 @@
 import { PrismaClient } from "@prisma/client";
-import { enviarCorreoInvitacion } from "./InvitacionServicio";
+import bcrypt from "bcrypt"; // Importa bcrypt para la encriptación de contraseñas
+import * as EmailInvitacion from "../Utils/emailInvitacion";
+
 const prisma = new PrismaClient();
 
-export const crearEmpleado = async (nombre, correo, telefono, cargo) => {
-  const empleado = await prisma.empleado.create({
-    data: {
+// Función para encriptar la contraseña
+const encryptPassword = async (password) => {
+  if (!password) {
+    throw new Error("Se requiere una contraseña para encriptar.");
+  }
+
+  const saltRounds = 10;
+  return await bcrypt.hash(password, saltRounds);
+};
+
+export const crearEmpleado = async (
+  nombre,
+  correo,
+  telefono,
+  cargo,
+  contrasena
+) => {
+  try {
+    // Encripta la contraseña antes de guardarla en la base de datos
+    const hashedPassword = await encryptPassword(contrasena);
+
+    // Crea el nuevo empleado en la base de datos
+    const empleado = await prisma.empleado.create({
+      data: {
+        nombre,
+        correo,
+        telefono,
+        cargo,
+        estado: true,
+        contrasena: hashedPassword,
+      },
+    });
+
+    // Envía el correo de bienvenida
+    await EmailInvitacion.enviarCorreoBienvenida(
+      correo,
       nombre,
       correo,
-      telefono,
-      cargo,
-      estado: true,
+      contrasena
+    );
+
+    return empleado;
+  } catch (error) {
+    throw new Error("Error al crear el empleado: " + error.message);
+  }
+};
+
+export const editarEmpleado = async (
+  id,
+  nombre,
+  correo,
+  telefono,
+  cargo,
+  contrasena
+) => {
+  let dataToUpdate = {
+    nombre,
+    correo,
+    telefono,
+    cargo,
+    estado: true,
+  };
+
+  // Buscar el empleado por ID para obtener la contraseña actual
+  const empleadoExistente = await prisma.empleado.findUnique({
+    where: {
+      id: Number(id),
     },
   });
 
-  // Llamar a la función de enviarCorreoInvitacion con el correo del nuevo empleado
-  await enviarCorreoInvitacion(correo);
+  // Verificar si se proporcionó una nueva contraseña y si es diferente de la actual
+  if (contrasena && empleadoExistente.contrasena !== contrasena) {
+    // Encriptar la nueva contraseña
+    const hashedPassword = await encryptPassword(contrasena);
+    dataToUpdate.contrasena = hashedPassword;
+  }
 
-  return empleado;
-};
-
-export const editarEmpleado = async (id, nombre, correo, telefono, cargo) => {
   // Actualizar empleado en la base de datos
   const empleado = await prisma.empleado.update({
     where: {
       id: Number(id),
     },
-    data: {
-      nombre: nombre,
-      correo: correo,
-      telefono: telefono,
-      cargo: cargo,
-      estado: true,
-    },
+    data: dataToUpdate,
   });
-  const updatedEmpleado = {
-    nombre: empleado.nombre,
-    correo: empleado.correo,
-    telefono: empleado.telefono,
-    cargo: empleado.cargo,
-    estado: empleado.estado,
-  };
 
-  return updatedEmpleado;
+  return empleado;
 };
 
 export const listarEmpleadoPorId = async (id) => {
@@ -62,12 +110,4 @@ export const listarEmpleados = async () => {
     where: { estado: true },
   });
   return empleados;
-};
-
-module.exports = {
-  crearEmpleado,
-  editarEmpleado,
-  listarEmpleados,
-  listarEmpleadoPorId,
-  eliminarEmpleadoPorId,
 };

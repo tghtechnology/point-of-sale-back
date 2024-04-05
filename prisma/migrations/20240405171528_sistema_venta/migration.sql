@@ -1,12 +1,11 @@
 -- CreateTable
 CREATE TABLE `categoria` (
-    `text_id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `nombre` VARCHAR(255) NOT NULL,
     `color` VARCHAR(255) NOT NULL,
     `estado` BOOLEAN NOT NULL,
 
-    UNIQUE INDEX `categoria_nombre_key`(`nombre`),
-    PRIMARY KEY (`text_id`)
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -39,6 +38,7 @@ CREATE TABLE `empleado` (
     `correo` VARCHAR(255) NOT NULL,
     `telefono` VARCHAR(255) NOT NULL,
     `cargo` VARCHAR(255) NOT NULL,
+    `contrasena` VARCHAR(255) NOT NULL,
     `estado` BOOLEAN NOT NULL,
 
     UNIQUE INDEX `empleado_correo_key`(`correo`),
@@ -52,6 +52,7 @@ CREATE TABLE `usuario` (
     `email` VARCHAR(255) NOT NULL,
     `password` VARCHAR(255) NOT NULL,
     `pais` VARCHAR(255) NULL,
+    `rol` ENUM('Propietario', 'Empleado') NOT NULL,
     `estado` BIT(1) NOT NULL,
     `eliminado_temporal_fecha` DATETIME(3) NULL,
 
@@ -61,17 +62,16 @@ CREATE TABLE `usuario` (
 
 -- CreateTable
 CREATE TABLE `articulo` (
-    `text_id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `nombre` VARCHAR(255) NOT NULL,
     `tipo_venta` ENUM('Peso', 'Unidad') NOT NULL,
     `precio` DECIMAL(10, 2) NULL,
-    `coste` DECIMAL(10, 2) NOT NULL,
     `ref` VARCHAR(255) NOT NULL,
     `representacion` VARCHAR(255) NOT NULL,
-    `nombre_categoria` VARCHAR(255) NULL DEFAULT 'Sin categoría',
+    `id_categoria` INTEGER NULL,
     `estado` BOOLEAN NOT NULL,
 
-    PRIMARY KEY (`text_id`)
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -94,8 +94,25 @@ CREATE TABLE `sesion` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `cliente` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `nombre` VARCHAR(255) NOT NULL,
+    `email` VARCHAR(255) NOT NULL,
+    `telefono` VARCHAR(255) NOT NULL,
+    `direccion` VARCHAR(255) NOT NULL,
+    `ciudad` VARCHAR(255) NOT NULL,
+    `region` VARCHAR(255) NOT NULL,
+    `codigo_postal` VARCHAR(255) NOT NULL,
+    `pais` VARCHAR(255) NOT NULL,
+    `estado` BOOLEAN NOT NULL,
+
+    UNIQUE INDEX `cliente_email_key`(`email`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
-ALTER TABLE `articulo` ADD CONSTRAINT `articulo_nombre_categoria_fkey` FOREIGN KEY (`nombre_categoria`) REFERENCES `categoria`(`text_id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `articulo` ADD CONSTRAINT `articulo_id_categoria_fkey` FOREIGN KEY (`id_categoria`) REFERENCES `categoria`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `reset_tokens` ADD CONSTRAINT `reset_tokens_usuario_id_fkey` FOREIGN KEY (`usuario_id`) REFERENCES `usuario`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
