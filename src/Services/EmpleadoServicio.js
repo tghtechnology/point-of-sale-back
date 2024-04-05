@@ -21,34 +21,30 @@ export const crearEmpleado = async (
   cargo,
   contrasena
 ) => {
-  try {
-    // Encripta la contraseña antes de guardarla en la base de datos
-    const hashedPassword = await encryptPassword(contrasena);
+  // Encripta la contraseña antes de guardarla en la base de datos
+  const hashedPassword = await encryptPassword(contrasena);
 
-    // Crea el nuevo empleado en la base de datos
-    const empleado = await prisma.empleado.create({
-      data: {
-        nombre,
-        correo,
-        telefono,
-        cargo,
-        estado: true,
-        contrasena: hashedPassword,
-      },
-    });
-
-    // Envía el correo de bienvenida
-    await EmailInvitacion.enviarCorreoBienvenida(
-      correo,
+  // Crea el nuevo empleado en la base de datos
+  const empleado = await prisma.empleado.create({
+    data: {
       nombre,
       correo,
-      contrasena
-    );
+      telefono,
+      cargo,
+      estado: true,
+      contrasena: hashedPassword,
+    },
+  });
 
-    return empleado;
-  } catch (error) {
-    throw new Error("Error al crear el empleado: " + error.message);
-  }
+  // Envía el correo de bienvenida
+  await EmailInvitacion.enviarCorreoBienvenida(
+    correo,
+    nombre,
+    correo,
+    contrasena
+  );
+
+  return empleado;
 };
 
 export const editarEmpleado = async (
