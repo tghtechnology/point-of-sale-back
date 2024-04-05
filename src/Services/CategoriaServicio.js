@@ -148,3 +148,31 @@ export const eliminarCategoria = async (id) => {
   })
   return categoria
 }
+
+/*export const buscarCategoria = async (search) => {
+    //const page = parseInt(req.query.page) - 1 || 0;
+
+    const categorias = await prisma.categoria.findMany({
+      where: {
+        nombre: {
+            contains: search
+            //mode: "insensitive"
+        }
+    }
+    })
+
+    const total = categorias.length;
+    /*const total = await prisma.categoria.countDocuments({
+      where: {
+        nombre: {
+            contains: search
+            //mode: "insensitive"
+        }
+    }
+    })
+
+    const result = {
+      total,
+      categorias
+    }
+    return result*/

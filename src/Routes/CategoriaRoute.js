@@ -3,7 +3,7 @@ import {
   listarCategorias,
   obtenerCategoriaPorId,
   actualizarCategoria,
-  eliminarCategoria,
+  eliminarCategoria
 } from "../controllers/CategoriaControlador";
 import { Router } from "express";
 
@@ -14,4 +14,5 @@ router.post("/categoria/crear", crearCategoria);
 router.get("/categoria/listar/:id", obtenerCategoriaPorId);
 router.put("/categoria/actualizar/:id", actualizarCategoria);
 router.delete("/categoria/eliminar/:id", eliminarCategoria);
+//router.get("/categoria/buscar", buscarCategoria)
 export default router;
