@@ -11,9 +11,6 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
                     id: detalle.articuloId
                 }
             });
-            if (!articulo) {
-                throw new Error(`No se encontró el artículo con id ${detalle.articuloId}`);
-            }
             subtotal += articulo.precio * detalle.cantidad;
         }
 
@@ -42,7 +39,6 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
             total -= total * (descuento.valor_calculado);
         }
 
-        // Crear la venta en la base de datos
         const nuevaVenta = await prisma.venta.create({
             data: {
                 subtotal: subtotal,
@@ -55,7 +51,6 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
             }
         });
 
-        // Crear los detalles de venta asociados a la venta recién creada
         await Promise.all(detalles.map(async detalle => {
             await DetalleVentaServicio.CrearDetalle(detalle.cantidad, detalle.articuloId, nuevaVenta.id);
         }));
@@ -63,7 +58,11 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
         return nuevaVenta;
     
 };
-
+const ListarVentas=async()=>{
+    const ventas = await prisma.venta.findMany();
+    return ventas;
+}
 module.exports = {
-    CrearVenta
+    CrearVenta,
+    ListarVentas
 };
