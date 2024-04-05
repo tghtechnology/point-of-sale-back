@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+//Rutas apis
 import routerUsuario from "./Routes/UsuarioRouter";
 import routerAuth from "./Routes/AuthRouter";
 import routerDescuento from "./Routes/DescuentoRouter"
@@ -8,8 +9,10 @@ import routerCategoria from "./Routes/CategoriaRoute"
 import routerCliente from "./Routes/ClienteRouter"
 import routerEmpleado from "./Routes/EmpleadoRouter"
 import router from "./Routes/ImpuestoRouter"
-import morgan from "morgan";
+import routerDetalleVenta from "./Routes/DetalleVentaRouter"
+import routerVenta from "./Routes/VentaRouter";
 
+import morgan from "morgan";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerui from "swagger-ui-express";
 import { options } from "./Utils/SwaggerOptions";
@@ -29,6 +32,8 @@ app.use(routerAuth)
 app.use(routerCliente)
 app.use(routerEmpleado)
 app.use(router)
+app.use(routerDetalleVenta)
+app.use(routerVenta)
 
 app.use('/docs',swaggerui.serve,swaggerui.setup(specs));
 export default app

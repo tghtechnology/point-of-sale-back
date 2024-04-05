@@ -30,6 +30,7 @@ model Descuento {
   valor Decimal @db.Decimal(10,2)
   valor_calculado Decimal @db.Decimal(10,2)
   estado Boolean
+  ventas Venta[]
 
   @@map("descuento")
 }
@@ -45,6 +46,7 @@ model Impuesto {
   tasa Decimal @db.Decimal(10,2)
   tipo_impuesto tipoImpuesto
   estado Boolean 
+  ventas Venta[]
 }
 
 enum tipoImpuesto {
@@ -93,6 +95,8 @@ model Articulo {
   representacion String     @db.VarChar(255)
   id_categoria Int? @db.Int @map("id_categoria")
   estado Boolean
+  
+  detalles    DetalleVenta[]
 
   categoria Categoria? @relation(fields: [id_categoria], references: [id])
 
@@ -139,4 +143,30 @@ model Cliente {
 
   @@map("cliente")
 }
+model DetalleVenta {
+  id           Int       @id @default(autoincrement())
+  cantidad     Int
+  subtotal     Float
+  articulo     Articulo  @relation(fields: [articuloId], references: [id])
+  articuloId   Int
+  venta        Venta     @relation(fields: [ventaId], references: [id])
+  ventaId      Int
 
+  @@map("detalleVenta")
+}
+model Venta {
+  id          Int            @id @default(autoincrement())
+  subtotal    Float
+  total       Float
+  tipoPago    TipoPago
+  detalles    DetalleVenta[]
+  impuesto    Impuesto?     @relation(fields: [impuestoId], references: [id])
+  impuestoId  Int?
+  descuento   Descuento?    @relation(fields: [descuentoId], references: [id])
+  descuentoId Int?
+  @@map("venta")
+}
+enum TipoPago {
+  EFECTIVO
+  TARJETA
+}

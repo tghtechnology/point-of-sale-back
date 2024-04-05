@@ -7,8 +7,8 @@ POST {{api}}/impuesto/crear
 Content-Type: application/json
 
 {
-  "nombre": "dksamd",
-  "tasa": "osfmks",
+  "nombre": "IGV",
+  "tasa": 18,
   "tipo_impuesto": "Incluido_en_el_precio"
 }
 ###
