@@ -13,13 +13,26 @@ import morgan from "morgan";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerui from "swagger-ui-express";
 import { options } from "./Utils/SwaggerOptions";
+import passport from "passport";
 
 const specs = swaggerJSDoc(options);
+const session = require('express-session')
 const app= express();  
+require('./Middleware/passport')
 
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
+
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false
+}))
+
+app.use(passport.initialize())
+app.use(passport.session());
+
 
 app.use(routerUsuario)
 app.use(routerDescuento)
