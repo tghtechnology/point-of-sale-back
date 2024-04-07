@@ -7,26 +7,26 @@ POST {{api}}/articulo/crear
 Content-Type: application/json
 
 {
-  "nombre": "Espátula",
+  "nombre": "Desktop",
   "tipo_venta":"Unidad",
   "precio": 14.50,
   "ref": "82323",
   "representacion": "imagen",
-  "id_categoria": 6
+  "id_categoria": ""
 }
 ###
-GET {{api}}/articulo/listar/8
+GET {{api}}/articulo/listar/11
 ###
 PUT {{api}}/articulo/actualizar/20
 Content-Type: application/json
 
 {
-  "nombre": "PC",
+  "nombre": "Almohada de Puntos",
   "tipo_venta":"Peso",
   "precio": 12.50,
   "ref": "14834",
   "representacion": "imagen",
-  "id_categoria": 6
+  "id_categoria": 8
 }
 ###
-DELETE {{api}}/articulo/eliminar/20
+DELETE {{api}}/articulo/eliminar/11
