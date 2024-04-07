@@ -22,7 +22,7 @@ const prisma = new PrismaClient(); // Inicializa PrismaClient
   }
 };*/
 
-/*export const login = async (req, res) => {
+export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const result = await AuthServicio.login(email, password);
@@ -41,9 +41,9 @@ const prisma = new PrismaClient(); // Inicializa PrismaClient
       return res.status(500).json({ error: "Error interno del servidor" });
     }
   }
-};*/
+};
 
-export const login = async (req, res, next) => {
+/*export const login = async (req, res, next) => {
   const { email, password } = req.body;
   passport.authenticate('local', async (err, usuario, info) => {
     try {
@@ -69,7 +69,7 @@ export const login = async (req, res, next) => {
     }
     }
   })(req, res, next);
-};
+};*/
 
 export const logout = async (req, res) => {  
   try {
