@@ -1,4 +1,3 @@
-import { connect } from "../database";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
@@ -10,7 +9,6 @@ const prisma = new PrismaClient();
 
 //Lógica para iniciar sesión
 export const login = async (email, password) => {
-    const connection = await connect();
     const results = await prisma.usuario.findMany({
       where: {
         email: email
@@ -64,8 +62,6 @@ export const login = async (email, password) => {
 export const logout = async (token) => {
   
     const decodedToken = jwt.verify(token, "secreto_del_token"); 
-    // Conexión a la base de datos
-    const connection = await connect(); 
     // Eliminación del token de sesión del usuario
     await prisma.sesion.deleteMany({
       where: {
@@ -204,7 +200,6 @@ export const cambiarPassword = async (token, password) => {
 
 // Función para eliminar tokens de sesión expirados y tokens de cambio de contraseña expirados de la base de datos
 export const eliminarTokensExpirados = async () => {
-    const db = await connect();
     const eliminarTokenSesion = await prisma.resetToken.deleteMany({
       where: {
         expiracion: {

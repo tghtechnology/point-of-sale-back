@@ -1,11 +1,9 @@
-import { connect } from "../database";
 import { PrismaClient } from "@prisma/client";
 
 //Inicialización de prisma
 const prisma = new PrismaClient();
 
 const crearDescuento = async (nombre, tipo_descuento, valor) => {
-  const connection = await connect();
   //Opciones de tipos de descuento que se deben ingresar
   const tiposValidos = ["PORCENTAJE", "MONTO"];
   //En el caso se ingrese otro tipo
@@ -35,7 +33,6 @@ const crearDescuento = async (nombre, tipo_descuento, valor) => {
   return newDescuento;
 };
 const eliminarDescuento = async (id) => {
-  const connection = await connect();
   // Actualizar solo el estado del descuento en la base de datos
   const descuento = await prisma.descuento.update({
     where: {
@@ -48,7 +45,6 @@ const eliminarDescuento = async (id) => {
 };
 
 const obtenerDescuentoById = async (id) => {
-  const connection = await connect();
   const descuento = await prisma.descuento.findFirst({
     where: {
       id: Number(id),
@@ -64,7 +60,6 @@ const modificarDescuento = async (
   valor,
   estado
 ) => {
-  const connection = await connect();
   const tiposValidos = ["PORCENTAJE", "MONTO"];
   // Validar tipo de descuento
   if (!tiposValidos.includes(tipo_descuento)) {
@@ -109,7 +104,6 @@ const modificarDescuento = async (
   return updatedDescuento;
 };
 const obtenerDescuentos = async () => {
-  const connection = await connect();
   const descuentos = await prisma.descuento.findMany({
     where: {
       estado: true,
@@ -119,7 +113,6 @@ const obtenerDescuentos = async () => {
 };
 
 const obtenerDescuentosEliminados = async () => {
-  const connection = await connect();
   const descuentoseliminados = await prisma.descuento.findMany({
     where: {
       estado: false,
@@ -128,7 +121,6 @@ const obtenerDescuentosEliminados = async () => {
   return descuentoseliminados;
 };
 const cambiarEstadoDescuento = async (id, nuevoEstado) => {
-  const connection = await connect();
   // Actualizar solo el estado del descuento en la base de datos
   const descuento = await prisma.descuento.update({
     where: {
