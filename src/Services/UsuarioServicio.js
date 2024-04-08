@@ -20,7 +20,7 @@ export const crearUsuario = async (nombre, email, password, pais, rol) => {
             email: email,
             pais: pais,
             password:hashedPassword,
-            rol: Propietario,
+            rol: "Propietario",
             estado:true
       }
     })

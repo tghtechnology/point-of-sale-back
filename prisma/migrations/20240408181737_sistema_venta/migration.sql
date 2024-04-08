@@ -32,20 +32,6 @@ CREATE TABLE `Impuesto` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `empleado` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `nombre` VARCHAR(255) NOT NULL,
-    `correo` VARCHAR(255) NOT NULL,
-    `telefono` VARCHAR(255) NOT NULL,
-    `cargo` VARCHAR(255) NOT NULL,
-    `contrasena` VARCHAR(255) NOT NULL,
-    `estado` BOOLEAN NOT NULL,
-
-    UNIQUE INDEX `empleado_correo_key`(`correo`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `usuario` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `nombre` VARCHAR(255) NOT NULL,

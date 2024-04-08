@@ -1,14 +1,16 @@
 import * as EmpleadoServicio from "../Services/EmpleadoServicio";
 
 export const crearEmpleado = async (req, res) => {
-  const { nombre, correo, telefono, cargo, password } = req.body;
+  const { nombre, correo, telefono, cargo, pais, password, rol} = req.body;
   try {
     const nuevoEmpleado = await EmpleadoServicio.crearEmpleado(
       nombre,
       correo,
       telefono,
       cargo,
-      password
+      pais,
+      password,
+      rol
     );
     res.status(200).json(nuevoEmpleado);
   } catch (error) {
@@ -45,14 +47,16 @@ export const listarEmpleadoPorId = async (req, res) => {
 export const editarEmpleado = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre, correo, telefono, cargo, contrasena } = req.body;
+    const { nombre, correo, telefono, cargo, pais, password, rol} = req.body;
     const empleado = await EmpleadoServicio.editarEmpleado(
       id,
       nombre,
       correo,
       telefono,
       cargo,
-      contrasena
+      pais,
+      password,
+      rol
     );
     res.status(200).json(empleado);
   } catch (error) {

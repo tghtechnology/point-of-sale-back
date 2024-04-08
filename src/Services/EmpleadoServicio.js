@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
+import { validarNombrePais } from "../helpers/helperPais";
 import * as EmailInvitacion from "../Utils/emailInvitacion";
 import nodemailer from "nodemailer";
 
@@ -29,21 +30,27 @@ export const crearEmpleado = async (
   correo,
   telefono,
   cargo,
-  contrasena
+  pais,
+  rol,
+  password
 ) => {
   // Encripta la contraseña antes de guardarla en la base de datos
-  const hashedPassword = await encryptPassword(contrasena);
-
+  const hashedPassword = await encryptPassword(password);
+  // Validación del país
+  if (!validarNombrePais(pais)) {
+    throw new Error("País inválido");
+  }
   // Crea el nuevo empleado en la base de datos
-  const empleado = await prisma.empleado.create({
+  const empleado = await prisma.usuario.create({
     data: {
       nombre,
       correo,
       telefono,
       cargo,
-      rol: Empleado,
+      pais,
+      rol: "Empleado",
       estado: true,
-      contrasena: hashedPassword,
+      password: hashedPassword,
     },
   });
 
@@ -52,7 +59,7 @@ export const crearEmpleado = async (
     correo,
     nombre,
     correo,
-    contrasena
+    password
   );
 
   // Envía el correo de bienvenida
@@ -67,32 +74,34 @@ export const editarEmpleado = async (
   correo,
   telefono,
   cargo,
-  contrasena
+  pais,
+  password
 ) => {
   let dataToUpdate = {
     nombre,
     correo,
     telefono,
     cargo,
+    pais,
     estado: true,
   };
 
   // Buscar el empleado por ID para obtener la contraseña actual
-  const empleadoExistente = await prisma.empleado.findUnique({
+  const empleadoExistente = await prisma.usuario.findUnique({
     where: {
       id: Number(id),
     },
   });
 
   // Verificar si se proporcionó una nueva contraseña y si es diferente de la actual
-  if (contrasena && empleadoExistente.contrasena !== contrasena) {
+  if (password && empleadoExistente.password !== password) {
     // Encriptar la nueva contraseña
-    const hashedPassword = await encryptPassword(contrasena);
-    dataToUpdate.contrasena = hashedPassword;
+    const hashedPassword = await encryptPassword(password);
+    dataToUpdate.password = hashedPassword;
   }
 
   // Actualizar empleado en la base de datos
-  const empleado = await prisma.empleado.update({
+  const empleado = await prisma.usuario.update({
     where: {
       id: Number(id),
     },
@@ -116,7 +125,7 @@ export const eliminarEmpleadoPorId = async (id) => {
 };
 
 export const listarEmpleados = async () => {
-  const empleados = await prisma.empleado.findMany({
+  const empleados = await prisma.usuario.findMany({
     where: { estado: true },
   });
   return empleados;
