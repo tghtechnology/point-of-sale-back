@@ -2,4 +2,5 @@
 Punto de venta backend
 
 
-instalar express-session
+npm i express-fileupload
+npm i cloudinary

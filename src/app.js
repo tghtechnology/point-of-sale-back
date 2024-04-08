@@ -17,6 +17,7 @@ import swaggerJSDoc from "swagger-jsdoc";
 import swaggerui from "swagger-ui-express";
 import { options } from "./Utils/SwaggerOptions";
 import passport from "passport";
+import fileUpload from 'express-fileupload'
 
 const specs = swaggerJSDoc(options);
 const session = require('express-session')
@@ -26,6 +27,10 @@ require('./Middleware/passport')
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(fileUpload({
+    useTempFiles : true,
+    tempFileDir : './tmp'
+}))
 
 app.use(session({
     secret: process.env.SESSION_SECRET,
