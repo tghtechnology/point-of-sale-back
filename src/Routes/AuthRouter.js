@@ -6,16 +6,14 @@ import {
   verificarSesion,
 } from "../controllers/AuthControlador";
 import { Router } from "express";
-
+import { verificarAuth } from "../Middleware/verificarAuth";
 const routerAuth = Router();
-//VERIFICAR SESION
-//routerAuth.get("/verificarSesion", verificarSesion);
 
 //SISTEMA DE ACCESO AL USUARIO
 
 routerAuth.post("/login", login);
-routerAuth.post("/logout", logout);
-routerAuth.post("/envioCorreo", enviarTokenCambioPassword);
-routerAuth.post("/cambiarPassword", cambiarPassword);
+routerAuth.post("/logout", verificarAuth, logout);
+routerAuth.post("/envioCorreo", verificarAuth, enviarTokenCambioPassword);
+routerAuth.post("/cambiarPassword", verificarAuth, cambiarPassword);
 
 export default routerAuth;

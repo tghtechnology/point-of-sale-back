@@ -1,4 +1,3 @@
-import { Router } from "express";
 import {
   crearEmpleado,
   editarEmpleado,
@@ -6,22 +5,19 @@ import {
   listarEmpleadoPorId,
   eliminarEmpleadoPorId,
 } from "../controllers/EmpleadoControlador";
+import { verificarAuth, isPropietario } from "../Middleware/verificarAuth";
+import { Router } from "express";
 
 const routerEmpleado = Router();
 
-// Crear un nuevo empleado
-routerEmpleado.post("/empleado", crearEmpleado);
+// Rutas para la gestión de empleados
 
-// Obtener la lista de empleados activos
-routerEmpleado.get("/empleados", listarEmpleados);
+//Sólo propietario
+routerEmpleado.post("/empleado", verificarAuth, isPropietario, crearEmpleado); 
+routerEmpleado.put("/empleado/:id", verificarAuth, isPropietario, editarEmpleado); 
+routerEmpleado.delete("/empleado/:id", verificarAuth, isPropietario, eliminarEmpleadoPorId); 
 
-// Obtener un empleado por su ID
-routerEmpleado.get("/empleado/:id", listarEmpleadoPorId);
-
-// Editar un empleado por su ID
-routerEmpleado.put("/empleado/:id", editarEmpleado);
-
-// Eliminar un empleado por su ID
-routerEmpleado.delete("/empleado/:id", eliminarEmpleadoPorId);
+routerEmpleado.get("/empleado", verificarAuth, listarEmpleados); 
+routerEmpleado.get("/empleado/:id", verificarAuth, listarEmpleadoPorId); 
 
 export default routerEmpleado;

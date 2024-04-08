@@ -100,3 +100,14 @@ export const eliminarCategoria = async (req, res) => {
     }
   }
 }
+
+/*export const buscarCategoria = async (req, res) => {
+  try {
+    const search = req.query.search
+    const result = await CategoriaServicio.buscarCategoria(search)
+    res.status(200).json(result)
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al buscar las categorías' });
+  }
+}*/

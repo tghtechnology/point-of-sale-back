@@ -7,8 +7,8 @@ POST {{api}}/categoria/crear
 Content-Type: application/json
 
 {
-  "nombre": "Utensilios de cocina",
-  "color":"Negro"
+  "nombre": "Libros",
+  "color":"Azul"
 }
 ###
 GET {{api}}/categoria/listar/6
@@ -21,4 +21,6 @@ Content-Type: application/json
   "color":"Blanco"
 }
 ###
-DELETE {{api}}/categoria/eliminar/21
+DELETE {{api}}/categoria/eliminar/6
+###
+//GET {{api}}/categoria/buscar?search=utensilios
