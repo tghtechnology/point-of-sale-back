@@ -15,7 +15,7 @@ Content-Type: application/json
   "id_categoria": 1
 }
 ###
-GET {{api}}/articulo/listar/20
+GET {{api}}/articulo/listar/11
 ###
 PUT {{api}}/articulo/actualizar/20
 Content-Type: application/json
@@ -29,4 +29,4 @@ Content-Type: application/json
   "id_categoria": 8
 }
 ###
-DELETE {{api}}/articulo/eliminar/20
+DELETE {{api}}/articulo/eliminar/11

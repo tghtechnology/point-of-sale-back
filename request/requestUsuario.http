@@ -5,20 +5,30 @@ POST {{api}}/registro
 Content-Type: application/json
 
 {
-  "nombre": "Unique",
-  "email": "estefanyt3101@gmail.com",
-  "password": "123345",
-  "pais": "Perú"
+  "nombre": "Pom",
+  "email": "pompom@gmail.com",
+  "password": "12345",
+  "pais": "Perú",
+  "rol": "Propietario"
 }
 ### 
 POST {{api}}/login
 Content-Type: application/json
 
 {
-  "email": "estefanyt3101@gmail.com",
-  "password": "123345"
+  "email": "mark@gmail.com",
+  "password": "12345"
 }
-###
-POST {{api}}/restaurar-cuenta/15
+###P
+POST {{api}}/restaurar-cuenta/13
 ###
 POST {{api}}/eliminar-cuenta-vencida/7
+###
+POST {{api}}/eliminar-temporal
+Content-Type: application/json
+
+{
+  "usuario_id": 1,
+  "password": "12345",
+  "token":
+}

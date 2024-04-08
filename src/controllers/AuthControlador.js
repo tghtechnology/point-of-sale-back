@@ -2,6 +2,8 @@ import * as AuthServicio from "../Services/AuthServicio";
 import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import { verificarSesion as verificacion } from "../Middleware/verificarSesion";
+const passport = require('passport')
+require('../Middleware/passport')
 
 const prisma = new PrismaClient(); // Inicializa PrismaClient
 
@@ -40,6 +42,34 @@ export const login = async (req, res) => {
     }
   }
 };
+
+/*export const login = async (req, res, next) => {
+  const { email, password } = req.body;
+  passport.authenticate('local', async (err, usuario, info) => {
+    try {
+      if (err) {
+        return next(err);
+      }
+      if (!usuario) {
+        return res.status(401).json({ error: info.message });
+      }
+      const result = await AuthServicio.login(email, password);
+      return res.status(200).json({
+        token: result.token,
+        usuario_id: result.usuario_id
+      });
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+    if (error.message === "Nombre de usuario o contraseña incorrectos") {
+      return res.status(401).json({ error: "Nombre de usuario o contraseña incorrectos" });
+    } else if (error.message === "Sesión activa encontrada") {
+      return res.status(401).json({ error: "Ya has iniciado sesión", activeSessions: true });
+    } else {
+      return res.status(500).json({ error: "Error interno del servidor" });
+    }
+    }
+  })(req, res, next);
+};*/
 
 export const logout = async (req, res) => {  
   try {
