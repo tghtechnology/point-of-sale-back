@@ -152,21 +152,23 @@ model DetalleVenta {
   @@map("detalleVenta")
 }
 model Venta {
-  id          Int            @id @default(autoincrement())
-  subtotal    Float
-  total       Float
-  tipoPago    TipoPago
-  detalles    DetalleVenta[]
-  impuesto    Impuesto?     @relation(fields: [impuestoId], references: [id])
-  impuestoId  Int?
-  descuento   Descuento?    @relation(fields: [descuentoId], references: [id])
-  descuentoId Int?
-  cliente      Cliente?  @relation(fields: [clienteId], references: [id])
-  clienteId    Int?
-  usuario Usuario? @relation(fields: [usuarioId], references: [id])
-  usuarioId   Int?
-  @@map("venta")
+  id            Int      @id @default(autoincrement())
+  subtotal      Float
+  total         Float
+  tipoPago      String
+  impuesto      Impuesto? @relation(fields: [impuestoId], references: [id])
+  descuento     Descuento? @relation(fields: [descuentoId], references: [id])
+  cliente       Cliente   @relation(fields: [clienteId], references: [id])
+  usuario       Usuario   @relation(fields: [usuarioId], references: [id])
+  dineroRecibido Float   
+  cambio        Float?
+  detalles      DetalleVenta[]
+  impuestoId    Int?
+  descuentoId   Int?
+  clienteId     Int
+  usuarioId     Int
 }
+
 enum TipoPago {
   EFECTIVO
   TARJETA
