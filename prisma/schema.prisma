@@ -30,6 +30,7 @@ model Descuento {
   valor Decimal @db.Decimal(10,2)
   valor_calculado Decimal @db.Decimal(10,2)
   estado Boolean
+  ventas Venta[]
 
   @@map("descuento")
 }
@@ -45,22 +46,12 @@ model Impuesto {
   tasa Decimal @db.Decimal(10,2)
   tipo_impuesto tipoImpuesto
   estado Boolean 
+  ventas Venta[]
 }
 
 enum tipoImpuesto {
   Incluido_en_el_precio
   Anadido_al_precio
-}
-
-model Empleado {
-  id Int @id @default(autoincrement())
-  nombre String @db.VarChar(255)
-  correo String @db.VarChar(255) @unique
-  telefono String @db.VarChar(255)
-  cargo String @db.VarChar(255)
-  estado Boolean
-
-  @@map("empleado")
 }
 
 model Usuario {
@@ -75,6 +66,7 @@ model Usuario {
 
   resetTokens ResetToken[]
   sesiones Sesion[]
+  ventas Venta[]
 
   @@map("usuario")
 }
@@ -93,6 +85,7 @@ model Articulo {
   representacion String     @db.VarChar(255)
   id_categoria Int? @db.Int @map("id_categoria")
   estado Boolean
+  detalles    DetalleVenta[]
 
   categoria Categoria? @relation(fields: [id_categoria], references: [id])
 
@@ -136,6 +129,7 @@ model Cliente {
   codigo_postal String @db.VarChar(255)
   pais String @db.VarChar(255)
   estado Boolean
+  ventas Venta[]
 
   @@map("cliente")
 }
@@ -147,3 +141,33 @@ model Cliente {
 
   //venta Venta? @relation(fields: [id_venta], references: [id])
 //}
+model DetalleVenta {
+  id           Int       @id @default(autoincrement())
+  cantidad     Int
+  subtotal     Float
+  articulo     Articulo  @relation(fields: [articuloId], references: [id])
+  articuloId   Int
+  venta        Venta     @relation(fields: [ventaId], references: [id])
+  ventaId      Int
+  @@map("detalleVenta")
+}
+model Venta {
+  id          Int            @id @default(autoincrement())
+  subtotal    Float
+  total       Float
+  tipoPago    TipoPago
+  detalles    DetalleVenta[]
+  impuesto    Impuesto?     @relation(fields: [impuestoId], references: [id])
+  impuestoId  Int?
+  descuento   Descuento?    @relation(fields: [descuentoId], references: [id])
+  descuentoId Int?
+  cliente      Cliente?  @relation(fields: [clienteId], references: [id])
+  clienteId    Int?
+  usuario Usuario? @relation(fields: [usuarioId], references: [id])
+  usuarioId   Int?
+  @@map("venta")
+}
+enum TipoPago {
+  EFECTIVO
+  TARJETA
+}
