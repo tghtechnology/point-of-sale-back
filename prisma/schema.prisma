@@ -144,7 +144,7 @@ model Cliente {
 model DetalleVenta {
   id           Int       @id @default(autoincrement())
   cantidad     Int
-  subtotal     Float
+  subtotal     Decimal @db.Decimal(10,2)
   articulo     Articulo  @relation(fields: [articuloId], references: [id])
   articuloId   Int
   venta        Venta     @relation(fields: [ventaId], references: [id])
@@ -153,15 +153,15 @@ model DetalleVenta {
 }
 model Venta {
   id            Int      @id @default(autoincrement())
-  subtotal      Float
-  total         Float
+  subtotal      Decimal @db.Decimal(10,2)
+  total         Decimal @db.Decimal(10,2)
   tipoPago      String
   impuesto      Impuesto? @relation(fields: [impuestoId], references: [id])
   descuento     Descuento? @relation(fields: [descuentoId], references: [id])
   cliente       Cliente   @relation(fields: [clienteId], references: [id])
   usuario       Usuario   @relation(fields: [usuarioId], references: [id])
-  dineroRecibido Float   
-  cambio        Float?
+  dineroRecibido Decimal @db.Decimal(10,2) 
+  cambio        Decimal @db.Decimal(10,2)
   detalles      DetalleVenta[]
   impuestoId    Int?
   descuentoId   Int?

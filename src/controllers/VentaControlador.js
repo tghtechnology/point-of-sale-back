@@ -10,7 +10,7 @@ export const CrearVenta = async (req, res) => {
       const nuevaVenta = await VentaServicio.CrearVenta(detalles, tipoPago, impuestoId, descuentoId, clienteId, usuarioId, dineroRecibido);
 
       // Aquí puedes enviar la respuesta con la nueva venta creada
-      res.status(201).json({ venta: nuevaVenta });
+      res.status(201).json(nuevaVenta);
   } catch (error) {
       // En caso de error, envía una respuesta de error
       console.error('Error al crear la venta:', error);
