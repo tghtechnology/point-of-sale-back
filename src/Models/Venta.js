@@ -8,3 +8,4 @@ class Venta {
         this.total = total;
     }
 }
+export default Venta

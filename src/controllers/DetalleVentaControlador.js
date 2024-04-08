@@ -11,9 +11,9 @@ export const CrearDetalle=async(res, req)=>{
     res.status(500).json({ mensaje: 'Ocurrió un error al crear el detalle de venta' });
   }
 }
-export const ListarDetalles = (req, res) => {
+export const ListarDetalles = async (req, res) => {
     try {
-        const detalles = DetalleVentaServicio.ListarDetalles();
+        const detalles = await DetalleVentaServicio.ListarDetalles();
         res.status(200).json(detalles);
       } catch (error) {
         console.error(error);

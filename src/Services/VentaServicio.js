@@ -22,7 +22,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
                     id: impuestoId
                 }
             });
-            if (impuesto.tipo_impuesto === "Añadido_al_precio") {
+            if (impuesto.tipo_impuesto === "Anadido_al_precio") {
                 total += subtotal * (impuesto.tasa / 100);
             } else {
                 total += subtotal * (impuesto.tasa / 100);

@@ -12,9 +12,9 @@ export const CrearVenta = async (req, res) => {
     res.status(500).json({ error: 'Ocurrió un error al crear la venta' });
   }
 };
-export const ListarVentas = (req, res) => { 
+export const ListarVentas = async(req, res) => { 
     try {
-        const ventas = VentaServicio.ListarVentas();
+        const ventas = await VentaServicio.ListarVentas();
         res.status(200).json(ventas);
       } catch (error) {
         console.error(error);
