@@ -10,7 +10,6 @@ const prisma = new PrismaClient();
 
 //Lógica para iniciar sesión
 export const login = async (email, password) => {
-    const connection = await connect();
     const results = await prisma.usuario.findMany({
       where: {
         email: email
@@ -64,8 +63,6 @@ export const login = async (email, password) => {
 export const logout = async (token) => {
   
     const decodedToken = jwt.verify(token, "secreto_del_token"); 
-    // Conexión a la base de datos
-    const connection = await connect(); 
     // Eliminación del token de sesión del usuario
     await prisma.sesion.deleteMany({
       where: {

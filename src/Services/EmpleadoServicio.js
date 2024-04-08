@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt"; // Importa bcrypt para la encriptación de contraseñas
+import bcrypt from "bcrypt";
 import * as EmailInvitacion from "../Utils/emailInvitacion";
+import nodemailer from "nodemailer";
 
 const prisma = new PrismaClient();
 
@@ -13,6 +14,15 @@ const encryptPassword = async (password) => {
   const saltRounds = 10;
   return await bcrypt.hash(password, saltRounds);
 };
+
+// Configurar el transporte de correo electrónico
+const transporter = nodemailer.createTransport({
+  service: process.env.EMAIL_SERVICE,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
 
 export const crearEmpleado = async (
   nombre,
@@ -31,18 +41,22 @@ export const crearEmpleado = async (
       correo,
       telefono,
       cargo,
+      rol: Empleado,
       estado: true,
       contrasena: hashedPassword,
     },
   });
 
-  // Envía el correo de bienvenida
-  await EmailInvitacion.enviarCorreoBienvenida(
+  // Construye el mensaje de correo electrónico
+  const mensajeCorreo = await EmailInvitacion.enviarCorreoBienvenida(
     correo,
     nombre,
     correo,
     contrasena
   );
+
+  // Envía el correo de bienvenida
+  await transporter.sendMail(mensajeCorreo);
 
   return empleado;
 };

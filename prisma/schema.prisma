@@ -52,18 +52,6 @@ enum tipoImpuesto {
   Anadido_al_precio
 }
 
-model Empleado {
-  id Int @id @default(autoincrement())
-  nombre String @db.VarChar(255)
-  correo String @db.VarChar(255) @unique
-  telefono String @db.VarChar(255)
-  cargo String @db.VarChar(255)
-  contrasena String @db.VarChar(255)
-  estado Boolean
-
-  @@map("empleado")
-}
-
 model Usuario {
   id Int @id @default(autoincrement())
   nombre String @db.VarChar(255)

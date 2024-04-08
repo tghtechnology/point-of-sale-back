@@ -8,7 +8,7 @@ const crearCliente = async (nombre, email, telefono, direccion, ciudad, region, 
     if (!validarNombrePais(pais)) {
       throw new Error("País inválido");
     }
-    const connection = await connect();
+
     const newCliente=await prisma.cliente.create({
       data:{
             nombre: nombre,
@@ -27,7 +27,6 @@ const crearCliente = async (nombre, email, telefono, direccion, ciudad, region, 
 
 //Listar clientes
 const listarClientes= async()=>{
-    const connection = await connect();
     const clientes= await prisma.cliente.findMany({
         where: {
           estado: true
@@ -38,7 +37,6 @@ const listarClientes= async()=>{
 
 //Listar por id
 const obtenerClienteById=async (id) => {
-    const connection = await connect();
     const cliente= await prisma.cliente.findFirst({
         where: {
           id: Number(id)
@@ -52,7 +50,6 @@ const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, reg
     if (!validarNombrePais(pais)) {
       throw new Error("País inválido");
     }
-    const connection = await connect();
     const cliente=await prisma.cliente.update({
       where: {
         id: Number(id)
@@ -85,7 +82,6 @@ const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, reg
 
 //Eliminar cliente
 const eliminarCliente = async (id) => {
-    const connection = await connect();
     const cliente=await prisma.cliente.update({
       where: {
         id: Number(id)

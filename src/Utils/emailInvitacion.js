@@ -1,19 +1,9 @@
-import nodemailer from "nodemailer";
-
 export const enviarCorreoBienvenida = async (
   destinatario,
   nombre,
   correo,
   contrasena
 ) => {
-  const transporter = nodemailer.createTransport({
-    service: process.env.EMAIL_SERVICE,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
-
   const mensajeCorreo = {
     from: process.env.EMAIL_USER,
     to: destinatario,
@@ -29,5 +19,5 @@ export const enviarCorreoBienvenida = async (
     `,
   };
 
-  await transporter.sendMail(mensajeCorreo);
+  return mensajeCorreo;
 };
