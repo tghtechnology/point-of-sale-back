@@ -6,7 +6,7 @@ import {
   verificarSesion,
 } from "../controllers/AuthControlador";
 import { Router } from "express";
-const verificarAuth = require('../Middleware/verificarAuth.js')
+import { verificarAuth } from "../Middleware/verificarAuth";
 const routerAuth = Router();
 
 //SISTEMA DE ACCESO AL USUARIO

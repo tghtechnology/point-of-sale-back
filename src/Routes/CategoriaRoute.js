@@ -6,12 +6,15 @@ import {
   eliminarCategoria
 } from "../controllers/CategoriaControlador";
 import { Router } from "express";
-const verificarAuth = require('../Middleware/verificarAuth.js')
+import { verificarAuth, isPropietario } from "../Middleware/verificarAuth";
 const router = Router();
 
+//Sólo propietario
+router.post("/categoria/crear", verificarAuth, isPropietario, crearCategoria);
+router.put("/categoria/actualizar/:id", verificarAuth, isPropietario, actualizarCategoria);
+router.delete("/categoria/eliminar/:id", verificarAuth, isPropietario, eliminarCategoria);
+
 router.get("/categoria/listar", verificarAuth, listarCategorias);
-router.post("/categoria/crear", verificarAuth, crearCategoria);
 router.get("/categoria/listar/:id", verificarAuth, obtenerCategoriaPorId);
-router.put("/categoria/actualizar/:id", verificarAuth, actualizarCategoria);
-router.delete("/categoria/eliminar/:id", verificarAuth, eliminarCategoria);
+
 export default router;
