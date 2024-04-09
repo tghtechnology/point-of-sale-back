@@ -36,6 +36,8 @@ CREATE TABLE `usuario` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `nombre` VARCHAR(255) NOT NULL,
     `email` VARCHAR(255) NOT NULL,
+    `cargo` VARCHAR(255) NOT NULL,
+    `telefono` VARCHAR(255) NOT NULL,
     `password` VARCHAR(255) NOT NULL,
     `pais` VARCHAR(255) NULL,
     `rol` ENUM('Propietario', 'Empleado') NOT NULL,
