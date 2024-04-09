@@ -2,8 +2,10 @@ export const enviarCorreoBienvenida = async (
   destinatario,
   nombre,
   email,
-  contrasena
+  contrasena,
+  urlEmpleado
 ) => {
+  const invitacionLink = `http://${urlEmpleado}`;
   const mensajeCorreo = {
     from: process.env.EMAIL_USER,
     to: destinatario,
@@ -25,6 +27,7 @@ export const enviarCorreoBienvenida = async (
               margin: 0;
               padding: 0;
               background-color: #f5f5f5;
+              font-family: Arial, sans-serif;
             }
             #panel {
               width: 60%; /* Ancho del panel */
@@ -34,7 +37,7 @@ export const enviarCorreoBienvenida = async (
               text-align: center;
               margin: 0 auto;
             }
-            button {
+            .resetButton {
               background-color: #007bff;
               border: none;
               color: white;
@@ -47,22 +50,32 @@ export const enviarCorreoBienvenida = async (
               border-radius: 5px; /* Added border-radius to make the corners rounded */
               cursor: pointer;
             }
-            a {
+            a.resetButton {
               text-decoration: none;
               color: white;
+            }
+            .logo {
+              width: 200px;
+              height: auto;
+              margin-bottom: 20px;
+            }
+            .credentials {
+              margin: 20px 0;
             }
           </style>
       </head>
       <body>
           <div id="panel">
+              <img src="URL_DEL_LOGO_DE_LA_EMPRESA" alt="Logo de la empresa" class="logo">
               <p>Hola ${nombre},</p>
               <p>¡Bienvenido a nuestra empresa! Te damos la bienvenida como nuevo empleado.</p>
-              <p>Tus credenciales de inicio de sesión son:</p>
-              <p>Correo electrónico: ${email}</p>
-              <p>Contraseña: ${contrasena}</p>
+              <div class="credentials">
+                  <p>Tus credenciales de inicio de sesión son:</p>
+                  <p>Correo electrónico: ${email}</p>
+                  <p>Contraseña: ${contrasena}</p>
+              </div>
               <p>Por favor, asegúrate de mantener seguras tus credenciales de inicio de sesión.</p>
-              <p>¡Gracias!</p>
-              <button id="resetButton">Acceder a tu cuenta</button>
+              <a href="${invitacionLink}" class="resetButton">Acceder a tu cuenta</a>
           </div>
       </body>
       </html>

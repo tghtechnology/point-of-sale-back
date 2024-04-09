@@ -6,15 +6,6 @@ import nodemailer from "nodemailer";
 
 const prisma = new PrismaClient();
 
-const encryptPassword = async (password) => {
-  if (!password) {
-    throw new Error("Se requiere una contraseña para encriptar.");
-  }
-
-  const saltRounds = 10;
-  return bcrypt.hash(password, saltRounds);
-};
-
 const transporter = nodemailer.createTransport({
   service: process.env.EMAIL_SERVICE,
   auth: {
@@ -22,6 +13,11 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASSWORD,
   },
 });
+
+const encryptPassword = async (password) => {
+  if (!password) throw new Error("Se requiere una contraseña para encriptar.");
+  return bcrypt.hash(password, 10);
+};
 
 export const crearEmpleado = async (
   nombre,
@@ -31,11 +27,9 @@ export const crearEmpleado = async (
   pais,
   password
 ) => {
-  const hashedPassword = await encryptPassword(password);
+  if (!validarNombrePais(pais)) throw new Error("País inválido");
 
-  if (!validarNombrePais(pais)) {
-    throw new Error("País inválido");
-  }
+  const hashedPassword = await encryptPassword(password);
 
   const empleado = await prisma.usuario.create({
     data: {
@@ -50,12 +44,13 @@ export const crearEmpleado = async (
     },
   });
 
-  const mensajeCorreo = await EmailInvitacion.enviarCorreoBienvenida(
+  await transporter.sendMail(await EmailInvitacion.enviarCorreoBienvenida(
     email,
     nombre,
-    password
-  );
-  await transporter.sendMail(mensajeCorreo);
+    email,
+    password,
+    process.env.URLEMPLOYE
+  ));  
 
   return empleado;
 };
@@ -75,9 +70,7 @@ export const editarEmpleado = async (
     },
   });
 
-  if (!empleadoExistente) {
-    throw new Error(`No se encontró ningún empleado con el ID ${id}`);
-  }
+  if (!empleadoExistente) throw new Error(`No se encontró ningún empleado con el ID ${id}`);
 
   let dataToUpdate = {
     nombre,
@@ -89,18 +82,15 @@ export const editarEmpleado = async (
   };
 
   if (password && empleadoExistente.password !== password) {
-    const hashedPassword = await encryptPassword(password);
-    dataToUpdate.password = hashedPassword;
+    dataToUpdate.password = await encryptPassword(password);
   }
 
-  const empleado = await prisma.usuario.update({
+  return await prisma.usuario.update({
     where: {
       id: Number(id),
     },
     data: dataToUpdate,
   });
-
-  return empleado;
 };
 
 export const listarEmpleadoPorId = async (id) => {
@@ -108,9 +98,7 @@ export const listarEmpleadoPorId = async (id) => {
     where: { id: parseInt(id, 10) },
   });
 
-  if (!empleado) {
-    throw new Error(`No se encontró ningún empleado con el ID ${id}`);
-  }
+  if (!empleado) throw new Error(`No se encontró ningún empleado con el ID ${id}`);
 
   return empleado;
 };
@@ -123,7 +111,5 @@ export const eliminarEmpleadoPorId = async (id) => {
 };
 
 export const listarEmpleados = async () => {
-  return await prisma.usuario.findMany({
-    where: { estado: true },
-  });
+  return await prisma.usuario.findMany({ where: { estado: true } });
 };
