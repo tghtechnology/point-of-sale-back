@@ -1,4 +1,4 @@
-export const cuerpoCorreo = (nombreUsuario, detallesVenta) => {
+export const cuerpoVenta = (nombreUsuario, detallesVenta, subtotal, total) => {
     // Generar el contenido HTML de los detalles de la venta
     const detallesHTML = detallesVenta.map(detalle => `
         <p>${detalle.producto}: ${detalle.cantidad} x ${detalle.precioUnitario}</p>
@@ -61,6 +61,8 @@ export const cuerpoCorreo = (nombreUsuario, detallesVenta) => {
             <p>¡Hola ${nombreUsuario}!<br>
             Aquí están los detalles de tu última compra:</p>
             ${detallesHTML}
+            <p>Subtotal: ${subtotal}</p>
+            <p>Total: ${total}</p>
             <br>
             <p>¡Esperamos volver a verte pronto! 👏</p>
         </div>
