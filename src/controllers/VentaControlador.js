@@ -2,14 +2,19 @@ import * as VentaServicio from "../Services/VentaServicio"
 
 // Controlador para la creación de una venta
 export const CrearVenta = async (req, res) => {
-  const { detalles, tipoPago, impuestoId, descuentoId, empleadoId, clienteId } = req.body;
-  
   try {
-    const nuevaVenta = await VentaServicio.CrearVenta(detalles, tipoPago, impuestoId, descuentoId,empleadoId, clienteId);
-    res.status(201).json(nuevaVenta);
+      // Aquí obtienes los datos necesarios para crear la venta desde el cuerpo de la solicitud (req.body)
+      const { detalles, tipoPago, impuestoId, descuentoId, clienteId, usuarioId, dineroRecibido } = req.body;
+
+      // Llama a la función CrearVenta con los parámetros necesarios
+      const nuevaVenta = await VentaServicio.CrearVenta(detalles, tipoPago, impuestoId, descuentoId, clienteId, usuarioId, dineroRecibido);
+
+      // Aquí puedes enviar la respuesta con la nueva venta creada
+      res.status(201).json(nuevaVenta);
   } catch (error) {
-    console.error('Error al crear la venta:', error);
-    res.status(500).json({ error: 'Ocurrió un error al crear la venta' });
+      // En caso de error, envía una respuesta de error
+      console.error('Error al crear la venta:', error);
+      res.status(500).json({ error: 'Error al crear la venta' });
   }
 };
 export const ListarVentas = async(req, res) => { 

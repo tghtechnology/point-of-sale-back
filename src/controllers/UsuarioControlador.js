@@ -12,8 +12,8 @@ export const listaPaises = async (req, res) => {
 //Creacion de usuario con sus requerimientos o validaciones
 export const crearUsuario=async (req, res)=>{
     try {
-        const {nombre,email,password,pais, rol}=req.body
-        const newUsuario=await UsuarioServicio.crearUsuario(nombre,email,password,pais,rol);
+        const {nombre,email,password,pais}=req.body
+        const newUsuario=await UsuarioServicio.crearUsuario(nombre,email,password,pais);
         res.json(newUsuario);
       } catch (error) {
         console.error(error);
