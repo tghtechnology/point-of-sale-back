@@ -1,62 +1,129 @@
+import { validarNombrePais } from "../helpers/helperPais";
+import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
+import * as EmailInvitacion from "../Utils/emailInvitacion";
+import nodemailer from "nodemailer";
+
 const prisma = new PrismaClient();
 
-export const crearEmpleado = async (nombre, correo, telefono, cargo) => {
-  
-  const empleado = await prisma.empleado.create({
+const encryptPassword = async (password) => {
+  if (!password) {
+    throw new Error("Se requiere una contraseña para encriptar.");
+  }
+
+  const saltRounds = 10;
+  return bcrypt.hash(password, saltRounds);
+};
+
+const transporter = nodemailer.createTransport({
+  service: process.env.EMAIL_SERVICE,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
+
+export const crearEmpleado = async (
+  nombre,
+  email,
+  telefono,
+  cargo,
+  pais,
+  password
+) => {
+  const hashedPassword = await encryptPassword(password);
+
+  if (!validarNombrePais(pais)) {
+    throw new Error("País inválido");
+  }
+
+  const empleado = await prisma.usuario.create({
     data: {
       nombre,
-      correo,
+      email,
       telefono,
       cargo,
+      pais,
+      rol: "Empleado",
       estado: true,
+      password: hashedPassword,
     },
   });
+
+  const mensajeCorreo = await EmailInvitacion.enviarCorreoBienvenida(
+    email,
+    nombre,
+    password
+  );
+  await transporter.sendMail(mensajeCorreo);
+
   return empleado;
 };
 
-export const editarEmpleado = async (id, nombre,correo,telefono,cargo) => {
-    // Actualizar empleado en la base de datos
-    const empleado = await prisma.empleado.update({
-      where: {
-        id: Number(id),
-      },
-      data: {
-        nombre: nombre,
-        correo: correo,
-        telefono: telefono,
-        cargo: cargo,
-        estado: true,
-      },
-    });
-    const updatedEmpleado = {
-      nombre: empleado.nombre,
-      correo: empleado.correo,
-      telefono: empleado.telefono,
-      cargo: empleado.cargo,
-      estado: empleado.estado,
-    };
-  
-    return updatedEmpleado;
+export const editarEmpleado = async (
+  id,
+  nombre,
+  email,
+  telefono,
+  cargo,
+  pais,
+  password
+) => {
+  const empleadoExistente = await prisma.usuario.findUnique({
+    where: {
+      id: Number(id),
+    },
+  });
+
+  if (!empleadoExistente) {
+    throw new Error(`No se encontró ningún empleado con el ID ${id}`);
+  }
+
+  let dataToUpdate = {
+    nombre,
+    email,
+    telefono,
+    cargo,
+    pais,
+    estado: true,
   };
 
+  if (password && empleadoExistente.password !== password) {
+    const hashedPassword = await encryptPassword(password);
+    dataToUpdate.password = hashedPassword;
+  }
+
+  const empleado = await prisma.usuario.update({
+    where: {
+      id: Number(id),
+    },
+    data: dataToUpdate,
+  });
+
+  return empleado;
+};
+
 export const listarEmpleadoPorId = async (id) => {
-  return await prisma.empleado.findUnique({
+  const empleado = await prisma.usuario.findUnique({
     where: { id: parseInt(id, 10) },
   });
+
+  if (!empleado) {
+    throw new Error(`No se encontró ningún empleado con el ID ${id}`);
+  }
+
+  return empleado;
 };
 
 export const eliminarEmpleadoPorId = async (id) => {
-  return await prisma.empleado.update({
+  return await prisma.usuario.update({
     where: { id: parseInt(id, 10) },
     data: { estado: false },
   });
 };
 
-export const listarEmpleados=async()=>{
-  const empleados=await prisma.empleado.findMany({
+export const listarEmpleados = async () => {
+  return await prisma.usuario.findMany({
     where: { estado: true },
-  })
-  return empleados
-}
-
+  });
+};

@@ -8,21 +8,11 @@ var _EmpleadoControlador = require("../controllers/EmpleadoControlador");
 var _express = require("express");
 var routerEmpleado = (0, _express.Router)();
 
-//CREAR NUEVO EMPLEADO
-routerEmpleado.post("/empleado", _EmpleadoControlador.crearEmpleado);
-
-//ACTUALIZAR EMPLEADO
-routerEmpleado.put("/:id", _EmpleadoControlador.editarEmpleado);
-
-//OBTENER TODOS LOS EMPLEADOS
-routerEmpleado.get("/", _EmpleadoControlador.listarEmpleados);
-
-//OBTENER EMPLEADO POR ID
-routerEmpleado.get("/:id", _EmpleadoControlador.listarEmpleadoPorId);
-
-//ACTUALIZAR EMPLEADO POR ID
-routerEmpleado.put("/actualizar/:id", _EmpleadoControlador.actualizarEmpleadoPorId);
-
-//ELIMINAR EMPLEADO POR ID
-routerEmpleado["delete"]("/:id", _EmpleadoControlador.eliminarEmpleadoPorId);
+// Rutas para la gestión de empleados
+routerEmpleado.post("/empleado", _EmpleadoControlador.crearEmpleado); // Crear un nuevo empleado
+routerEmpleado.put("/empleado/:id", _EmpleadoControlador.editarEmpleado); // Editar un empleado
+routerEmpleado.get("/empleado", _EmpleadoControlador.listarEmpleados); // Obtener la lista de empleados activos
+routerEmpleado.get("/empleado/:id", _EmpleadoControlador.listarEmpleadoPorId); // Obtener un empleado por su ID
+//routerEmpleado.patch("/actualizarEmpleado/:id", actualizarEmpleadoPorId); // Actualizar un empleado por su ID
+routerEmpleado["delete"]("/empleado/:id", _EmpleadoControlador.eliminarEmpleadoPorId); // Eliminar un empleado por su ID
 var _default = exports["default"] = routerEmpleado;
