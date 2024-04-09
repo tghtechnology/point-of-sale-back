@@ -27,5 +27,15 @@ export const ListarVentas = async(req, res) => {
       }
     
 }
+export const ObtenerVentaPorId = async(req, res)=>{
+  try{
+    const id = req.params.id;
+    const venta = await VentaServicio.ObtenerVentaPorId(id);
+    res.status(200).json(venta);
+  }
+  catch(error){
+    res.status(500).json({error: "Error al obtener la venta"});
+  }
+}
 
 

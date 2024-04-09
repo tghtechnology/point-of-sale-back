@@ -66,7 +66,16 @@ const ListarVentas=async()=>{
     const ventas = await prisma.venta.findMany();
     return ventas;
 }
+const ObtenerVentaPorId=async()=>{
+    const ventas = await prisma.venta.findUnique({
+        where: {
+            id: Number(id)
+        }
+    });
+    return ventas;
+}
 module.exports = {
     CrearVenta,
-    ListarVentas
+    ListarVentas,
+    ObtenerVentaPorId
 };

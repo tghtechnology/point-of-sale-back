@@ -1,4 +1,3 @@
-// Construir el cuerpo del correo electrónico
 export const cuerpoCorreo = (nombreUsuario, detallesVenta) => {
     // Generar el contenido HTML de los detalles de la venta
     const detallesHTML = detallesVenta.map(detalle => `
