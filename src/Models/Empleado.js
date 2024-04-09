@@ -1,5 +1,5 @@
 class Empleado {
-  constructor(id, nombre, correo, telefono, pin, estado) {
+  constructor(id, nombre, correo, telefono, estado) {
     this.id = id;
     this.nombre = nombre;
     this.correo = correo;

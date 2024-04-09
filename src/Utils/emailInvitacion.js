@@ -2,7 +2,7 @@ export const enviarCorreoBienvenida = async (
   destinatario,
   nombre,
   email,
-  contrasena,
+  contrasena
 ) => {
   const mensajeCorreo = {
     from: process.env.EMAIL_USER,

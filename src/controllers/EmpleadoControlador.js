@@ -18,14 +18,15 @@ export const crearEmpleado = async (req, res) => {
   }
 };
 
-// Controlador para listar todos los empleados
 export const listarEmpleados = async (_req, res) => {
   try {
     const empleados = await EmpleadoServicio.listarEmpleados();
     res.status(200).json(empleados);
   } catch (error) {
     console.error("Error al obtener la lista de empleados:", error.message);
-    res.status(500).json({ mensaje: "Error al obtener la lista de empleados." });
+    res
+      .status(500)
+      .json({ mensaje: "Error al obtener la lista de empleados." });
   }
 };
 
@@ -40,7 +41,6 @@ export const listarEmpleadoPorId = async (req, res) => {
   }
 };
 
-// Controlador para editar un empleado por su ID
 export const editarEmpleado = async (req, res) => {
   try {
     const { id } = req.params;
