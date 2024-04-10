@@ -66,7 +66,7 @@ export const enviarCorreoBienvenida = async (
       </head>
       <body>
           <div id="panel">
-              <img src="URL_DEL_LOGO_DE_LA_EMPRESA" alt="Logo de la empresa" class="logo">
+              <img src="https://res.cloudinary.com/dzhstkyeu/image/upload/v1712764127/logo_oficial_empresa_uewoz4.png" alt="Logo de la empresa" class="logo">
               <p>Hola ${nombre},</p>
               <p>¡Bienvenido a nuestra empresa! Te damos la bienvenida como nuevo empleado.</p>
               <div class="credentials">
@@ -81,6 +81,5 @@ export const enviarCorreoBienvenida = async (
       </html>
     `,
   };
-
   return mensajeCorreo;
 };

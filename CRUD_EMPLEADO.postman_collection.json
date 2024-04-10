@@ -1,0 +1,181 @@
+{
+  "info": {
+    "_postman_id": "6205b5e6-bb00-4a66-92d3-65220b080c06",
+    "name": "CRUD_EMPLEADO",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "32518315"
+  },
+  "item": [
+    {
+      "name": "Crear_Empleado",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhbGV4bHIxMjM0QGdtYWlsLmNvbSIsImlhdCI6MTcxMjY4OTUwMSwiZXhwIjoxNzEyNzc1OTAxfQ.FTe0sx-RlVsgvcnu4iKTwsL3bHknagqWYbstrooryAY",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"nombre\": \"Joseph Portella\",\r\n    \"telefono\": \"939 209 183\",\r\n    \"cargo\": \"Cajero\",\r\n    \"pais\": \"Perú\",\r\n    \"password\": \"mundotec1234\",\r\n    \"email\": \"dominickportella1470@gmail.com\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:3000/empleado",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["empleado"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Editar_Empleado",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhbGV4bHIxMjM0QGdtYWlsLmNvbSIsImlhdCI6MTcxMjYzMjYxOCwiZXhwIjoxNzEyNzE5MDE4fQ.qZv22rKaGf0XSh8gP892d802SLGoWzWAwchh8kJSwgQ",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"nombre\": \"Juan Pablo\",\r\n    \"nuevaContrasena\": \"123holamundo\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:3000/empleado/6",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["empleado", "6"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Listar_Empleados",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhbGV4bHIxMjM0QGdtYWlsLmNvbSIsImlhdCI6MTcxMjY4OTUwMSwiZXhwIjoxNzEyNzc1OTAxfQ.FTe0sx-RlVsgvcnu4iKTwsL3bHknagqWYbstrooryAY",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:3000/empleado",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["empleado"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Listar_Empleado_Por_ID",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhbGV4bHIxMjM0QGdtYWlsLmNvbSIsImlhdCI6MTcxMjY4OTUwMSwiZXhwIjoxNzEyNzc1OTAxfQ.FTe0sx-RlVsgvcnu4iKTwsL3bHknagqWYbstrooryAY",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:3000/empleado/6",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["empleado", "6"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Eliminar_Empleado_Por_ID",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhbGV4bHIxMjM0QGdtYWlsLmNvbSIsImlhdCI6MTcxMjY4OTUwMSwiZXhwIjoxNzEyNzc1OTAxfQ.FTe0sx-RlVsgvcnu4iKTwsL3bHknagqWYbstrooryAY",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:3000/empleado/6",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["empleado", "6"]
+        }
+      },
+      "response": []
+    }
+  ]
+}

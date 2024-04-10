@@ -10,6 +10,7 @@ import { Router } from "express";
 
 const routerEmpleado = Router();
 
+//Solo Propietario
 routerEmpleado.post("/empleado", verificarAuth, isPropietario, crearEmpleado); 
 routerEmpleado.put("/empleado/:id", verificarAuth, isPropietario, editarEmpleado); 
 routerEmpleado.delete("/empleado/:id", verificarAuth, isPropietario, eliminarEmpleadoPorId); 
