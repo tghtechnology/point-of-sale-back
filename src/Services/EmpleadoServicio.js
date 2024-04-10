@@ -44,13 +44,15 @@ export const crearEmpleado = async (
     },
   });
 
-  await transporter.sendMail(await EmailInvitacion.enviarCorreoBienvenida(
-    email,
-    nombre,
-    email,
-    password,
-    process.env.URLEMPLOYE
-  ));  
+  await transporter.sendMail(
+    await EmailInvitacion.enviarCorreoBienvenida(
+      email,
+      nombre,
+      email,
+      password,
+      process.env.URLEMPLOYE
+    )
+  );
 
   return empleado;
 };
@@ -70,7 +72,8 @@ export const editarEmpleado = async (
     },
   });
 
-  if (!empleadoExistente) throw new Error(`No se encontró ningún empleado con el ID ${id}`);
+  if (!empleadoExistente)
+    throw new Error(`No se encontró ningún empleado con el ID ${id}`);
 
   let dataToUpdate = {
     nombre,
@@ -98,7 +101,8 @@ export const listarEmpleadoPorId = async (id) => {
     where: { id: parseInt(id, 10) },
   });
 
-  if (!empleado) throw new Error(`No se encontró ningún empleado con el ID ${id}`);
+  if (!empleado)
+    throw new Error(`No se encontró ningún empleado con el ID ${id}`);
 
   return empleado;
 };
