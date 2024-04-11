@@ -184,8 +184,7 @@ export const eliminarTokensExpirados = async () => {
           lt: new Date(),
         },
       },
-    },
-  });
+    })
 
   const eliminarTokenPassword = await prisma.sesion.deleteMany({
     where: {

@@ -11,8 +11,6 @@ import routerEmpleado from "./Routes/EmpleadoRouter"
 import router from "./Routes/ImpuestoRouter"
 import routerDetalleVenta from "./Routes/DetalleVentaRouter"
 import routerVenta from "./Routes/VentaRouter";
-import router from "./Routes/ImpuestoRouter";
-import morgan from "morgan";
 
 import morgan from "morgan";
 import swaggerJSDoc from "swagger-jsdoc";
@@ -45,15 +43,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(routerUsuario);
-app.use(routerDescuento);
-app.use(routerArticulo);
-app.use(routerCategoria);
-app.use(routerAuth);
-app.use(routerCliente);
-app.use(routerEmpleado);
-app.use(router);
-
 app.use(routerUsuario)
 app.use(routerDescuento)
 app.use(routerArticulo)
@@ -67,5 +56,3 @@ app.use(routerVenta)
 
 app.use('/docs',swaggerui.serve,swaggerui.setup(specs));
 export default app
-app.use("/docs", swaggerui.serve, swaggerui.setup(specs));
-export default app;
