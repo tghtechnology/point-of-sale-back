@@ -15,7 +15,6 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
             }
         });
         subtotal += articulo.precio * detalle.cantidad;
-
         detallesArticulos.push({
             producto: articulo.nombre,
             cantidad: detalle.cantidad,
@@ -30,8 +29,11 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
                 id: impuestoId
             }
         });
-        total += impuesto.tipo_impuesto === "Anadido_al_precio" ? subtotal * (impuesto.tasa / 100) : subtotal * (impuesto.tasa / 100);
-    }
+        if (impuesto.tipo_impuesto === "Anadido_al_precio") {
+            total += subtotal * (impuesto.tasa / 100);
+        } else {
+            total = subtotal
+        }    }
 
     // Aplicar descuento
     if (descuentoId) {
@@ -48,7 +50,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
 
     // Crear la venta en la base de datos
     const nuevaVenta = await prisma.venta.create({
-        data: {
+        data: { 
             subtotal: subtotal,
             total: total,
             tipoPago: tipoPago,
@@ -82,7 +84,6 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
 
     // Enviar el correo electrónico
     await envioCorreo(usuarioInfo.email, "Venta realizada", cuerpo);
-
     return nuevaVenta;
 };
 const ListarVentas=async()=>{
