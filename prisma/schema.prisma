@@ -149,6 +149,7 @@ model Cliente {
 model Recibo {
   id             Int      @id @default(autoincrement())
   fecha_creacion DateTime @default(now())
+  ref String @db.VarChar(255)
   id_venta       Int      @map("id_venta") @db.Int
 
   venta Venta @relation(fields: [id_venta], references: [id])

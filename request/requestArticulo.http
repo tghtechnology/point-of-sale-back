@@ -7,7 +7,7 @@ POST {{api}}/articulo/crear
 Content-Type: application/json
 
 {
-  "nombre": "Camisita",
+  "nombre": "Camisa",
   "tipo_venta":"Unidad",
   "precio": 12,
   "ref": "82323",
