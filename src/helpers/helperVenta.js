@@ -1,7 +1,9 @@
 export const cuerpoVenta = (nombreUsuario, detallesVenta, subtotal, total) => {
     // Generar el contenido HTML de los detalles de la venta
+    subtotal = subtotal.toFixed(2);
+    total = total.toFixed(2);
     const detallesHTML = detallesVenta.map(detalle => `
-        <p>${detalle.producto}: ${detalle.cantidad} x ${detalle.precioUnitario}</p>
+        <p>${detalle.producto}: ${detalle.cantidad} x S/.${detalle.precioUnitario}</p>
     `).join('');
 
     return `
@@ -39,11 +41,22 @@ export const cuerpoVenta = (nombreUsuario, detallesVenta, subtotal, total) => {
                 font-size: 16px; 
                 margin-bottom: 20px; 
             }
+            .detalles-venta {
+                background-color: white;
+                padding: 10px;
+                border-radius: 8px;
+                margin: 0 auto;
+                max-width: 600px;
+                text-align: left;
+            }
+            .detalles-venta p {
+                margin: 5px 0;
+            }
             .footer { 
                 font-size: 12px; 
                 color: #777; 
-                text-align: 
-                center; padding: 10px; 
+                text-align: center; 
+                padding: 10px; 
                 background-color: white;
             }
             .footer a {
@@ -60,10 +73,11 @@ export const cuerpoVenta = (nombreUsuario, detallesVenta, subtotal, total) => {
             <h2>Detalles de la venta</h2>
             <p>¡Hola ${nombreUsuario}!<br>
             Aquí están los detalles de tu última compra:</p>
-            ${detallesHTML}
-            <p>Subtotal: ${subtotal}</p>
-            <p>Total: ${total}</p>
-            <br>
+            <div class="detalles-venta">
+                ${detallesHTML}
+                <p>Subtotal: S/.${subtotal}</p>
+                <p>Total: S/.${total}</p>
+            </div>
             <p>¡Esperamos volver a verte pronto! 👏</p>
         </div>
         <div class="footer">
