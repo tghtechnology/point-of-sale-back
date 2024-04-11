@@ -1,11 +1,14 @@
 export const cuerpoVenta = (nombreUsuario, detallesVenta, subtotal, total) => {
-    // Generar el contenido HTML de los detalles de la venta
+    const detallesHTML = detallesVenta.map(detalle => {
+        const subtotalItem = (detalle.cantidad * detalle.precioUnitario).toFixed(2);
+        return `
+            <p>${detalle.producto}: ${detalle.cantidad} x S/.${detalle.precioUnitario.toFixed(2)} = S/.${subtotalItem}</p>
+        `;
+    }).join('');
+
+    // Convertir subtotal y total a dos decimales
     subtotal = subtotal.toFixed(2);
     total = total.toFixed(2);
-    const detallesHTML = detallesVenta.map(detalle => `
-        <p>${detalle.producto}: ${detalle.cantidad} x S/.${detalle.precioUnitario}</p>
-    `).join('');
-
     return `
     <html>
     <head>
