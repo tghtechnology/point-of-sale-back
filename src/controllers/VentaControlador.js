@@ -1,4 +1,5 @@
 import * as VentaServicio from "../Services/VentaServicio"
+import * as ReciboServicio from "../Services/ReciboServicio"
 
 // Controlador para la creación de una venta
 export const CrearVenta = async (req, res) => {
@@ -17,6 +18,14 @@ export const CrearVenta = async (req, res) => {
       res.status(500).json({ error: 'Error al crear la venta' });
   }
 };
+
+export const crearRecibo = async (req, res) => {
+  const id_venta = req.params.id;
+  const { ref } = req.body
+  const nuevoRecibo = await ReciboServicio.crearRecibo(id_venta, ref)
+  res.status(201).json(nuevoRecibo);
+}
+
 export const ListarVentas = async(req, res) => { 
     try {
         const ventas = await VentaServicio.ListarVentas();

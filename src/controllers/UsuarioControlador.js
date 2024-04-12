@@ -10,15 +10,18 @@ export const listaPaises = async (req, res) => {
   }
 };
 //Creacion de usuario con sus requerimientos o validaciones
-export const crearUsuario=async (req, res)=>{
-    try {
-        const {nombre,email,password,pais}=req.body
-        const newUsuario=await UsuarioServicio.crearUsuario(nombre,email,password,pais);
-        res.json(newUsuario);
-      } catch (error) {
-        console.error(error);
-      }
+// Controlador para crear un nuevo usuario
+export const crearUsuario = async (req, res) => {
+  try {
+    const {nombre, email, password, pais, telefono, cargo} = req.body;
+    const newUsuario = await UsuarioServicio.crearUsuario(nombre, email, password, pais, telefono, cargo);
+    res.json(newUsuario);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 };
+
 
 //Eliminar temporalmente durante 1 semana
 export const eliminarTemporalmente = async (req, res) => {

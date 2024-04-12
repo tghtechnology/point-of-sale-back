@@ -14,23 +14,23 @@ datasource db {
 }
 
 model Categoria {
-  id Int @id @default(autoincrement())
-  nombre String @db.VarChar (255)
-  color String @db.VarChar (255)
-  estado Boolean
+  id        Int        @id @default(autoincrement())
+  nombre    String     @db.VarChar(255)
+  color     String     @db.VarChar(255)
+  estado    Boolean
   articulos Articulo[]
 
   @@map("categoria")
 }
 
 model Descuento {
-  id Int @id @default(autoincrement())
-  nombre String @db.VarChar (255)
-  tipo_descuento tipoDescuento
-  valor Decimal @db.Decimal(10,2)
-  valor_calculado Decimal @db.Decimal(10,2)
-  estado Boolean
-  ventas Venta[]
+  id              Int           @id @default(autoincrement())
+  nombre          String        @db.VarChar(255)
+  tipo_descuento  tipoDescuento
+  valor           Decimal       @db.Decimal(10, 2)
+  valor_calculado Decimal       @db.Decimal(10, 2)
+  estado          Boolean
+  ventas          Venta[]
 
   @@map("descuento")
 }
@@ -41,12 +41,12 @@ enum tipoDescuento {
 }
 
 model Impuesto {
-  id Int @id @default(autoincrement())
-  nombre String @db.VarChar (255)
-  tasa Decimal @db.Decimal(10,2)
+  id            Int          @id @default(autoincrement())
+  nombre        String       @db.VarChar(255)
+  tasa          Decimal      @db.Decimal(10, 2)
   tipo_impuesto tipoImpuesto
-  estado Boolean 
-  ventas Venta[]
+  estado        Boolean
+  ventas        Venta[]
 }
 
 enum tipoImpuesto {
@@ -55,18 +55,20 @@ enum tipoImpuesto {
 }
 
 model Usuario {
-  id Int @id @default(autoincrement())
-  nombre String @db.VarChar(255)
-  email String @db.VarChar(255) @unique
-  password String @db.VarChar(255)
-  pais String? @db.VarChar(255)
-  rol Rol 
-  estado Boolean @db.Bit(1)
+  id                       Int       @id @default(autoincrement())
+  nombre                   String    @db.VarChar(255)
+  email                    String    @unique @db.VarChar(255)
+  cargo                    String    @db.VarChar(255)
+  telefono                 String    @db.VarChar(255)
+  password                 String    @db.VarChar(255)
+  pais                     String?   @db.VarChar(255)
+  rol                      Rol
+  estado                   Boolean   @db.Bit(1)
   eliminado_temporal_fecha DateTime?
 
   resetTokens ResetToken[]
-  sesiones Sesion[]
-  ventas Venta[]
+  sesiones    Sesion[]
+  ventas      Venta[]
 
   @@map("usuario")
 }
@@ -77,17 +79,19 @@ enum Rol {
 }
 
 model Articulo {
-  id Int @id @default(autoincrement())
-  nombre String @db.VarChar(255)
-  tipo_venta TipoVenta
-  precio Decimal? @db.Decimal(10, 2)
-  ref String @db.VarChar(255)
-  representacion String     @db.VarChar(255)
-  id_categoria Int? @db.Int @map("id_categoria")
-  estado Boolean
-  detalles    DetalleVenta[]
+  id           Int            @id @default(autoincrement())
+  nombre       String         @db.VarChar(255)
+  tipo_venta   TipoVenta
+  precio       Decimal?       @db.Decimal(10, 2)
+  ref          String         @db.VarChar(255)
+  color        String         @db.VarChar(255)
+  imagen       String?        @map("imagen")
+  id_categoria Int?           @map("id_categoria") @db.Int
+  estado       Boolean
+  detalles     DetalleVenta[]
 
   categoria Categoria? @relation(fields: [id_categoria], references: [id])
+  Imagen    Imagen?    @relation(fields: [imagen], references: [public_id])
 
   @@map("articulo")
 }
@@ -97,60 +101,70 @@ enum TipoVenta {
   Unidad
 }
 
-model ResetToken {
-  id Int @id @default(autoincrement())
-  token String @db.VarChar(255)
-  expiracion DateTime
-  usuario_id Int @map("usuario_id")
-  usuario Usuario @relation(fields: [usuario_id], references: [id])
+model Imagen {
+  public_id  String     @id
+  secure_url String     @unique
+  articulos  Articulo[]
 
-  @@map("reset_tokens") 
+  @@map("imagen")
+}
+
+model ResetToken {
+  id         Int      @id @default(autoincrement())
+  token      String   @db.VarChar(255)
+  expiracion DateTime
+  usuario_id Int      @map("usuario_id")
+  usuario    Usuario  @relation(fields: [usuario_id], references: [id])
+
+  @@map("reset_tokens")
 }
 
 model Sesion {
-  id Int @id @default(autoincrement())
-  usuario_id Int @map("usuario_id")
-  token String @db.VarChar(255)
+  id         Int      @id @default(autoincrement())
+  usuario_id Int      @map("usuario_id")
+  token      String   @db.VarChar(255)
   expiracion DateTime
 
   usuario Usuario @relation(fields: [usuario_id], references: [id])
 
-  @@map("sesion") 
+  @@map("sesion")
 }
 
 model Cliente {
-  id Int @id @default(autoincrement())
-  nombre String @db.VarChar(255)
-  email String @db.VarChar(255) @unique
-  telefono String @db.VarChar(255)
-  direccion String @db.VarChar(255)
-  ciudad String @db.VarChar(255)
-  region String @db.VarChar(255)
-  codigo_postal String @db.VarChar(255)
-  pais String @db.VarChar(255)
-  estado Boolean
-  ventas Venta[]
+  id            Int     @id @default(autoincrement())
+  nombre        String  @db.VarChar(255)
+  email         String  @unique @db.VarChar(255)
+  telefono      String  @db.VarChar(255)
+  direccion     String  @db.VarChar(255)
+  ciudad        String  @db.VarChar(255)
+  region        String  @db.VarChar(255)
+  codigo_postal String  @db.VarChar(255)
+  pais          String  @db.VarChar(255)
+  estado        Boolean
+  ventas        Venta[]
 
   @@map("cliente")
 }
 
-//model Recibo {
- // id Int @id @default(autoincrement())
-  //fecha_creacion DateTime @default(now())
-  //id_venta @db.Int @map("id_venta")
+model Recibo {
+  id Int @id @default(autoincrement())
+  fecha_creacion DateTime @default(now())
+  id_venta Int @db.Int @map("id_venta")
 
-  //venta Venta? @relation(fields: [id_venta], references: [id])
-//}
+  venta Venta? @relation(fields: [id_venta], references: [id])
+}
 model DetalleVenta {
-  id           Int       @id @default(autoincrement())
-  cantidad     Int
-  subtotal     Decimal @db.Decimal(10,2)
-  articulo     Articulo  @relation(fields: [articuloId], references: [id])
-  articuloId   Int
-  venta        Venta     @relation(fields: [ventaId], references: [id])
-  ventaId      Int
+  id         Int      @id @default(autoincrement())
+  cantidad   Int
+  subtotal   Decimal  @db.Decimal(10, 2)
+  articulo   Articulo @relation(fields: [articuloId], references: [id])
+  articuloId Int
+  venta      Venta    @relation(fields: [ventaId], references: [id])
+  ventaId    Int
+
   @@map("detalleVenta")
 }
+
 model Venta {
   id            Int      @id @default(autoincrement())
   subtotal      Decimal @db.Decimal(10,2)
@@ -167,6 +181,8 @@ model Venta {
   descuentoId   Int?
   clienteId     Int
   usuarioId     Int
+
+  recibo Recibo[]
 }
 
 enum TipoPago {

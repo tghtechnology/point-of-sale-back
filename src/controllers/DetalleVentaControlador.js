@@ -5,6 +5,10 @@ export const CrearDetalle=async(res, req)=>{
     const { cantidad, articuloId, ventaId } = req.body; 
   try {
     const nuevoDetalle = await DetalleVentaServicio.CrearDetalle(cantidad, articuloId, ventaId);
+
+    //Crear recibo
+    const nuevoRecibo = await ReciboServicio.crearRecibo(ventaId)
+
     res.status(201).json(nuevoDetalle);
   } catch (error) {
     console.error('Error al crear el detalle de venta:', error);

@@ -1,69 +1,73 @@
 import * as EmpleadoServicio from "../Services/EmpleadoServicio";
 
 export const crearEmpleado = async (req, res) => {
+  const { nombre, email, telefono, cargo, pais, password } = req.body;
   try {
-    const { nombre, correo, telefono, cargo } = req.body;
     const nuevoEmpleado = await EmpleadoServicio.crearEmpleado(
       nombre,
-      correo,
+      email,
       telefono,
-      cargo
+      cargo,
+      pais,
+      password
     );
-    res.json(nuevoEmpleado);
+    res.status(200).json(nuevoEmpleado);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: "Error al crear el empleado" });
+    console.error("Error al crear empleado:", error.message);
+    res.status(500).json({ mensaje: "Error al crear el empleado." });
+  }
+};
+
+export const listarEmpleados = async (_req, res) => {
+  try {
+    const empleados = await EmpleadoServicio.listarEmpleados();
+    res.status(200).json(empleados);
+  } catch (error) {
+    console.error("Error al obtener la lista de empleados:", error.message);
+    res
+      .status(500)
+      .json({ mensaje: "Error al obtener la lista de empleados." });
+  }
+};
+
+export const listarEmpleadoPorId = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const empleado = await EmpleadoServicio.listarEmpleadoPorId(id);
+    res.status(200).json(empleado);
+  } catch (error) {
+    console.error("Error al obtener el empleado:", error.message);
+    res.status(500).json({ mensaje: "Error al obtener el empleado." });
   }
 };
 
 export const editarEmpleado = async (req, res) => {
   try {
     const { id } = req.params;
-    const {nombre, correo, telefono, cargo} = req.body;
-    const empleadoActualizado = await EmpleadoServicio.editarEmpleado(id,nombre, correo, telefono, cargo);
-    res.json(empleadoActualizado);
+    const { nombre, email, telefono, cargo, pais, password } = req.body;
+    const empleado = await EmpleadoServicio.editarEmpleado(
+      id,
+      nombre,
+      email,
+      telefono,
+      cargo,
+      pais,
+      password
+    );
+    res.status(200).json(empleado);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: "Error al editar el empleado" });
-  }
-};
-
-export const listarEmpleados = async (req, res) => {
-  try {
-    const empleados = await EmpleadoServicio.listarEmpleados();
-    res.json(empleados);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: "Error al obtener la lista de empleados" });
-  }
-};
-
-export const listarEmpleadoPorId = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const empleado = await EmpleadoServicio.listarEmpleadoPorId(id);
-    if (empleado) {
-      res.json(empleado);
-    } else {
-      res.status(404).json({ mensaje: "Empleado no encontrado" });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: "Error al obtener el empleado" });
+    console.error("Error al editar el empleado:", error.message);
+    res.status(500).json({ mensaje: "Error al editar el empleado." });
   }
 };
 
 export const eliminarEmpleadoPorId = async (req, res) => {
+  const id = req.params.id;
   try {
-    const { id } = req.params;
-    const resultado = await EmpleadoServicio.eliminarEmpleadoPorId(id);
-    if (resultado) {
-      res.json({ mensaje: "Empleado eliminado correctamente" });
-    } else {
-      res.status(404).json({ mensaje: "Empleado no encontrado" });
-    }
+    await EmpleadoServicio.eliminarEmpleadoPorId(id);
+    res.status(200).json({ mensaje: "Empleado eliminado." });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: "Error al eliminar el empleado" });
+    console.error("Error al eliminar el empleado:", error.message);
+    res.status(500).json({ mensaje: "Error al eliminar el empleado." });
   }
 };

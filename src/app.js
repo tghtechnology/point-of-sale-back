@@ -8,43 +8,48 @@ import routerArticulo from "./Routes/ArticuloRoute"
 import routerCategoria from "./Routes/CategoriaRoute"
 import routerCliente from "./Routes/ClienteRouter"
 import routerEmpleado from "./Routes/EmpleadoRouter"
-import router from "./Routes/ImpuestoRouter"
+import routerImpuesto from "./Routes/ImpuestoRouter"
 import routerDetalleVenta from "./Routes/DetalleVentaRouter"
 import routerVenta from "./Routes/VentaRouter";
 
-import morgan from "morgan";
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerui from "swagger-ui-express";
 import { options } from "./Utils/SwaggerOptions";
 import passport from "passport";
+import fileUpload from 'express-fileupload'
 
 const specs = swaggerJSDoc(options);
-const session = require('express-session')
-const app= express();  
-require('./Middleware/passport')
+const session = require("express-session");
+const app = express();
+require("./Middleware/passport");
 
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
-
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false
+app.use(fileUpload({
+    useTempFiles : true,
+    tempFileDir : './tmp'
 }))
 
-app.use(passport.initialize())
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
 app.use(passport.session());
 
-
-app.use(routerUsuario)
-app.use(routerDescuento)
-app.use(routerArticulo)
-app.use(routerCategoria)
-app.use(routerAuth)
-app.use(routerCliente)
-app.use(routerEmpleado)
-app.use(router)
+app.use(routerUsuario);
+app.use(routerDescuento);
+app.use(routerArticulo);
+app.use(routerCategoria);
+app.use(routerAuth);
+app.use(routerCliente);
+app.use(routerEmpleado);
+app.use(routerImpuesto);
 app.use(routerDetalleVenta)
 app.use(routerVenta)
 
