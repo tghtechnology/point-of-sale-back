@@ -18,7 +18,7 @@ routerDescuento.post("/descuento", verificarAuth, isPropietario, crearDescuento)
 routerDescuento.put("/descuento/:id", verificarAuth, isPropietario, modificarDescuento);
 routerDescuento.delete("/descuento/:id", verificarAuth, isPropietario, eliminarDescuento);
 // Ruta para desactivar y activar descuento
-routerDescuento.put("/descuento/:id/cambiar-estado", isPropietario, cambiarEstadoDescuento);
+routerDescuento.put("/descuento/:id/cambiar-estado", verificarAuth, isPropietario, cambiarEstadoDescuento);
 
 routerDescuento.get("/descuento", verificarAuth, obtenerDescuentos);
 routerDescuento.get("/descuento/:id", verificarAuth, obtenerDescuentoById);
