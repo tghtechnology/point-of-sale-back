@@ -9,53 +9,50 @@ const prisma = new PrismaClient();
 
 //Lógica para iniciar sesión
 export const login = async (email, password) => {
-    const results = await prisma.usuario.findMany({
-      where: {
-        email: email
-      },
-    })
-    if (results.length === 0) {
-      throw new Error("Nombre de usuario o contraseña incorrectos");
-    }
-    const usuario = results[0];
+  const results = await prisma.usuario.findMany({
+    where: {
+      email: email
+    },
+  })
+  if (results.length === 0) {
+    throw new Error("Nombre de usuario o contraseña incorrectos");
+  }
+  const usuario = results[0];
 
-    const match = await bcrypt.compare(password, usuario.password);
-    if (!match) {
-      throw new Error("Nombre de usuario o contraseña incorrectos");
+  const match = await bcrypt.compare(password, usuario.password);
+  if (!match) {
+    throw new Error("Nombre de usuario o contraseña incorrectos");
+  }
+  await prisma.sesion.deleteMany({
+    where: {
+      usuario_id: usuario.id
     }
-    const cuentaRestaurada = await restaurarCuenta(usuario.id);
-    if (cuentaRestaurada) {
-      console.log("La cuenta fue restaurada exitosamente");
-    }
-    //Verificar si existe una sesión activa 
-    const existingSessions = await prisma.sesion.findMany({
-      where: {
-        usuario_id: usuario.id
-      },
-    })
-    if (existingSessions.length > 0) {
-      throw new Error("Sesión activa encontrada");
-    }
-    
-    const token = jwt.sign(
-      { id: usuario.id, email: usuario.email },
-      "secreto_del_token",
-      { expiresIn: "24h" }
-    );
+  });
+  const cuentaRestaurada = await restaurarCuenta(usuario.id);
+  if (cuentaRestaurada) {
+    console.log("La cuenta fue restaurada exitosamente");
+  }
+  const token = jwt.sign(
+    { id: usuario.id, email: usuario.email },
+    "secreto_del_token",
+    { expiresIn: "24h" }
+  );
 
-    const expiracion = new Date();
-    expiracion.setHours(expiracion.getHours() + 24);
-    const result=await prisma.sesion.create({
-      data: {
-        usuario_id: usuario.id,
-        token: token,
-        expiracion: expiracion
-      }
-    })
-    return {
-      usuario_id: result.usuario_id,
-      token: result.token
+  const expiracion = new Date();
+  expiracion.setHours(expiracion.getHours() + 24);
+
+  const result = await prisma.sesion.create({
+    data: {
+      usuario_id: usuario.id,
+      token: token,
+      expiracion: expiracion
     }
+  });
+
+  return {
+    usuario_id: result.usuario_id,
+    token: result.token
+  };
 };
 
 //Lógica para cerrar sesión
