@@ -7,7 +7,7 @@ POST {{api}}/categoria/crear
 Content-Type: application/json
 
 {
-  "nombre": "Calzado",
+  "nombre": "Ropa",
   "color":"Negro"
 }
 ###

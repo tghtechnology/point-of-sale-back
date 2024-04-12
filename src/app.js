@@ -11,7 +11,6 @@ import routerEmpleado from "./Routes/EmpleadoRouter"
 import routerImpuesto from "./Routes/ImpuestoRouter"
 import routerDetalleVenta from "./Routes/DetalleVentaRouter"
 import routerVenta from "./Routes/VentaRouter";
-import morgan from "morgan";
 
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerui from "swagger-ui-express";

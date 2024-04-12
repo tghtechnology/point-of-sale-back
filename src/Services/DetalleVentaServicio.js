@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-
+import { cambiarEstadoDescuento } from "../controllers/DescuentoControlador";
 const prisma = new PrismaClient();
 
 //Creacion de detalle de la venta
@@ -18,6 +18,7 @@ const CrearDetalle=async(cantidad, articuloId, ventaId )=>{
             ventaId:ventaId,
         }
     })
+
     return newDetalle
 }
 const ListarDetalles=async()=>{
