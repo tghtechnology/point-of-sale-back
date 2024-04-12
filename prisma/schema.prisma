@@ -155,7 +155,7 @@ model Venta {
   id            Int      @id @default(autoincrement())
   subtotal      Decimal @db.Decimal(10,2)
   total         Decimal @db.Decimal(10,2)
-  tipoPago      String
+  tipoPago      TipoPago
   impuesto      Impuesto? @relation(fields: [impuestoId], references: [id])
   descuento     Descuento? @relation(fields: [descuentoId], references: [id])
   cliente       Cliente   @relation(fields: [clienteId], references: [id])
@@ -170,6 +170,6 @@ model Venta {
 }
 
 enum TipoPago {
-  EFECTIVO
-  TARJETA
+  Efectivo
+  Tarjeta
 }
