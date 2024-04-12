@@ -32,23 +32,12 @@ CREATE TABLE `Impuesto` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `empleado` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `nombre` VARCHAR(255) NOT NULL,
-    `correo` VARCHAR(255) NOT NULL,
-    `telefono` VARCHAR(255) NOT NULL,
-    `cargo` VARCHAR(255) NOT NULL,
-    `estado` BOOLEAN NOT NULL,
-
-    UNIQUE INDEX `empleado_correo_key`(`correo`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `usuario` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `nombre` VARCHAR(255) NOT NULL,
     `email` VARCHAR(255) NOT NULL,
+    `cargo` VARCHAR(255) NOT NULL,
+    `telefono` VARCHAR(255) NOT NULL,
     `password` VARCHAR(255) NOT NULL,
     `pais` VARCHAR(255) NULL,
     `rol` ENUM('Propietario', 'Empleado') NOT NULL,
@@ -124,7 +113,7 @@ CREATE TABLE `cliente` (
 CREATE TABLE `detalleVenta` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `cantidad` INTEGER NOT NULL,
-    `subtotal` DOUBLE NOT NULL,
+    `subtotal` DECIMAL(10, 2) NOT NULL,
     `articuloId` INTEGER NOT NULL,
     `ventaId` INTEGER NOT NULL,
 
@@ -132,15 +121,17 @@ CREATE TABLE `detalleVenta` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `venta` (
+CREATE TABLE `Venta` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `subtotal` DOUBLE NOT NULL,
-    `total` DOUBLE NOT NULL,
-    `tipoPago` ENUM('EFECTIVO', 'TARJETA') NOT NULL,
+    `subtotal` DECIMAL(10, 2) NOT NULL,
+    `total` DECIMAL(10, 2) NOT NULL,
+    `tipoPago` VARCHAR(191) NOT NULL,
+    `dineroRecibido` DECIMAL(10, 2) NOT NULL,
+    `cambio` DECIMAL(10, 2) NOT NULL,
     `impuestoId` INTEGER NULL,
     `descuentoId` INTEGER NULL,
-    `clienteId` INTEGER NULL,
-    `empleadoId` INTEGER NULL,
+    `clienteId` INTEGER NOT NULL,
+    `usuarioId` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -161,16 +152,16 @@ ALTER TABLE `sesion` ADD CONSTRAINT `sesion_usuario_id_fkey` FOREIGN KEY (`usuar
 ALTER TABLE `detalleVenta` ADD CONSTRAINT `detalleVenta_articuloId_fkey` FOREIGN KEY (`articuloId`) REFERENCES `articulo`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `detalleVenta` ADD CONSTRAINT `detalleVenta_ventaId_fkey` FOREIGN KEY (`ventaId`) REFERENCES `venta`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `detalleVenta` ADD CONSTRAINT `detalleVenta_ventaId_fkey` FOREIGN KEY (`ventaId`) REFERENCES `Venta`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `venta` ADD CONSTRAINT `venta_impuestoId_fkey` FOREIGN KEY (`impuestoId`) REFERENCES `Impuesto`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Venta` ADD CONSTRAINT `Venta_impuestoId_fkey` FOREIGN KEY (`impuestoId`) REFERENCES `Impuesto`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `venta` ADD CONSTRAINT `venta_descuentoId_fkey` FOREIGN KEY (`descuentoId`) REFERENCES `descuento`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Venta` ADD CONSTRAINT `Venta_descuentoId_fkey` FOREIGN KEY (`descuentoId`) REFERENCES `descuento`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `venta` ADD CONSTRAINT `venta_clienteId_fkey` FOREIGN KEY (`clienteId`) REFERENCES `cliente`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Venta` ADD CONSTRAINT `Venta_clienteId_fkey` FOREIGN KEY (`clienteId`) REFERENCES `cliente`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `venta` ADD CONSTRAINT `venta_empleadoId_fkey` FOREIGN KEY (`empleadoId`) REFERENCES `empleado`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Venta` ADD CONSTRAINT `Venta_usuarioId_fkey` FOREIGN KEY (`usuarioId`) REFERENCES `usuario`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -146,13 +146,13 @@ model Cliente {
   @@map("cliente")
 }
 
-//model Recibo {
- // id Int @id @default(autoincrement())
-  //fecha_creacion DateTime @default(now())
-  //id_venta @db.Int @map("id_venta")
+model Recibo {
+  id Int @id @default(autoincrement())
+  fecha_creacion DateTime @default(now())
+  id_venta Int @db.Int @map("id_venta")
 
-  //venta Venta? @relation(fields: [id_venta], references: [id])
-//}
+  venta Venta? @relation(fields: [id_venta], references: [id])
+}
 model DetalleVenta {
   id           Int       @id @default(autoincrement())
   cantidad     Int
@@ -179,6 +179,8 @@ model Venta {
   descuentoId   Int?
   clienteId     Int
   usuarioId     Int
+
+  recibo Recibo[]
 }
 
 enum TipoPago {

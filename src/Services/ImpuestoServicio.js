@@ -1,7 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import * as DTOInsert from "../DTOS/ImpuestoDTO/ImpuestoDTOForInsert"
-import * as DTOMin from "../DTOS/ImpuestoDTO/ImpuestoDTOMinimal"
-import * as DTOList from "../DTOS/ImpuestoDTO/ImpuestoDTOForList"
 
 const prisma = new PrismaClient();
 
@@ -12,6 +9,7 @@ export const crearImpuesto = async (nombre, tasa, tipo_impuesto) => {
     if (!tasa) {throw new Error("Campo tasa vacío")}
     if (typeof tasa !== 'number' || isNaN(parseFloat(tasa)) || !isFinite(tasa)) {throw new Error("Tasa no es número válido")}
 
+    console.log(tipo_impuesto)
     //Validación tipo de impuesto
     let tipo = tipo_impuesto.replace(/\s+/g, '-').replace(/ñ/g, 'n');
     const TiposPermitidos = ['Incluido_en_el_precio', 'Anadido_al_precio'];
@@ -20,30 +18,62 @@ export const crearImpuesto = async (nombre, tasa, tipo_impuesto) => {
     //Validación nombre
     if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
     
-    //Llamado al dto de crear
-    const imp = await DTOInsert.toCreate(nombre, tasa, tipo_impuesto)
-
-    //Dar formato
-    const impuestoFormato = DTOMin.DTOFormat(imp.id, imp.nombre, imp.tasa, imp.tipo_impuesto);
-    return impuestoFormato
+    const newImpuesto = await prisma.impuesto.create({
+        data: {
+          nombre: nombre,
+          tasa: tasa,
+          tipo_impuesto: tipo_impuesto,
+          estado: true
+        },
+      })
+    
+      const impuestoFormato = {
+        id: newImpuesto.id,
+        nombre: newImpuesto.nombre,
+        tasa: newImpuesto.tasa,
+        tipo_impuesto: newImpuesto.tipo_impuesto
+      }
+      return impuestoFormato; 
 }
 
 export const listarImpuestos = async () => {
 
-    //Llamado al dto de listar
-    const impuestos = await DTOList.toList()
-    return impuestos
+    const allImpuestos = await prisma.impuesto.findMany({
+        where: {
+          estado: true
+        }
+      })
+    
+      const impuestoFormato = allImpuestos.map((impuesto) => {
+        return {
+          id: impuesto.id,
+          nombre: impuesto.nombre,
+          tasa: impuesto.tasa,
+          tipo_impuesto: impuesto.tipo_impuesto
+        };
+      });
+      return impuestoFormato;
 }
 
 export const listarImpuestoPorId = async (id) => {
 
-    //Llamado al dto de listar por id
-    const impuesto = await DTOList.toListById(id)
-
-    //Si el id no existe
-    if (id === null) {throw new Error("ID no encontrado")}
-
-    return impuesto
+    const impuesto = await prisma.impuesto.findUnique({
+        where: {
+          id: parseInt(id),
+          estado: true
+        }
+      })
+    
+      //Si el id no existe
+      if (!impuesto) {return null}
+    
+      const impuestoFormato = {
+        id: impuesto.id,
+        nombre: impuesto.nombre,
+        tasa: impuesto.tasa,
+        tipo_impuesto: impuesto.tipo_impuesto
+    }
+      return impuestoFormato;
 }
 
 export const modificarImpuesto = async (id, nombre, tasa, tipo_impuesto) => {
@@ -57,38 +87,51 @@ export const modificarImpuesto = async (id, nombre, tasa, tipo_impuesto) => {
     const TiposPermitidos = ['Incluido_en_el_precio', 'Anadido_al_precio'];
     if (!TiposPermitidos.includes(tipo)) {throw new Error("tipo_impuesto no válido")}
 
-    //Llamado al dto de editar
-    const imp = await DTOInsert.toEdit(id, nombre, tasa, tipo_impuesto) 
-    if (imp == null) {return null}
+    const impuesto = await prisma.impuesto.update({
+        where: {
+          id: parseInt(id),
+          estado: true
+        },
+        data: {
+          nombre: nombre,
+          tasa: tasa,
+          tipo_impuesto: tipo_impuesto
+        }
+      })
 
     //Validación nombre
     if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
 
-    //Dar formato
-    const impuestoFormato = DTOMin.DTOFormat(imp.id, imp.nombre, imp.tasa, imp.tipo_impuesto);
-    return impuestoFormato
+    const impuestoFormato = {
+        id: impuesto.id,
+        nombre: impuesto.nombre,
+        tasa: impuesto.tasa,
+        tipo_impuesto: impuesto.tipo_impuesto
+      }
+      return impuestoFormato;
 }
 
 export const eliminarImpuesto = async (id) => {
 
-    //Buscar por id
-    const impuestoExistente = await prisma.impuesto.findUnique({
-        where: {
-          id: parseInt(id)
-        }
-    })
+    //Buscar si existe una categoría con el id
+  const impuestoExistente = await prisma.impuesto.findUnique({
+    where: {
+      id: parseInt(id),
+      estado: true
+    }
+  })
 
-    //Si no existe el id
-    if (!impuestoExistente) { return null}
+  //Si el id no existe
+  if (!impuestoExistente) {return null}
 
-    const impuesto = await prisma.impuesto.update({
-        where: {
-            id: parseInt(id),
-            estado: true
-        },
-        data: {
-            estado: false
-        }
-      })
-      return impuesto
+  const impuesto = await prisma.impuesto.update({
+    where: {
+      id: parseInt(id),
+      estado: true
+    },
+    data: {
+      estado: false
+    }
+  })
+  return impuesto
 }
