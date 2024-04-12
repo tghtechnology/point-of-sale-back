@@ -1,18 +1,19 @@
 import * as UsuarioServicio from "../Services/UsuarioServicio";
 import { obtenerListaPaises } from "../helpers/helperPais";
+
 export const listaPaises = async (req, res) => {
   try {
-    // Obtiene la lista de todos los países
     const listaPaises = obtenerListaPaises();
     res.json(listaPaises);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-// Controlador para crear un nuevo usuario
+
 export const crearUsuario = async (req, res) => {
   try {
-    const { nombre, email, password, pais, telefono, cargo } = req.body;
+    const { nombre, email, password, pais, telefono, tipoUsuario } = req.body;
+    const cargo = (tipoUsuario === "Empleado") ? "Empleado" : "Gerente";
     const newUsuario = await UsuarioServicio.crearUsuario(
       nombre,
       email,
@@ -28,7 +29,6 @@ export const crearUsuario = async (req, res) => {
   }
 };
 
-//Eliminar temporalmente durante 1 semana
 export const eliminarTemporalmente = async (req, res) => {
   try {
     const { usuario_id, password, token } = req.body;
@@ -60,7 +60,6 @@ export const eliminarTemporalmente = async (req, res) => {
   }
 };
 
-//Restaurar la cuenta dentro de una semana de eliminación temporal
 export const restaurarCuenta = async (req, res) => {
   try {
     const id = req.params.id;
@@ -75,7 +74,6 @@ export const restaurarCuenta = async (req, res) => {
   }
 };
 
-//Eliminar cuenta automaticamente luego de pasada la semana
 export const eliminarCuentasVencidas = async (req, res) => {
   try {
     const id = req.params.id;
@@ -92,10 +90,9 @@ export const eliminarCuentasVencidas = async (req, res) => {
     console.error(error);
   }
 };
-// Programar la tarea para ejecutarse periódicamente
-setInterval(eliminarCuentasVencidas, 24 * 60 * 60 * 1000); // Ejecutar cada 24 horas
 
-/** Eliminar cuenta permanentemente */
+setInterval(eliminarCuentasVencidas, 24 * 60 * 60 * 1000);
+
 export const eliminarPermanentemente = async (req, res) => {
   try {
     const { usuario_id, password, token } = req.body;

@@ -44,20 +44,36 @@ export const listarEmpleadoPorId = async (req, res) => {
 export const editarEmpleado = async (req, res) => {
   try {
     const { id } = req.params;
-    const { nombre, email, telefono, cargo, pais, password } = req.body;
+    const { nombre, email, telefono, cargo, pais } = req.body;
     const empleado = await EmpleadoServicio.editarEmpleado(
       id,
       nombre,
       email,
       telefono,
       cargo,
-      pais,
-      password
+      pais
     );
     res.status(200).json(empleado);
   } catch (error) {
     console.error("Error al editar el empleado:", error.message);
     res.status(500).json({ mensaje: "Error al editar el empleado." });
+  }
+};
+
+export const cambiarContraseña = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { contraseñaActual, nuevaContraseña, confirmarNuevaContraseña } = req.body;
+    await EmpleadoServicio.cambiarContraseña(
+      id,
+      contraseñaActual,
+      nuevaContraseña,
+      confirmarNuevaContraseña
+    );
+    res.status(200).json({ mensaje: "Contraseña cambiada exitosamente." });
+  } catch (error) {
+    console.error("Error al cambiar la contraseña del empleado:", error.message);
+    res.status(500).json({ mensaje: "Error al cambiar la contraseña del empleado." });
   }
 };
 

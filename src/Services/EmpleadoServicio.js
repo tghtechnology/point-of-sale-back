@@ -63,8 +63,7 @@ export const editarEmpleado = async (
   email,
   telefono,
   cargo,
-  pais,
-  password
+  pais
 ) => {
   const empleadoExistente = await prisma.usuario.findUnique({
     where: {
@@ -75,24 +74,18 @@ export const editarEmpleado = async (
   if (!empleadoExistente)
     throw new Error(`No se encontró ningún empleado con el ID ${id}`);
 
-  let dataToUpdate = {
-    nombre,
-    email,
-    telefono,
-    cargo,
-    pais,
-    estado: true,
-  };
-
-  if (password && empleadoExistente.password !== password) {
-    dataToUpdate.password = await encryptPassword(password);
-  }
-
   return await prisma.usuario.update({
     where: {
       id: Number(id),
     },
-    data: dataToUpdate,
+    data: {
+      nombre,
+      email,
+      telefono,
+      cargo,
+      pais,
+      estado: true,
+    },
   });
 };
 
@@ -116,4 +109,47 @@ export const eliminarEmpleadoPorId = async (id) => {
 
 export const listarEmpleados = async () => {
   return await prisma.usuario.findMany({ where: { estado: true } });
+};
+
+export const cambiarContraseña = async (
+  id,
+  contraseñaActual,
+  nuevaContraseña,
+  confirmarNuevaContraseña
+) => {
+  const empleado = await prisma.usuario.findUnique({
+    where: {
+      id: Number(id),
+    },
+  });
+
+  if (!empleado)
+    throw new Error(`No se encontró ningún empleado con el ID ${id}`);
+
+  const contraseñaValida = await bcrypt.compare(
+    contraseñaActual,
+    empleado.password
+  );
+
+  if (!contraseñaValida)
+    throw new Error(
+      `La contraseña actual no es válida para el empleado con el ID ${id}`
+    );
+
+  if (nuevaContraseña !== confirmarNuevaContraseña)
+    throw new Error(`Las contraseñas nuevas no coinciden`);
+
+  if (!nuevaContraseña)
+    throw new Error(`La nueva contraseña no puede estar vacía`);
+
+  const hashedPassword = await encryptPassword(nuevaContraseña);
+
+  return await prisma.usuario.update({
+    where: {
+      id: Number(id),
+    },
+    data: {
+      password: hashedPassword,
+    },
+  });
 };

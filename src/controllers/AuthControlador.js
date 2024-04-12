@@ -1,7 +1,5 @@
 import * as AuthServicio from "../Services/AuthServicio";
-import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
-import { verificarSesion as verificacion } from "../Middleware/verificarSesion";
 const passport = require("passport");
 require("../Middleware/passport");
 
@@ -91,6 +89,5 @@ export const eliminarTokensExpirados = async () => {
   }
 };
 
-// Programación de la ejecución periódica para eliminar tokens expirados cada hora
-const horasEnMilisegundos = 60 * 60 * 1000; // 1 hora en milisegundos
+const horasEnMilisegundos = 60 * 60 * 1000;
 setInterval(eliminarTokensExpirados, horasEnMilisegundos);

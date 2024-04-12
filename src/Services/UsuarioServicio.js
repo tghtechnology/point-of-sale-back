@@ -7,14 +7,7 @@ import { envioCorreo } from "../Utils/SendEmail";
 
 const prisma = new PrismaClient();
 
-export const crearUsuario = async (
-  nombre,
-  email,
-  password,
-  pais,
-  telefono,
-  cargo
-) => {
+export const crearUsuario = async (nombre, email, password, pais, telefono) => {
   if (!validarNombrePais(pais)) {
     throw new Error("País inválido");
   }
@@ -29,7 +22,7 @@ export const crearUsuario = async (
       password: hashedPassword,
       rol: "Propietario",
       telefono: telefono,
-      cargo: cargo,
+      cargo: "Gerente",
       estado: true,
     },
   });
