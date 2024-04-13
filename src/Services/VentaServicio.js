@@ -67,28 +67,29 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
         await DetalleVentaServicio.CrearDetalle(detalle.cantidad, detalle.articuloId, nuevaVenta.id);
     }));
 
-    //Buscar nombre de empleado
-    const empleado = await prisma.usuario.findUnique({
-        where: {
-            id: usuarioId
-        },
-        select: {
-            nombre: true
-        }
-    })
-
-    console.log(detallesArticulos)
+        //Buscar nombre de empleado
+        const empleado = await prisma.usuario.findUnique({
+            where: {
+                id: usuarioId
+            },
+            select: {
+                nombre: true
+            }
+        })
     
-    //Buscar artículo
-    const articulo = await prisma.articulo.findMany({
-        where: {
-            id: detallesArticulos.articuloId
-        }
-    })
-
-    const id_venta = nuevaVenta.id
-    //Crear un recibo
-    const recibo = ReciboServicio.crearRecibo(id_venta)
+        console.log(detallesArticulos)
+        
+        //Buscar artículo
+        const articulo = await prisma.articulo.findMany({
+            where: {
+                id: detallesArticulos.articuloId
+            }
+        })
+    
+        const id_venta = nuevaVenta.id
+        //Crear un recibo
+        const recibo = await ReciboServicio.crearRecibo(id_venta)
+    
 
     // Obtener información del cliente para el correo electrónico
     const usuarioInfo = await prisma.cliente.findUnique({

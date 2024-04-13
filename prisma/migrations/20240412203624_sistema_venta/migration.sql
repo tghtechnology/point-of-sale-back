@@ -5,4 +5,4 @@
 
 */
 -- AlterTable
-ALTER TABLE `recibo` ADD COLUMN `ref` VARCHAR(255) NOT NULL;
+ALTER TABLE `recibo` ADD COLUMN `ref` VARCHAR(100) NOT NULL;

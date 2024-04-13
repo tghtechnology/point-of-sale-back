@@ -26,6 +26,7 @@ export const crearRecibo = async (req, res) => {
   res.status(201).json(nuevoRecibo);
 }
 
+
 export const ListarVentas = async(req, res) => { 
     try {
         const ventas = await VentaServicio.ListarVentas();
