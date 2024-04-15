@@ -4,6 +4,7 @@ import nodemailer from "nodemailer";
 import getVerificationEmailTemplate from "../helpers/helperPlantilla";
 import { PrismaClient } from "@prisma/client";
 import { restaurarCuenta } from "./UsuarioServicio";
+import { getUTCTime } from "../Utils/Time";
 
 const prisma = new PrismaClient();
 
@@ -38,7 +39,8 @@ export const login = async (email, password) => {
     { expiresIn: "24h" }
   );
 
-  const expiracion = new Date();
+  const todayISO = new Date().toISOString()
+  const expiracion = getUTCTime(todayISO)
   expiracion.setHours(expiracion.getHours() + 24);
 
   const result = await prisma.sesion.create({
@@ -90,8 +92,8 @@ export const enviarCorreoCambioPass = async (email) => {
       { expiresIn: "1h" }
     );
 
-    //Creacion de registro en resetTokens
-    const expiracion = new Date();
+    const todayISO = new Date().toISOString()
+    const expiracion = getUTCTime(todayISO)
     expiracion.setHours(expiracion.getHours() + 1);
     await prisma.resetToken.create({
       data: {

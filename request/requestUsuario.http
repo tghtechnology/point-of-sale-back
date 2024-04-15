@@ -6,10 +6,10 @@ Content-Type: application/json
 
 {
   "nombre": "Ana",
-  "email": "ana@gmail.com",
+  "email": "estefanyt3101@gmail.com",
   "password": "12345",
   "pais": "Perú",
-  "cargo": "Cajero",
+  "cargo": "Gerente",
   "telefono": "92983293",
   "rol": "Propietario"
 }
@@ -18,7 +18,7 @@ POST {{api}}/login
 Content-Type: application/json
 
 {
-  "email": "ana@gmail.com",
+  "email": "estefanyt3101@gmail.com",
   "password": "12345"
 }
 ###P

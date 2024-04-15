@@ -1,6 +1,7 @@
 import {connect} from "../database"
 import { validarNombrePais } from "../helpers/helperPais";
 import { PrismaClient } from "@prisma/client";
+import { getUTCTime } from "../Utils/Time";
 //Inicialización de prisma
 const prisma = new PrismaClient();
 //Crear clientes
@@ -8,6 +9,8 @@ const crearCliente = async (nombre, email, telefono, direccion, ciudad, region, 
     if (!validarNombrePais(pais)) {
       throw new Error("País inválido");
     }
+    const todayISO = new Date().toISOString()
+    const fecha_creacion = getUTCTime(todayISO)
     const newCliente=await prisma.cliente.create({
       data:{
             nombre: nombre,
@@ -18,6 +21,8 @@ const crearCliente = async (nombre, email, telefono, direccion, ciudad, region, 
             region: region,
             codigo_postal: codigo_postal,
             pais: pais,
+            fecha_creacion:fecha_creacion,
+            fecha_modificacion: null,
             estado:true
       }
     })
@@ -49,6 +54,9 @@ const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, reg
     if (!validarNombrePais(pais)) {
       throw new Error("País inválido");
     }
+    const todayISO = new Date().toISOString()
+   // const fecha_creacion = getUTCTime(todayISO)
+    const fecha_modificacion = getUTCTime(todayISO)
     const cliente=await prisma.cliente.update({
       where: {
         id: Number(id)
@@ -62,6 +70,7 @@ const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, reg
             region: region,
             codigo_postal: codigo_postal,
             pais: pais,
+            fecha_modificacion: fecha_modificacion,
             estado:true
       }
     })
@@ -74,6 +83,8 @@ const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, reg
         region:cliente.region,
         codigo_postal:cliente.codigo_postal,
         pais:cliente.pais,
+        fecha_creacion:cliente.fecha_creacion,
+        fecha_modificacion:cliente.fecha_modificacion,
         estado:cliente.estado
     }
     return updatedCliente

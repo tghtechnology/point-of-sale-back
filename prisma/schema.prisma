@@ -140,6 +140,8 @@ model Cliente {
   region        String  @db.VarChar(255)
   codigo_postal String  @db.VarChar(255)
   pais          String  @db.VarChar(255)
+  fecha_creacion DateTime
+  fecha_modificacion DateTime?
   estado        Boolean
   ventas        Venta[]
 
