@@ -103,6 +103,8 @@ CREATE TABLE `cliente` (
     `region` VARCHAR(255) NOT NULL,
     `codigo_postal` VARCHAR(255) NOT NULL,
     `pais` VARCHAR(255) NOT NULL,
+    `fecha_creacion` DATETIME(3) NOT NULL,
+    `fecha_modificacion` DATETIME(3) NOT NULL,
     `estado` BOOLEAN NOT NULL,
 
     UNIQUE INDEX `cliente_email_key`(`email`),
@@ -134,7 +136,7 @@ CREATE TABLE `Venta` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `subtotal` DECIMAL(10, 2) NOT NULL,
     `total` DECIMAL(10, 2) NOT NULL,
-    `tipoPago` VARCHAR(191) NOT NULL,
+    `tipoPago` ENUM('Efectivo', 'Tarjeta') NOT NULL,
     `dineroRecibido` DECIMAL(10, 2) NOT NULL,
     `cambio` DECIMAL(10, 2) NOT NULL,
     `impuestoId` INTEGER NULL,

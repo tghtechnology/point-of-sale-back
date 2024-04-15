@@ -11,7 +11,7 @@ const routerAuth = Router();
 
 routerAuth.post("/login", login);
 routerAuth.post("/logout", verificarAuth, logout);
-routerAuth.post("/envioCorreo", verificarAuth, enviarTokenCambioPassword);
-routerAuth.post("/cambiarPassword", verificarAuth, cambiarPassword);
+routerAuth.post("/envioCorreo", enviarTokenCambioPassword);
+routerAuth.post("/cambiarPassword", cambiarPassword);
 
 export default routerAuth;
