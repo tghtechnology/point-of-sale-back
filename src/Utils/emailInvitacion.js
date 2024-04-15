@@ -5,7 +5,7 @@ export const enviarCorreoBienvenida = async (
   contrasena,
   urlEmpleado
 ) => {
-  const invitacionLink = `http://${urlEmpleado}`;
+  const invitacionLink = `${urlEmpleado}`;
   const mensajeCorreo = {
     from: process.env.EMAIL_USER,
     to: destinatario,
