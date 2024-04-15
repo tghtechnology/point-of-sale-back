@@ -88,7 +88,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     
         const id_venta = nuevaVenta.id
         //Crear un recibo
-        const recibo = await ReciboServicio.crearRecibo(id_venta)
+        const recibo = await ReciboServicio.crearRecibo({ params: { id: id_venta } })
     
 
     // Obtener información del cliente para el correo electrónico

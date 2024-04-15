@@ -18,6 +18,7 @@ import swaggerui from "swagger-ui-express";
 import { options } from "./Utils/SwaggerOptions";
 import passport from "passport";
 import fileUpload from 'express-fileupload'
+import routerRecibo from "./Routes/ReciboRouter";
 
 const specs = swaggerJSDoc(options);
 const session = require("express-session");
@@ -53,6 +54,7 @@ app.use(routerEmpleado);
 app.use(routerImpuesto);
 app.use(routerDetalleVenta)
 app.use(routerVenta)
+app.use(routerRecibo)
 
 app.use('/docs',swaggerui.serve,swaggerui.setup(specs));
 export default app
