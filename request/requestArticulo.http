@@ -7,12 +7,12 @@ POST {{api}}/articulo/crear
 Content-Type: application/json
 
 {
-  "nombre": "Desktop",
+  "nombre": "Camisa",
   "tipo_venta":"Unidad",
-  "precio": 14.50,
+  "precio": 12,
   "ref": "82323",
   "representacion": "imagen",
-  "id_categoria": ""
+  "id_categoria": 1
 }
 ###
 GET {{api}}/articulo/listar/11

@@ -1,4 +1,3 @@
-import { connect } from "../database";
 import { PrismaClient } from "@prisma/client";
 
 //Inicialización de prisma
@@ -34,7 +33,6 @@ const crearDescuento = async (nombre, tipo_descuento, valor) => {
   return newDescuento;
 };
 const eliminarDescuento = async (id) => {
-
   // Actualizar solo el estado del descuento en la base de datos
   const descuento = await prisma.descuento.update({
     where: {
@@ -47,7 +45,6 @@ const eliminarDescuento = async (id) => {
 };
 
 const obtenerDescuentoById = async (id) => {
-
   const descuento = await prisma.descuento.findFirst({
     where: {
       id: Number(id),
@@ -63,7 +60,6 @@ const modificarDescuento = async (
   valor,
   estado
 ) => {
-
   const tiposValidos = ["PORCENTAJE", "MONTO"];
   // Validar tipo de descuento
   if (!tiposValidos.includes(tipo_descuento)) {
@@ -117,7 +113,6 @@ const obtenerDescuentos = async () => {
 };
 
 const obtenerDescuentosEliminados = async () => {
-
   const descuentoseliminados = await prisma.descuento.findMany({
     where: {
       estado: false,

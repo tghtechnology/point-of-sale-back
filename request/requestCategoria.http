@@ -7,8 +7,8 @@ POST {{api}}/categoria/crear
 Content-Type: application/json
 
 {
-  "nombre": "Libros",
-  "color":"Azul"
+  "nombre": "Ropa",
+  "color":"Negro"
 }
 ###
 GET {{api}}/categoria/listar/6
@@ -21,6 +21,4 @@ Content-Type: application/json
   "color":"Blanco"
 }
 ###
-DELETE {{api}}/categoria/eliminar/6
-###
-//GET {{api}}/categoria/buscar?search=utensilios
+DELETE {{api}}/categoria/eliminar/11

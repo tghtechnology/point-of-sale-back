@@ -8,7 +8,6 @@ const crearCliente = async (nombre, email, telefono, direccion, ciudad, region, 
     if (!validarNombrePais(pais)) {
       throw new Error("País inválido");
     }
-
     const newCliente=await prisma.cliente.create({
       data:{
             nombre: nombre,
