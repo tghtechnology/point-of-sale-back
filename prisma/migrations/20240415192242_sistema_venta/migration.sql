@@ -43,6 +43,8 @@ CREATE TABLE `usuario` (
     `rol` ENUM('Propietario', 'Empleado') NOT NULL,
     `estado` BIT(1) NOT NULL,
     `eliminado_temporal_fecha` DATETIME(3) NULL,
+    `fecha_creacion` DATETIME(3) NOT NULL,
+    `fecha_modificacion` DATETIME(3) NULL,
 
     UNIQUE INDEX `usuario_email_key`(`email`),
     PRIMARY KEY (`id`)
@@ -104,7 +106,7 @@ CREATE TABLE `cliente` (
     `codigo_postal` VARCHAR(255) NOT NULL,
     `pais` VARCHAR(255) NOT NULL,
     `fecha_creacion` DATETIME(3) NOT NULL,
-    `fecha_modificacion` DATETIME(3) NOT NULL,
+    `fecha_modificacion` DATETIME(3) NULL,
     `estado` BOOLEAN NOT NULL,
 
     UNIQUE INDEX `cliente_email_key`(`email`),

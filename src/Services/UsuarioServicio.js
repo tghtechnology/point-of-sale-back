@@ -1,9 +1,9 @@
-import { validarNombrePais } from "../helpers/helperPais";
-import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
-import { logout } from "../Services/AuthServicio";
+import bcrypt from "bcrypt";
+import { validarNombrePais } from "../helpers/helperPais";
 import { cuerpoCorreo } from "../helpers/helperEmail";
 import { envioCorreo } from "../Utils/SendEmail";
+import { getUTCTime } from "../Utils/Time";
 
 const prisma = new PrismaClient();
 
@@ -13,6 +13,8 @@ export const crearUsuario = async (nombre, email, password, pais, telefono) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
+
+  const fechaCreacion = getUTCTime(new Date().toISOString());
 
   const newUsuario = await prisma.usuario.create({
     data: {
@@ -24,9 +26,38 @@ export const crearUsuario = async (nombre, email, password, pais, telefono) => {
       telefono: telefono,
       cargo: "Gerente",
       estado: true,
+      fecha_creacion: fechaCreacion,
+      fecha_modificacion: null,
     },
   });
   return newUsuario;
+};
+
+export const editarUsuario = async (id, nombre, email, telefono, pais) => {
+  const usuarioExistente = await prisma.usuario.findUnique({
+    where: {
+      id: Number(id),
+    },
+  });
+
+  if (!usuarioExistente) {
+    throw new Error(`No se encontró ningún usuario con el ID ${id}`);
+  }
+
+  const updatedUsuario = await prisma.usuario.update({
+    where: {
+      id: Number(id),
+    },
+    data: {
+      nombre,
+      email,
+      telefono,
+      pais,
+      fecha_modificacion: getUTCTime(new Date().toISOString())
+    },
+  });
+
+  return updatedUsuario;
 };
 
 const validarUsuario = async (id, password, token) => {

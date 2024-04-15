@@ -65,7 +65,8 @@ model Usuario {
   rol                      Rol
   estado                   Boolean   @db.Bit(1)
   eliminado_temporal_fecha DateTime?
-
+  fecha_creacion DateTime
+  fecha_modificacion DateTime?
   resetTokens ResetToken[]
   sesiones    Sesion[]
   ventas      Venta[]

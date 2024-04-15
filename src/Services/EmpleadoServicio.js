@@ -1,8 +1,9 @@
-import { validarNombrePais } from "../helpers/helperPais";
-import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
+import { validarNombrePais } from "../helpers/helperPais";
 import * as EmailInvitacion from "../Utils/emailInvitacion";
 import nodemailer from "nodemailer";
+import { getUTCTime } from "../Utils/Time";
 
 const prisma = new PrismaClient();
 
@@ -30,6 +31,7 @@ export const crearEmpleado = async (
   if (!validarNombrePais(pais)) throw new Error("País inválido");
 
   const hashedPassword = await encryptPassword(password);
+  const fechaCreacion = getUTCTime(new Date().toISOString());
 
   const empleado = await prisma.usuario.create({
     data: {
@@ -41,6 +43,8 @@ export const crearEmpleado = async (
       rol: "Empleado",
       estado: true,
       password: hashedPassword,
+      fecha_creacion: fechaCreacion,
+      fecha_modificacion: null,
     },
   });
 
@@ -74,7 +78,7 @@ export const editarEmpleado = async (
   if (!empleadoExistente)
     throw new Error(`No se encontró ningún empleado con el ID ${id}`);
 
-  return await prisma.usuario.update({
+  const updatedEmpleado = await prisma.usuario.update({
     where: {
       id: Number(id),
     },
@@ -85,8 +89,11 @@ export const editarEmpleado = async (
       cargo,
       pais,
       estado: true,
+      fecha_modificacion: getUTCTime(new Date().toISOString())
     },
   });
+
+  return updatedEmpleado;
 };
 
 export const listarEmpleadoPorId = async (id) => {
