@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import { logout } from "../Services/AuthServicio";
 import { cuerpoCorreo } from "../helpers/helperEmail";
 import { envioCorreo } from "../Utils/SendEmail";
-
+import { getUTCTime } from "../Utils/Time";
 const prisma = new PrismaClient();
 
 export const crearUsuario = async (
@@ -106,12 +106,14 @@ export const eliminarTemporalmente = async (usuario_id, password, token) => {
   );
 
   await eliminarSesionesActivas(usuario_id);
-
+  const todayISO = new Date().toISOString()
+  const eliminado_temporal_fecha = getUTCTime(todayISO)
   const results = await prisma.usuario.update({
+    
     where: { id: parseInt(usuario_id) },
     data: {
       estado: false,
-      eliminado_temporal_fecha: { set: new Date() },
+      eliminado_temporal_fecha:eliminado_temporal_fecha,
     },
   });
 
