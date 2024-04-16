@@ -8,10 +8,12 @@ import {
 } from "../controllers/UsuarioControlador";
 import { verificarAuth, isPropietario } from "../Middleware/verificarAuth";
 import { Router } from "express";
+import { editarUsuario } from "../Services/UsuarioServicio";
 
 const routerUsuario = Router();
 //REGISTRO DE USUARIO
 routerUsuario.post("/registro", crearUsuario);
+routerUsuario.put("/editar", editarUsuario)
 routerUsuario.get("/listaPaises", listaPaises);
 
 //RUTAS PARA ELIMINACIÓN DE CUENTA
