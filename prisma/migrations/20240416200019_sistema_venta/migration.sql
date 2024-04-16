@@ -104,7 +104,7 @@ CREATE TABLE `cliente` (
     `codigo_postal` VARCHAR(255) NOT NULL,
     `pais` VARCHAR(255) NOT NULL,
     `fecha_creacion` DATETIME(3) NOT NULL,
-    `fecha_modificacion` DATETIME(3) NOT NULL,
+    `fecha_modificacion` DATETIME(3) NULL,
     `estado` BOOLEAN NOT NULL,
 
     UNIQUE INDEX `cliente_email_key`(`email`),
@@ -115,6 +115,7 @@ CREATE TABLE `cliente` (
 CREATE TABLE `Recibo` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `fecha_creacion` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `ref` VARCHAR(100) NOT NULL,
     `id_venta` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)

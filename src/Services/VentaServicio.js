@@ -43,7 +43,13 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
                 id: parseInt(descuentoId)
             }
         });
-        total -= total * (descuento.valor_calculado);
+        if (descuento.tipo_descuento=="PORCENTAJE"){
+            total -= total * (descuento.valor_calculado);
+        }
+        else{
+            total=total-descuento.valor_calculado
+        }
+        
     }
 
     // Calcular cambio
