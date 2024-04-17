@@ -32,7 +32,7 @@ export const crearUsuario = async (nombre, email, password, pais, telefono) => {
   return newUsuario;
 };
 
-export const editarUsuario = async (id, nombre, email, telefono, pais) => {
+export const editarUsuarioPorId = async (id, nombre, email, telefono, pais) => {
   const usuarioExistente = await prisma.usuario.findUnique({
     where: {
       id: Number(id),

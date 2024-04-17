@@ -63,7 +63,8 @@ export const editarEmpleado = async (req, res) => {
 export const cambiarContraseña = async (req, res) => {
   try {
     const { id } = req.params;
-    const { contraseñaActual, nuevaContraseña, confirmarNuevaContraseña } = req.body;
+    const { contraseñaActual, nuevaContraseña, confirmarNuevaContraseña } =
+      req.body;
     await EmpleadoServicio.cambiarContraseña(
       id,
       contraseñaActual,
@@ -72,8 +73,13 @@ export const cambiarContraseña = async (req, res) => {
     );
     res.status(200).json({ mensaje: "Contraseña cambiada exitosamente." });
   } catch (error) {
-    console.error("Error al cambiar la contraseña del empleado:", error.message);
-    res.status(500).json({ mensaje: "Error al cambiar la contraseña del empleado." });
+    console.error(
+      "Error al cambiar la contraseña del empleado:",
+      error.message
+    );
+    res
+      .status(500)
+      .json({ mensaje: "Error al cambiar la contraseña del empleado." });
   }
 };
 

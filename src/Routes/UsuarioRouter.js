@@ -1,7 +1,7 @@
 import {
   crearUsuario,
   listaPaises,
-  editarUsuario,
+  editarUsuarioPorId,
   listarUsuarios,
   eliminarTemporalmente,
   restaurarCuenta,
@@ -10,12 +10,11 @@ import {
 } from "../controllers/UsuarioControlador";
 import { verificarAuth, isPropietario } from "../Middleware/verificarAuth";
 import { Router } from "express";
-import { editarUsuario, listarUsuarios } from "../Services/UsuarioServicio";
 
 const routerUsuario = Router();
 //REGISTRO DE USUARIO
 routerUsuario.post("/registro", crearUsuario);
-routerUsuario.put("/editar", editarUsuario)
+routerUsuario.put("/editar/:id", editarUsuarioPorId)
 routerUsuario.get("/listaPaises", listaPaises);
 routerUsuario.get("/listar", listarUsuarios)
 

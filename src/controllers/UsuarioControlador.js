@@ -13,7 +13,7 @@ export const listaPaises = async (req, res) => {
 export const crearUsuario = async (req, res) => {
   try {
     const { nombre, email, password, pais, telefono, tipoUsuario } = req.body;
-    const cargo = (tipoUsuario === "Empleado") ? "Empleado" : "Gerente";
+    const cargo = tipoUsuario === "Empleado" ? "Empleado" : "Gerente";
     const newUsuario = await UsuarioServicio.crearUsuario(
       nombre,
       email,
@@ -29,11 +29,11 @@ export const crearUsuario = async (req, res) => {
   }
 };
 
-export const editarUsuario = async (req, res) => {
+export const editarUsuarioPorId = async (req, res) => {
   try {
     const { id } = req.params;
     const { nombre, email, telefono, cargo, pais } = req.body;
-    const usuario = await UsuarioServicio.editarUsuario(
+    const usuario = await UsuarioServicio.editarUsuarioPorId(
       id,
       nombre,
       email,
