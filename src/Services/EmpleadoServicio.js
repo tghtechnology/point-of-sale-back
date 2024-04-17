@@ -89,7 +89,7 @@ export const editarEmpleado = async (
       cargo,
       pais,
       estado: true,
-      fecha_modificacion: getUTCTime(new Date().toISOString())
+      fecha_modificacion: getUTCTime(new Date().toISOString()),
     },
   });
 
@@ -115,7 +115,9 @@ export const eliminarEmpleadoPorId = async (id) => {
 };
 
 export const listarEmpleados = async () => {
-  return await prisma.usuario.findMany({ where: { estado: true } });
+  return await prisma.usuario.findMany({
+    where: { estado: true, rol: "Empleado" },
+  });
 };
 
 export const cambiarContraseña = async (

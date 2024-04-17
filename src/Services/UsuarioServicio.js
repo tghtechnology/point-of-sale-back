@@ -60,7 +60,9 @@ export const editarUsuarioPorId = async (id, nombre, email, telefono, pais) => {
 };
 
 export const listarUsuarios = async () => {
-  return await prisma.usuario.findMany({ where: { estado: true } });
+  return await prisma.usuario.findMany({
+    where: { estado: true, rol: "Propietario" },
+  });
 };
 
 const validarUsuario = async (id, password, token) => {
