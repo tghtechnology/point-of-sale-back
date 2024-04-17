@@ -64,9 +64,10 @@ model Usuario {
   pais                     String?   @db.VarChar(255)
   rol                      Rol
   estado                   Boolean   @db.Bit(1)
+  fecha_creacion           DateTime
+  fecha_modificacion       DateTime?
   eliminado_temporal_fecha DateTime?
-  fecha_creacion DateTime
-  fecha_modificacion DateTime?
+
   resetTokens ResetToken[]
   sesiones    Sesion[]
   ventas      Venta[]
@@ -132,31 +133,32 @@ model Sesion {
 }
 
 model Cliente {
-  id            Int     @id @default(autoincrement())
-  nombre        String  @db.VarChar(255)
-  email         String  @unique @db.VarChar(255)
-  telefono      String  @db.VarChar(255)
-  direccion     String  @db.VarChar(255)
-  ciudad        String  @db.VarChar(255)
-  region        String  @db.VarChar(255)
-  codigo_postal String  @db.VarChar(255)
-  pais          String  @db.VarChar(255)
-  fecha_creacion DateTime
+  id                 Int       @id @default(autoincrement())
+  nombre             String    @db.VarChar(255)
+  email              String    @unique @db.VarChar(255)
+  telefono           String    @db.VarChar(255)
+  direccion          String    @db.VarChar(255)
+  ciudad             String    @db.VarChar(255)
+  region             String    @db.VarChar(255)
+  codigo_postal      String    @db.VarChar(255)
+  pais               String    @db.VarChar(255)
+  fecha_creacion     DateTime
   fecha_modificacion DateTime?
-  estado        Boolean
-  ventas        Venta[]
+  estado             Boolean
+  ventas             Venta[]
 
   @@map("cliente")
 }
 
 model Recibo {
-  id Int @id @default(autoincrement())
+  id             Int      @id @default(autoincrement())
   fecha_creacion DateTime @default(now())
-  ref String @db.VarChar(100)
-  id_venta Int @db.Int @map("id_venta")
+  ref            String   @db.VarChar(100)
+  id_venta       Int      @map("id_venta") @db.Int
 
   venta Venta? @relation(fields: [id_venta], references: [id])
 }
+
 model DetalleVenta {
   id         Int      @id @default(autoincrement())
   cantidad   Int
@@ -170,21 +172,21 @@ model DetalleVenta {
 }
 
 model Venta {
-  id            Int      @id @default(autoincrement())
-  subtotal      Decimal @db.Decimal(10,2)
-  total         Decimal @db.Decimal(10,2)
-  tipoPago      TipoPago
-  impuesto      Impuesto? @relation(fields: [impuestoId], references: [id])
-  descuento     Descuento? @relation(fields: [descuentoId], references: [id])
-  cliente       Cliente   @relation(fields: [clienteId], references: [id])
-  usuario       Usuario   @relation(fields: [usuarioId], references: [id])
-  dineroRecibido Decimal @db.Decimal(10,2) 
-  cambio        Decimal @db.Decimal(10,2)
-  detalles      DetalleVenta[]
-  impuestoId    Int?
-  descuentoId   Int?
-  clienteId     Int
-  usuarioId     Int
+  id             Int            @id @default(autoincrement())
+  subtotal       Decimal        @db.Decimal(10, 2)
+  total          Decimal        @db.Decimal(10, 2)
+  tipoPago       TipoPago
+  impuesto       Impuesto?      @relation(fields: [impuestoId], references: [id])
+  descuento      Descuento?     @relation(fields: [descuentoId], references: [id])
+  cliente        Cliente        @relation(fields: [clienteId], references: [id])
+  usuario        Usuario        @relation(fields: [usuarioId], references: [id])
+  dineroRecibido Decimal        @db.Decimal(10, 2)
+  cambio         Decimal        @db.Decimal(10, 2)
+  detalles       DetalleVenta[]
+  impuestoId     Int?
+  descuentoId    Int?
+  clienteId      Int
+  usuarioId      Int
 
   recibo Recibo[]
 }

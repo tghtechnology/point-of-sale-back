@@ -42,9 +42,9 @@ CREATE TABLE `usuario` (
     `pais` VARCHAR(255) NULL,
     `rol` ENUM('Propietario', 'Empleado') NOT NULL,
     `estado` BIT(1) NOT NULL,
-    `eliminado_temporal_fecha` DATETIME(3) NULL,
     `fecha_creacion` DATETIME(3) NOT NULL,
     `fecha_modificacion` DATETIME(3) NULL,
+    `eliminado_temporal_fecha` DATETIME(3) NULL,
 
     UNIQUE INDEX `usuario_email_key`(`email`),
     PRIMARY KEY (`id`)
@@ -117,6 +117,7 @@ CREATE TABLE `cliente` (
 CREATE TABLE `Recibo` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `fecha_creacion` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `ref` VARCHAR(100) NOT NULL,
     `id_venta` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
