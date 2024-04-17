@@ -29,6 +29,37 @@ export const crearUsuario = async (req, res) => {
   }
 };
 
+export const editarUsuario = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre, email, telefono, cargo, pais } = req.body;
+    const usuario = await UsuarioServicio.editarUsuario(
+      id,
+      nombre,
+      email,
+      telefono,
+      cargo,
+      pais
+    );
+    res.status(200).json(usuario);
+  } catch (error) {
+    console.error("Error al editar el propietario:", error.message);
+    res.status(500).json({ mensaje: "Error al editar el propietario." });
+  }
+};
+
+export const listarUsuarios = async (_req, res) => {
+  try {
+    const usuario = await UsuarioServicio.listarUsuarios();
+    res.status(200).json(usuario);
+  } catch (error) {
+    console.error("Error al obtener la lista de propietarios:", error.message);
+    res
+      .status(500)
+      .json({ mensaje: "Error al obtener la lista de propietarios." });
+  }
+};
+
 export const eliminarTemporalmente = async (req, res) => {
   try {
     const { usuario_id, password, token } = req.body;
@@ -112,7 +143,7 @@ export const eliminarPermanentemente = async (req, res) => {
         .status(400)
         .json({ error: "Token no proporcionado o inválido" });
     } else if (error.message === "Usuario no encontrado") {
-      return res.status(404).json({ error: "No se encontró el usuario" });
+      return res.status(404).json({ error: "No se encontró el Propietario" });
     } else if (error.message === "Contraseña incorrecta") {
       return res.status(404).json({ error: "No coincide la contraseña" });
     } else {

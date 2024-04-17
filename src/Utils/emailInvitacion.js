@@ -17,52 +17,6 @@ export const enviarCorreoBienvenida = async (
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Bienvenida</title>
-          <style>
-            /* Estilos CSS para el correo electrónico */
-            body {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              height: 100%;
-              margin: 0;
-              padding: 0;
-              background-color: #f5f5f5;
-              font-family: Arial, sans-serif;
-            }
-            #panel {
-              width: 60%; /* Ancho del panel */
-              border: 2px solid #808080; /* Borde del panel */
-              padding: 20px; /* Espaciado interno del panel */
-              background-color: white;
-              text-align: center;
-              margin: 0 auto;
-            }
-            .resetButton {
-              background-color: #007bff;
-              border: none;
-              color: white;
-              padding: 10px 20px;
-              text-align: center;
-              text-decoration: none;
-              display: inline-block;
-              font-size: 16px;
-              margin: 4px 2px;
-              border-radius: 5px; /* Added border-radius to make the corners rounded */
-              cursor: pointer;
-            }
-            a.resetButton {
-              text-decoration: none;
-              color: white;
-            }
-            .logo {
-              width: 200px;
-              height: auto;
-              margin-bottom: 20px;
-            }
-            .credentials {
-              margin: 20px 0;
-            }
-          </style>
       </head>
       <body>
           <div id="panel">

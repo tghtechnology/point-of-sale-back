@@ -59,6 +59,10 @@ export const editarUsuario = async (id, nombre, email, telefono, pais) => {
   return updatedUsuario;
 };
 
+export const listarUsuarios = async () => {
+  return await prisma.usuario.findMany({ where: { estado: true } });
+};
+
 const validarUsuario = async (id, password, token) => {
   if (!token) {
     throw new Error("Token no proporcionado");

@@ -1,6 +1,8 @@
 import {
   crearUsuario,
   listaPaises,
+  editarUsuario,
+  listarUsuarios,
   eliminarTemporalmente,
   restaurarCuenta,
   eliminarCuentasVencidas,
@@ -8,13 +10,14 @@ import {
 } from "../controllers/UsuarioControlador";
 import { verificarAuth, isPropietario } from "../Middleware/verificarAuth";
 import { Router } from "express";
-import { editarUsuario } from "../Services/UsuarioServicio";
+import { editarUsuario, listarUsuarios } from "../Services/UsuarioServicio";
 
 const routerUsuario = Router();
 //REGISTRO DE USUARIO
 routerUsuario.post("/registro", crearUsuario);
 routerUsuario.put("/editar", editarUsuario)
 routerUsuario.get("/listaPaises", listaPaises);
+routerUsuario.get("/listar", listarUsuarios)
 
 //RUTAS PARA ELIMINACIÓN DE CUENTA
 routerUsuario.post("/eliminar-temporal", verificarAuth, isPropietario, eliminarTemporalmente);
