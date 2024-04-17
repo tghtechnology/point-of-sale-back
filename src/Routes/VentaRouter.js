@@ -4,9 +4,9 @@ import { Router } from "express";
 
 const routerVenta =Router()
 
-routerVenta.post("/venta", CrearVenta)
+routerVenta.post("/venta", CrearVenta, crearRecibo)
 routerVenta.get("/venta", ListarVentas)
 routerVenta.get("/venta/:id",ObtenerVentaPorId)
 
-routerVenta.post("/recibo/:id", crearRecibo)
+
 export default routerVenta

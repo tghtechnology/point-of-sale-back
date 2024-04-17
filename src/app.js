@@ -1,5 +1,4 @@
 import express from "express";
-import morgan from "morgan";
 import cors from "cors";
 //Rutas apis
 import routerUsuario from "./Routes/UsuarioRouter";
@@ -13,11 +12,13 @@ import routerImpuesto from "./Routes/ImpuestoRouter"
 import routerDetalleVenta from "./Routes/DetalleVentaRouter"
 import routerVenta from "./Routes/VentaRouter";
 
+import morgan from "morgan"
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerui from "swagger-ui-express";
 import { options } from "./Utils/SwaggerOptions";
 import passport from "passport";
 import fileUpload from 'express-fileupload'
+import routerRecibo from "./Routes/ReciboRouter";
 
 const specs = swaggerJSDoc(options);
 const session = require("express-session");
@@ -53,6 +54,7 @@ app.use(routerEmpleado);
 app.use(routerImpuesto);
 app.use(routerDetalleVenta)
 app.use(routerVenta)
+app.use(routerRecibo)
 
 app.use('/docs',swaggerui.serve,swaggerui.setup(specs));
 export default app
