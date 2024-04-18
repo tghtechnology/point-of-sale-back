@@ -8,7 +8,7 @@ import { getUTCTime } from "../Utils/Time";
 
 const prisma = new PrismaClient();
 
-//Lógica para iniciar sesión
+// Lógica para iniciar sesión
 export const login = async (email, password) => {
   const results = await prisma.usuario.findMany({
     where: {
@@ -57,7 +57,7 @@ export const login = async (email, password) => {
   };
 };
 
-//Lógica para cerrar sesión
+// Lógica para cerrar sesión
 export const logout = async (token) => {
   
     const decodedToken = jwt.verify(token, "secreto_del_token"); 
@@ -68,6 +68,14 @@ export const logout = async (token) => {
         token: token,
       },
     });
+};
+
+// Función para obtener los datos de un usuario por su ID
+export const obtenerDatosUsuarioPorId = async (usuarioId) => {
+  const usuario = await prisma.usuario.findUnique({
+    where: { id: usuarioId },
+  });
+  return usuario;
 };
 
 // Función para enviar un correo electrónico al usuario con un enlace para cambiar la contraseña
@@ -128,7 +136,6 @@ export const enviarCorreoCambioPass = async (email) => {
     html: getVerificationEmailTemplate(usuario.nombre, resetPasswordLink),
   });
 };
-
 
 export const cambiarPassword = async (token, password) => {
   if (!token) {
@@ -206,5 +213,4 @@ export const eliminarTokensExpirados = async () => {
     ) {
       console.log("Tokens expirados eliminados correctamente.");
     }
-  
 };

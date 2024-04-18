@@ -1,15 +1,9 @@
 import * as AuthServicio from "../Services/AuthServicio";
-import { PrismaClient } from "@prisma/client";
-const passport = require("passport");
-require("../Middleware/passport");
-
-const prisma = new PrismaClient();
 
 export const login = async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const { email, password } = req.body;
     const result = await AuthServicio.login(email, password);
-
     return res.status(200).json({
       token: result.token,
       usuario_id: result.usuario_id,
@@ -20,10 +14,6 @@ export const login = async (req, res) => {
       return res
         .status(401)
         .json({ error: "Nombre de usuario o contraseña incorrectos" });
-    } else if (error.message === "Sesión activa encontrada") {
-      return res
-        .status(401)
-        .json({ error: "Ya has iniciado sesión", activeSessions: true });
     } else {
       return res.status(500).json({ error: "Error interno del servidor" });
     }
@@ -31,13 +21,41 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
+  const token = req.headers.authorization.split(" ")[1];
   try {
-    const token = req.headers.authorization.split(" ")[1];
     await AuthServicio.logout(token);
     return res.json({ message: "Sesión cerrada exitosamente" });
   } catch (error) {
     console.error("Error al cerrar sesión:", error.message);
     return res.status(500).json({ error: "Error del servidor" });
+  }
+};
+
+export const obtenerDatosUsuarioPorId = async (req, res) => {
+  const { id } = req.params; // Cambiado a 'id'
+  
+  try {
+    // Asegúrate de que el 'id' sea un número entero
+    const usuarioId = parseInt(id);
+
+    // Verifica si el ID es un número válido
+    if (isNaN(usuarioId)) {
+      return res.status(400).json({ error: "ID de usuario inválido" });
+    }
+
+    // Llama a la función para obtener los datos del usuario por su ID
+    const usuario = await AuthServicio.obtenerDatosUsuarioPorId(usuarioId);
+
+    // Verifica si se encontró el usuario
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    // Devuelve los datos del usuario
+    return res.status(200).json(usuario);
+  } catch (error) {
+    console.error("Error al obtener datos del usuario:", error.message);
+    return res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
@@ -79,15 +97,3 @@ export const cambiarPassword = async (req, res) => {
     return res.status(500).json({ error: "Error del servidor" });
   }
 };
-
-export const eliminarTokensExpirados = async () => {
-  try {
-    await AuthServicio.eliminarTokensExpirados();
-    console.log("Tokens expirados eliminados correctamente.");
-  } catch (error) {
-    console.error("Error al eliminar tokens expirados:", error.message);
-  }
-};
-
-const horasEnMilisegundos = 60 * 60 * 1000;
-setInterval(eliminarTokensExpirados, horasEnMilisegundos);
