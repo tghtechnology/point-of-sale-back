@@ -104,3 +104,8 @@ async function obtenerNombreArticulo(articuloId) {
 
   return articulo ? articulo.nombre : null;
 }
+
+
+export const Reembolso = async () => {
+  
+}
