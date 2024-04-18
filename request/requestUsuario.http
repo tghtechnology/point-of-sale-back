@@ -5,13 +5,11 @@ POST {{api}}/registro
 Content-Type: application/json
 
 {
-  "nombre": "Estefany",
-  "email": "estefanyt3101@gmail.com",
+  "nombre": "Pepe",
+  "email": "pepe@@gmail.com",
   "password": "12345",
   "pais": "Perú",
-  "cargo": "Gerente",
-  "telefono": "92983293",
-  "rol": "Propietario"
+  "telefono": "92983293"
 }
 ### 
 POST {{api}}/login

@@ -29,7 +29,7 @@ export const crearUsuario = async (
       password: hashedPassword,
       rol: "Propietario",
       telefono: telefono,
-      cargo: cargo,
+      cargo: "Gerente",
       estado: true,
     },
   });

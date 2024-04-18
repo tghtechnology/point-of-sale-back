@@ -7,9 +7,7 @@ const generarRef = async () => {
     const ultimaVenta = await prisma.venta.findFirst({
       orderBy: { id: "desc" },
     });
-
     const ultimoIdVenta = ultimaVenta ? ultimaVenta.id : 0;
-
     const nuevoRef = `#1-${ultimoIdVenta + 1000}`;
 
     return nuevoRef;
