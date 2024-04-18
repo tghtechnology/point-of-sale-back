@@ -20,10 +20,17 @@ const generarRef = async () => {
 };
 
 export const crearRecibo = async (req, res) => {
-  const id_venta = parseInt(req.recibo)
+  //const id_venta = parseInt(req.recibo)
   
   try {
     const ref = await generarRef(ref)
+
+    const ultimaVenta = await prisma.venta.findFirst({
+      orderBy: { id: "desc" },
+    });
+
+    const id_venta = parseInt(ultimaVenta.id)
+    console.log(id_venta)
 
     //Buscar venta
     const Rec = await prisma.venta.findFirst({
@@ -106,6 +113,4 @@ async function obtenerNombreArticulo(articuloId) {
 }
 
 
-export const Reembolso = async () => {
-  
-}
+export const Reembolso = async () => {}

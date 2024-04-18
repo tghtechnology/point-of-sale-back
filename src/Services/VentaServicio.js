@@ -76,8 +76,6 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
                 nombre: true
             }
         })
-    
-        console.log(detallesArticulos)
         
         //Buscar artículo
         const articulo = await prisma.articulo.findMany({
