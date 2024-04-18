@@ -85,13 +85,13 @@ model Articulo {
   precio       Decimal?       @db.Decimal(10, 2)
   ref          String         @db.VarChar(255)
   color        String         @db.VarChar(255)
-  imagen       String?        @map("imagen")
+  imagen       String?        @db.VarChar(255)
   id_categoria Int?           @map("id_categoria") @db.Int
   estado       Boolean
   detalles     DetalleVenta[]
 
   categoria Categoria? @relation(fields: [id_categoria], references: [id])
-  Imagen    Imagen?    @relation(fields: [imagen], references: [public_id])
+  //Imagen    Imagen?    @relation(fields: [imagen], references: [public_id])
 
   @@map("articulo")
 }
@@ -99,14 +99,6 @@ model Articulo {
 enum TipoVenta {
   Peso
   Unidad
-}
-
-model Imagen {
-  public_id  String     @id
-  secure_url String     @unique
-  articulos  Articulo[]
-
-  @@map("imagen")
 }
 
 model ResetToken {
