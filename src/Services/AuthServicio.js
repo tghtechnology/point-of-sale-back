@@ -8,10 +8,9 @@ import { getUTCTime } from "../Utils/Time";
 
 const prisma = new PrismaClient();
 
-// Lógica para iniciar sesión
 export const login = async (email, password) => {
   const results = await prisma.usuario.findMany({
-    where: {
+    where: {  
       email: email
     },
   })
@@ -47,7 +46,8 @@ export const login = async (email, password) => {
     data: {
       usuario_id: usuario.id,
       token: token,
-      expiracion: expiracion
+      expiracion: expiracion,
+      estado: true
     }
   });
 
