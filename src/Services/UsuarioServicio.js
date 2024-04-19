@@ -13,7 +13,7 @@ export const crearUsuario = async (
   password,
   pais,
   telefono,
-  cargo
+  nombreNegocio
 ) => {
   if (!validarNombrePais(pais)) {
     throw new Error("País inválido");
@@ -27,6 +27,7 @@ export const crearUsuario = async (
       email: email,
       pais: pais,
       password: hashedPassword,
+      nombreNegocio:nombreNegocio,
       rol: "Propietario",
       telefono: telefono,
       cargo: "Gerente",

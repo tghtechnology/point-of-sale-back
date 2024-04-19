@@ -5,9 +5,10 @@ POST {{api}}/registro
 Content-Type: application/json
 
 {
-  "nombre": "Digital",
+  "nombre": "Estefany Torres",
   "email": "estefanyt3101@gmail.com",
   "password": "12345",
+  "nombreNegocio": "Digital",
   "pais": "Perú",
   "telefono": "92983293"
 }

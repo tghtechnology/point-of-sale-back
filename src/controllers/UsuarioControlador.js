@@ -13,8 +13,8 @@ export const listaPaises = async (req, res) => {
 // Controlador para crear un nuevo usuario
 export const crearUsuario = async (req, res) => {
   try {
-    const {nombre, email, password, pais, telefono} = req.body;
-    const newUsuario = await UsuarioServicio.crearUsuario(nombre, email, password, pais, telefono);
+    const {nombre, email, password, pais, telefono, nombreNegocio} = req.body;
+    const newUsuario = await UsuarioServicio.crearUsuario(nombre, email, password, pais, telefono, nombreNegocio);
     res.json(newUsuario);
   } catch (error) {
     console.error(error);
