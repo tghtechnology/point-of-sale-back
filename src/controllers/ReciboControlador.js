@@ -11,8 +11,8 @@ export const ListarRecibo = async(_, res) => {
 }
 
 export const crearRecibo = async (req, res) => {
-    const id_venta = req.params.id;
-    const { ref } = req.body
-    const nuevoRecibo = await ReciboServicio.crearRecibo(id_venta, ref)
+    //const id_venta = req.params.id;
+    const { id_venta } = req.body
+    const nuevoRecibo = await ReciboServicio.crearRecibo(id_venta)
     res.status(201).json(nuevoRecibo);
 }

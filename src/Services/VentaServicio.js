@@ -94,7 +94,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     
         const id_venta = nuevaVenta.id
         //Crear un recibo
-        const recibo = await ReciboServicio.crearRecibo({ params: { id: id_venta } })
+        const recibo = await ReciboServicio.crearRecibo(id_venta)
     
 
     // Obtener información del cliente para el correo electrónico
@@ -113,7 +113,17 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
 
     // Enviar el correo electrónico
     await envioCorreo(usuarioInfo.email, "Venta realizada", cuerpo);
-    return nuevaVenta;
+    return {
+        ref: recibo.ref,
+        usuario: recibo.usuario,
+        cliente: recibo.cliente,
+        detalles: recibo.detalles,
+        descuento: recibo.descuento,
+        impuesto: recibo.impuesto,
+        tipoPago: recibo.tipoPago,
+        subtotal: recibo.subtotal,
+        total: recibo.total,
+    };
 };
 const ListarVentas=async()=>{
     const ventas = await prisma.venta.findMany();
