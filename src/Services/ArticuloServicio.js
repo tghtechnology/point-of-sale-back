@@ -4,7 +4,7 @@ import * as CategoriaServicio from "../Services/CategoriaServicio";
 const prisma = new PrismaClient();
 
 //Crear un nuevo artículo
-export const crearArticulo = async (nombre, tipo_venta, precio, ref, color, imagen, id_categoria) => {
+export const crearArticulo = async (nombre, tipo_venta, precio, color, imagen, id_categoria) => {
 
   //Validación campos vacíos
   if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
@@ -20,6 +20,9 @@ export const crearArticulo = async (nombre, tipo_venta, precio, ref, color, imag
   if (!TiposPermitidos.includes(tipo_venta)) {throw new Error("Tipo de venta no válido");}
 
   let categoria = await buscarCategoria(id_categoria);
+
+  //Generar ref
+  const ref = await generarRef(ref)
 
   const newArticulo = await prisma.articulo.create({
     data: {
@@ -131,7 +134,7 @@ export const listarArticuloPorId = async (id) => {
   return articuloFormato;
 } 
 
-export const modificarArticulo = async (id, nombre, tipo_venta, precio, ref, color, imagen, id_categoria) => {
+export const modificarArticulo = async (id, nombre, tipo_venta, precio, color, imagen, id_categoria) => {
 
   if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
   if (!tipo_venta || tipo_venta.length < 1) {throw new Error("Campo tipo_venta vacío")}
@@ -166,7 +169,6 @@ const articulo = await prisma.articulo.update({
     nombre: nombre,
     tipo_venta: tipo_venta,
     precio: Number(precio),
-    ref: ref,
     color: color,
     imagen: imagen ? imagen : null,
     id_categoria: parseInt(id_categoria),
@@ -233,3 +235,24 @@ const buscarCategoria = async (id_categoria) => {
   }
   return categoriaFormato
 }
+
+
+
+//Generar código de referencia de cada artículo
+
+const generarRef = async () => {
+  try {
+    const ultimaVenta = await prisma.venta.findFirst({
+      orderBy: { id: "desc" },
+    });
+
+    const ultimoIdVenta = ultimaVenta ? ultimaVenta.id : 0;
+
+    const nuevoRef = `#1-${ultimoIdVenta + 1000}`;
+
+    return nuevoRef;
+  } catch (error) {
+    console.error("Error al generar el valor de ref:", error);
+    throw error;
+  }
+};

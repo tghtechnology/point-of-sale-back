@@ -3,7 +3,7 @@ import { uploadImage, deleteImage } from "../Utils/cloudinary.js";
 
 export const crearArticulo = async (req, res) => {
   try {
-    const { nombre, tipo_venta, precio, ref, color, id_categoria} = req.body;
+    const { nombre, tipo_venta, precio, color, id_categoria} = req.body;
     let imagen = req.body.imagen
     console.log(req.body)
 
@@ -14,7 +14,7 @@ export const crearArticulo = async (req, res) => {
       console.log(result)
     }
 
-    const newArticulo = await ArticuloServicio.crearArticulo(nombre, tipo_venta, precio, ref, color, imagen, id_categoria);
+    const newArticulo = await ArticuloServicio.crearArticulo(nombre, tipo_venta, precio, color, imagen, id_categoria);
 
     res.status(201).json(newArticulo)
 
@@ -41,7 +41,7 @@ export const crearArticulo = async (req, res) => {
 }
 }
 
-export const listarArticulos = async (req, res) => {
+export const listarArticulos = async (_, res) => {
   try {
     const articulos = await ArticuloServicio.listarArticulos();
     res.status(200).json(articulos)
@@ -71,7 +71,7 @@ export const obtenerArticuloPorId = async (req, res) => {
 export const actualizarArticulo = async (req, res) => {
   try {
     const id = req.params.id;
-    const { nombre, tipo_venta, precio, ref, color, id_categoria} = req.body
+    const { nombre, tipo_venta, precio, color, id_categoria} = req.body
     let imagen = req.body.imagen
 
     //Quitar imagen
@@ -89,7 +89,7 @@ export const actualizarArticulo = async (req, res) => {
       console.log(imagen)
     }
 
-    const articulo = await ArticuloServicio.modificarArticulo(id, nombre, tipo_venta, precio, ref, color, imagen, id_categoria);
+    const articulo = await ArticuloServicio.modificarArticulo(id, nombre, tipo_venta, precio, color, imagen, id_categoria);
     
 
     if (articulo == null) {
