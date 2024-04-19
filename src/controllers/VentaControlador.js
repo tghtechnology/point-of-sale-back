@@ -10,9 +10,7 @@ export const CrearVenta = async (req, res) => {
 
       // Llama a la función CrearVenta con los parámetros necesarios
       const nuevaVenta = await VentaServicio.CrearVenta(detalles, tipoPago, impuestoId, descuentoId, clienteId, usuarioId, dineroRecibido);
-      await ReciboControlador.CrearRecibo()
-      //const id = nuevaVenta.id
-      //req.recibo = id
+      req.recibo = nuevaVenta.id
 
       // Aquí puedes enviar la respuesta con la nueva venta creada
       res.status(201).json({nuevaVenta})

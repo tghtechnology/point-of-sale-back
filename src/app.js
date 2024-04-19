@@ -29,8 +29,7 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(fileUpload({
-    useTempFiles : true,
-    tempFileDir : './tmp'
+    useTempFiles : true
 }))
 
 app.use(

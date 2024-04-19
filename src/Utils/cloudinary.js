@@ -12,4 +12,9 @@ export async function uploadImage(filePath) {
         folder: 'articulos'
     })
 }
+
+export async function deleteImage(secure_url) {
+    return await cloudinary.uploader.destroy(ImgId)
+}
+
           

@@ -131,15 +131,14 @@ export const listarArticuloPorId = async (id) => {
   return articuloFormato;
 } 
 
-export const modificarArticulo = async (id, nombre, tipo_venta, precio, ref, representacion, id_categoria) => {
+export const modificarArticulo = async (id, nombre, tipo_venta, precio, ref, color, imagen, id_categoria) => {
 
   if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
   if (!tipo_venta || tipo_venta.length < 1) {throw new Error("Campo tipo_venta vacío")}
   if (!precio || precio.length < 1) {throw new Error("Campo precio vacío")}
-  if (!representacion || representacion.length < 1) {throw new Error("Campo representación vacío")}
 
   //Validación tipo de dato de precio
-  if (typeof precio !== 'number' || isNaN(parseFloat(precio)) || !isFinite(precio)) {throw new Error("Precio no es número válido")}
+  //if (typeof precio !== 'number' || isNaN(parseFloat(precio)) || !isFinite(precio)) {throw new Error("Precio no es número válido")}
 
   //Validación tipo de venta
   const TiposPermitidos = ['Peso', 'Unidad'];
