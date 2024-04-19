@@ -5,14 +5,13 @@ export const crearArticulo = async (req, res) => {
   try {
     const { nombre, tipo_venta, precio, ref, color, id_categoria} = req.body;
     let imagen = req.body.imagen
+    console.log(req.body)
 
-    console.log(imagen)
-
+    //Subir imagen
     if(req.files?.imagen) {
       const result = await uploadImage(req.files.imagen.tempFilePath)
-      imagen = {
-        secure_url: result.secure_url
-      }
+      imagen = result.secure_url
+      console.log(result)
     }
 
     const newArticulo = await ArticuloServicio.crearArticulo(nombre, tipo_venta, precio, ref, color, imagen, id_categoria);
@@ -75,16 +74,19 @@ export const actualizarArticulo = async (req, res) => {
     const { nombre, tipo_venta, precio, ref, color, id_categoria} = req.body
     let imagen = req.body.imagen
 
+    //Quitar imagen
     if (imagen !== '') {
       const ImgId = imagen;
       if (ImgId) {
         const result = await deleteImage(imagen)
       }
-    } else if (req.files?.imagen) {
+    }
+    
+    //Subir otra imagen
+    if (req.files?.imagen) {
       const newImagen = await uploadImage(req.files.imagen.tempFilePath)
-      imagen = {
-        secure_url: newImagen.secure_url
-      }
+      imagen = newImagen.secure_url
+      console.log(imagen)
     }
 
     const articulo = await ArticuloServicio.modificarArticulo(id, nombre, tipo_venta, precio, ref, color, imagen, id_categoria);
@@ -119,8 +121,18 @@ export const actualizarArticulo = async (req, res) => {
 export const eliminarArticulo = async (req, res) => {
   try {
     const id = req.params.id;
-    const articulo = await ArticuloServicio.eliminarArticulo(id);
+
+    //Eliminar imagen de la nube
+    const Articulo = await ArticuloServicio.listarArticuloPorId(id)
+    const imagen = Articulo.imagen
     
+      const ImgId = imagen;
+      if (ImgId) {
+        const result = await deleteImage(imagen)
+      }
+
+    const articulo = await ArticuloServicio.eliminarArticulo(id);
+
     if (articulo == null) {
       return res.status(400).json({ error: "No se encontró el artículo" });
     }

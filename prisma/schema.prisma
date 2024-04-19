@@ -91,7 +91,6 @@ model Articulo {
   detalles     DetalleVenta[]
 
   categoria Categoria? @relation(fields: [id_categoria], references: [id])
-  //Imagen    Imagen?    @relation(fields: [imagen], references: [public_id])
 
   @@map("articulo")
 }

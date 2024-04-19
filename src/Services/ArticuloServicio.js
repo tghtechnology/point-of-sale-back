@@ -168,7 +168,7 @@ const articulo = await prisma.articulo.update({
     precio: Number(precio),
     ref: ref,
     color: color,
-    imagen: imagen,
+    imagen: imagen ? imagen : null,
     id_categoria: parseInt(id_categoria),
   }
 })
