@@ -16,6 +16,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
             }
         });
         subtotal += articulo.precio * detalle.cantidad;
+
         detallesArticulos.push({
             producto: articulo.nombre,
             cantidad: detalle.cantidad,
@@ -27,29 +28,20 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     if (impuestoId) {
         const impuesto = await prisma.impuesto.findUnique({
             where: {
-                id: parseInt(impuestoId)
+                id: impuestoId
             }
         });
-        if (impuesto.tipo_impuesto === "Anadido_al_precio") {
-            total += subtotal * (impuesto.tasa / 100);
-        } else {
-            total = subtotal
-        }    }
+        total += impuesto.tipo_impuesto === "Anadido_al_precio" ? subtotal * (impuesto.tasa / 100) : subtotal * (impuesto.tasa / 100);
+    }
 
     // Aplicar descuento
     if (descuentoId) {
         const descuento = await prisma.descuento.findUnique({
             where: {
-                id: parseInt(descuentoId)
+                id: descuentoId
             }
         });
-        if (descuento.tipo_descuento=="PORCENTAJE"){
-            total -= total * (descuento.valor_calculado);
-        }
-        else{
-            total=total-descuento.valor_calculado
-        }
-        
+        total -= total * (descuento.valor_calculado);
     }
 
     // Calcular cambio
@@ -57,14 +49,14 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
 
     // Crear la venta en la base de datos
     const nuevaVenta = await prisma.venta.create({
-        data: { 
+        data: {
             subtotal: subtotal,
             total: total,
             tipoPago: tipoPago,
-            impuestoId: parseInt(impuestoId),
-            descuentoId: parseInt(descuentoId),
-            clienteId: parseInt(clienteId),
-            usuarioId: parseInt(usuarioId),
+            impuestoId: impuestoId,
+            descuentoId: descuentoId,
+            clienteId: clienteId,
+            usuarioId: usuarioId,
             dineroRecibido: dineroRecibido,
             cambio: cambio
         }
@@ -94,13 +86,13 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     
         const id_venta = nuevaVenta.id
         //Crear un recibo
-        const recibo = await ReciboServicio.crearRecibo(id_venta)
-    
+        /*const recibo = await ReciboServicio.crearRecibo({ params: { id: id_venta } }req, res)*/
+        //const recibo = await ReciboServicio.CrearRecibo()
 
     // Obtener información del cliente para el correo electrónico
     const usuarioInfo = await prisma.cliente.findUnique({
         where: {
-            id: parseInt(clienteId)
+            id: clienteId
         },
         select: {
             email: true,
@@ -113,23 +105,14 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
 
     // Enviar el correo electrónico
     await envioCorreo(usuarioInfo.email, "Venta realizada", cuerpo);
-    return {
-        ref: recibo.ref,
-        usuario: recibo.usuario,
-        cliente: recibo.cliente,
-        detalles: recibo.detalles,
-        descuento: recibo.descuento,
-        impuesto: recibo.impuesto,
-        tipoPago: recibo.tipoPago,
-        subtotal: recibo.subtotal,
-        total: recibo.total,
-    };
+
+    return nuevaVenta;
 };
 const ListarVentas=async()=>{
     const ventas = await prisma.venta.findMany();
     return ventas;
 }
-const ObtenerVentaPorId=async(id)=>{
+const ObtenerVentaPorId=async()=>{
     const ventas = await prisma.venta.findUnique({
         where: {
             id: Number(id)

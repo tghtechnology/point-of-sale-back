@@ -1,9 +1,9 @@
 import * as VentaServicio from "../Services/VentaServicio"
-import * as ReciboServicio from "../Services/ReciboServicio"
+import * as ReciboControlador from "../controllers/ReciboControlador"
 
 
 // Controlador para la creación de una venta
-export const CrearVenta = async (req, res, next) => {
+export const CrearVenta = async (req, res) => {
   try {
       // Aquí obtienes los datos necesarios para crear la venta desde el cuerpo de la solicitud (req.body)
       const { detalles, tipoPago, impuestoId, descuentoId, clienteId, usuarioId, dineroRecibido } = req.body;
@@ -13,7 +13,7 @@ export const CrearVenta = async (req, res, next) => {
       req.recibo = nuevaVenta.id
 
       // Aquí puedes enviar la respuesta con la nueva venta creada
-      next();
+      res.status(201).json({nuevaVenta})
   } catch (error) {
       // En caso de error, envía una respuesta de error
       console.error('Error al crear la venta:', error);

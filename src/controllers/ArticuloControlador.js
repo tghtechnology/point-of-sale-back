@@ -1,19 +1,20 @@
 import * as ArticuloServicio from "../Services/ArticuloServicio";
-import { uploadImage } from "../Utils/cloudinary.js";
+import { uploadImage, deleteImage } from "../Utils/cloudinary.js";
 
 export const crearArticulo = async (req, res) => {
   try {
-    const { nombre, tipo_venta, precio, ref, color, imagen, id_categoria} = req.body;
-    console.log(req.files)
-    const newArticulo = await ArticuloServicio.crearArticulo(nombre, tipo_venta, precio, ref, color, imagen, id_categoria);
+    const { nombre, tipo_venta, precio, color, id_categoria} = req.body;
+    let imagen = req.body.imagen
+    console.log(req.body)
 
+    //Subir imagen
     if(req.files?.imagen) {
       const result = await uploadImage(req.files.imagen.tempFilePath)
-      newArticulo.imagen = {
-        public_id: result.public_id,
-        secure_url: result.secure_url
-      }
+      imagen = result.secure_url
+      console.log(result)
     }
+
+    const newArticulo = await ArticuloServicio.crearArticulo(nombre, tipo_venta, precio, color, imagen, id_categoria);
 
     res.status(201).json(newArticulo)
 
@@ -40,7 +41,7 @@ export const crearArticulo = async (req, res) => {
 }
 }
 
-export const listarArticulos = async (req, res) => {
+export const listarArticulos = async (_, res) => {
   try {
     const articulos = await ArticuloServicio.listarArticulos();
     res.status(200).json(articulos)
@@ -70,8 +71,26 @@ export const obtenerArticuloPorId = async (req, res) => {
 export const actualizarArticulo = async (req, res) => {
   try {
     const id = req.params.id;
-    const { nombre, tipo_venta, precio, ref, color, imagen, id_categoria} = req.body
-    const articulo = await ArticuloServicio.modificarArticulo(id, nombre, tipo_venta, precio, ref, color, imagen, id_categoria);
+    const { nombre, tipo_venta, precio, color, id_categoria} = req.body
+    let imagen = req.body.imagen
+
+    //Quitar imagen
+    if (imagen !== '') {
+      const ImgId = imagen;
+      if (ImgId) {
+        const result = await deleteImage(imagen)
+      }
+    }
+    
+    //Subir otra imagen
+    if (req.files?.imagen) {
+      const newImagen = await uploadImage(req.files.imagen.tempFilePath)
+      imagen = newImagen.secure_url
+      console.log(imagen)
+    }
+
+    const articulo = await ArticuloServicio.modificarArticulo(id, nombre, tipo_venta, precio, color, imagen, id_categoria);
+    
 
     if (articulo == null) {
       return res.status(400).json({ error: "No se encontró el artículo" });
@@ -94,7 +113,7 @@ export const actualizarArticulo = async (req, res) => {
       return res.status(400).json({ error: "El tipo de venta no es válido" });
     } else {
     console.error(error);
-    res.status(500).json({ mensaje: 'Error al crear el artículo' });
+    res.status(500).json({ mensaje: 'Error al editar el artículo' });
     }
   }
 }
@@ -102,8 +121,18 @@ export const actualizarArticulo = async (req, res) => {
 export const eliminarArticulo = async (req, res) => {
   try {
     const id = req.params.id;
-    const articulo = await ArticuloServicio.eliminarArticulo(id);
+
+    //Eliminar imagen de la nube
+    const Articulo = await ArticuloServicio.listarArticuloPorId(id)
+    const imagen = Articulo.imagen
     
+      const ImgId = imagen;
+      if (ImgId) {
+        const result = await deleteImage(imagen)
+      }
+
+    const articulo = await ArticuloServicio.eliminarArticulo(id);
+
     if (articulo == null) {
       return res.status(400).json({ error: "No se encontró el artículo" });
     }

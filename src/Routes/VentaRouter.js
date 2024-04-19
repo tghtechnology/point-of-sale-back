@@ -1,10 +1,10 @@
 import { CrearVenta, ListarVentas,ObtenerVentaPorId } from "../controllers/VentaControlador";
-import { crearRecibo } from "../Services/ReciboServicio";
+import { CrearRecibo } from "../controllers/ReciboControlador";
 import { Router } from "express";
 
 const routerVenta =Router()
 
-routerVenta.post("/venta", CrearVenta, crearRecibo)
+routerVenta.post("/venta", CrearVenta, CrearRecibo)
 routerVenta.get("/venta", ListarVentas)
 routerVenta.get("/venta/:id",ObtenerVentaPorId)
 
