@@ -4,7 +4,7 @@ import { Router } from "express";
 
 const routerVenta =Router()
 
-routerVenta.post("/venta", CrearVenta, CrearRecibo)
+routerVenta.post("/venta", CrearVenta)
 routerVenta.get("/venta", ListarVentas)
 routerVenta.get("/venta/:id",ObtenerVentaPorId)
 

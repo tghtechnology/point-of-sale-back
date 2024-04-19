@@ -31,7 +31,13 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
                 id: impuestoId
             }
         });
-        total += impuesto.tipo_impuesto === "Anadido_al_precio" ? subtotal * (impuesto.tasa / 100) : subtotal * (impuesto.tasa / 100);
+        if(impuesto.tipo_impuesto=="Anadido_al_precio"){
+            totalimpuesto=subtotal*(impuesto.tasa/100);
+            total=subtotal+totalimpuesto;
+        }
+        if (impuesto.tipo_impuesto=="Incluido_en_el_precio"){
+            total=subtotal
+        }
     }
 
     // Aplicar descuento
@@ -41,7 +47,12 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
                 id: descuentoId
             }
         });
+        if(descuento.tipo_descuento=="PORCENTAJE"){
         total -= total * (descuento.valor_calculado);
+        }
+        if(descuento.tipo_descuento=="MONTO"){
+            total=total-descuento.valor_calculado
+        }
     }
 
     // Calcular cambio
@@ -99,7 +110,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
             nombre: true
         }
     });
-
+    const recibo= await ReciboServicio.CrearRecibo()
     // Generar cuerpo del correo con los detalles de la venta
     const cuerpo = cuerpoVenta(usuarioInfo.nombre, detallesArticulos, subtotal, total);
 

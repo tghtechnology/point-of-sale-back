@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { getUTCTime } from "../Utils/Time";
 
 const prisma = new PrismaClient();
 
@@ -159,6 +160,18 @@ export const CrearRecibo = async () => {
     };
       return detalleArticulo;
   });
+  const todayISO = new Date().toISOString()
+  const fecha_creacion = getUTCTime(todayISO)
+  const newRecibo= await prisma.recibo.create({
+    data:{
+      ref: ref,
+      fecha_creacion:fecha_creacion,
+      id_venta: id_venta,
+      
+    }
+  })
+  return newRecibo
+
 }
 
 export const Reembolsar = async (id_recibo) => {

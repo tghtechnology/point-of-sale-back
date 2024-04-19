@@ -1,6 +1,4 @@
 @api=http://localhost:3000
-
-
 ###
 POST {{api}}/venta
 Content-Type: application/json
@@ -17,9 +15,7 @@ Content-Type: application/json
 
     }
   ],
-  "tipoPago": "EFECTIVO",
-  "impuestoId": 1,
-  "descuentoId": 1,
+  "tipoPago": "Efectivo",
   "clienteId":1,
   "usuarioId":1,
   "dineroRecibido":500
