@@ -1,6 +1,6 @@
 import * as ReciboServicio from "../Services/ReciboServicio"
 
-export const ListarRecibo = async(_, res) => { 
+export const ListarRecibo = async(req, res) => { 
     try {
         const recibos = await ReciboServicio.listarRecibo();
         res.status(200).json(recibos);
@@ -26,4 +26,15 @@ export const CrearRecibo = async (req, res) => {
       total: Rec.total
     
     })
+}
+export const Reembolsar=async(req,res)=>{
+  try{
+    const {id,detalles}=req.body;
+    const reembolso=await ReciboServicio.Reembolsar(id,detalles);
+    res.status(200).json(reembolso)
+  }
+  catch(error){
+
+  }
+
 }

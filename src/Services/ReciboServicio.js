@@ -5,13 +5,13 @@ const prisma = new PrismaClient();
 
 const generarRef = async () => {
   try {
-    const ultimaVenta = await prisma.venta.findFirst({
+    const ultimoRecibo = await prisma.recibo.findFirst({
       orderBy: { id: "desc" },
     });
 
-    const ultimoIdVenta = ultimaVenta ? ultimaVenta.id : 0;
+    const ultimoIdRecibo = ultimoRecibo ? ultimoRecibo.id : 0;
 
-    const nuevoRef = `#1-${ultimoIdVenta + 1000}`;
+    const nuevoRef = `#1-${ultimoIdRecibo + 1000}`;
 
     return nuevoRef;
   } catch (error) {
@@ -20,77 +20,9 @@ const generarRef = async () => {
   }
 };
 
-/*export const crearRecibo = async (req, res) => {
-  const id_venta = parseInt(req.params.id)
-  console.log(res)
-  try {
-    const ref = await generarRef(ref)
-
-    //Buscar venta
-    const Rec = await prisma.venta.findFirst({
-      where: {
-        id: id_venta
-      },
-      include: {
-        usuario: true,
-        detalles: true,
-        descuento: true,
-        impuesto: true,
-        cliente: true,
-      } 
-    })
-
-    //Obtener detalle para extraer los articulos asociados a la venta
-    const detalles = await prisma.detalleVenta.findMany({
-      where: {
-        ventaId: id_venta
-      },
-      select: {
-        articuloId: true,
-        cantidad: true,
-        subtotal: true,
-        ventaId: true
-      }
-    })
-
-    //Según el id de artículo se obtiene el nombre
-    const nombresArticulos = await Promise.all(detalles.map(async (detalle) => {
-    const articuloId = detalle.articuloId;
-    const nombreArticulo = await obtenerNombreArticulo(articuloId);
-      return nombreArticulo;
-    }));
-
-    //Indexar al array de detalles
-    const detallesFormato = detalles.map((detalle, index) => {
-      const detalleArticulo = {
-        nombreArticulo: nombresArticulos[index], 
-        cantidad: detalle.cantidad,
-        subtotal: detalle.subtotal,
-        ventaId: detalle.ventaId
-      };
-        return detalleArticulo;
-    });
-
-  res.status(201).json({
-    ref: ref,
-    usuario: Rec.usuario.nombre,
-    cliente: Rec.cliente.nombre,
-    detalles: detallesFormato,
-    descuento: Rec.descuento.nombre,
-    impuesto: Rec.impuesto.nombre,
-    tipoPago: Rec.tipoPago,
-    subtotal: Rec.subtotal,
-    total: Rec.total
-
-  })
-  } catch (error) {
-    console.log(error)
-  }
-}*/
-
 export const listarRecibo = async () => {
-  const recibo = await prisma.recibo.findMany();
-  return recibo
+  const recibos = await prisma.recibo.findMany();
+  return recibos
 }
 
 async function obtenerNombreArticulo(articuloId) {
@@ -107,7 +39,6 @@ async function obtenerNombreArticulo(articuloId) {
 }
 
 export const CrearRecibo = async () => {
-
   const lastVenta = await prisma.venta.findFirst({
     orderBy: { id: "desc" },
   })
@@ -160,54 +91,55 @@ export const CrearRecibo = async () => {
     };
       return detalleArticulo;
   });
+  //Creacion de recibo en la BD
   const todayISO = new Date().toISOString()
   const fecha_creacion = getUTCTime(todayISO)
   const newRecibo= await prisma.recibo.create({
     data:{
       ref: ref,
       fecha_creacion:fecha_creacion,
-      id_venta: id_venta,
-      
+      id_venta: id_venta
     }
   })
   return newRecibo
-
 }
 
-export const Reembolsar = async (id_recibo) => {
-  const ref = await generarRef(ref)
-
-  //Buscar recibo original
+export const Reembolsar = async (id, detalles) => {
+  const ref = await generarRef();
+  // Buscar recibo original
   const rec = await prisma.recibo.findUnique({
     where: {
-      id: id_recibo
-    }
-  })
-
-  //Duplicar recibo
-  const recibo_por_reembolsar = await prisma.recibo.create({
-    data: {
-      ref: ref,
-      id_venta: rec.id_venta
-    }
-  })
-
-  //Buscar artículos en nuevo recibo por reemblosar
-  const articulos = await prisma.findUnique({
-    where: {
-      id: recibo_por_reembolsar.id_venta
+      id: id,
     },
-    select: {
-      detalles
+  });
+  let subtotal = 0;
+    const detallesArticulos = [];
+    for (const detalle of detalles) {
+        const articulo = await prisma.articulo.findUnique({
+            where: {
+                id: detalle.articuloId
+            }
+        });
+        subtotal += articulo.precio * detalle.cantidad;
+
+        detallesArticulos.push({
+            producto: articulo.nombre,
+            cantidad: detalle.cantidad,
+            precioUnitario: articulo.precio
+        });
     }
-  })
 
-  console.log(articulos)
+    let monto_reembolsado = subtotal;
 
-  const recibo_reembolsado = await prisma.recibo.update({
-    where: {
-      id: recibo_por_reembolsar.id_venta,
-    },
-    data
-  })
-}
+    const todayISO = new Date().toISOString()
+    const fecha_creacion = getUTCTime(todayISO)
+    const recibo_reembolsado = await prisma.recibo.create({
+      data: {
+        ref: ref,
+        fecha_creacion:fecha_creacion,
+        id_venta: rec.id_venta,
+        monto_reembolsado:monto_reembolsado
+      },
+    });
+  return recibo_reembolsado;
+};
