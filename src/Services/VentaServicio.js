@@ -76,8 +76,6 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
                 nombre: true
             }
         })
-    
-        console.log(detallesArticulos)
         
         //Buscar artículo
         const articulo = await prisma.articulo.findMany({
@@ -88,8 +86,8 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     
         const id_venta = nuevaVenta.id
         //Crear un recibo
-        const recibo = await ReciboServicio.crearRecibo({ params: { id: id_venta } })
-    
+        /*const recibo = await ReciboServicio.crearRecibo({ params: { id: id_venta } }req, res)*/
+        //const recibo = await ReciboServicio.CrearRecibo()
 
     // Obtener información del cliente para el correo electrónico
     const usuarioInfo = await prisma.cliente.findUnique({

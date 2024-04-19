@@ -5,20 +5,20 @@ POST {{api}}/registro
 Content-Type: application/json
 
 {
-  "nombre": "Ana",
-  "email": "ana@gmail.com",
+  "nombre": "Maria",
+  "email": "maria@gmail.com",
   "password": "12345",
   "pais": "Perú",
-  "cargo": "Cajero",
-  "telefono": "92983293",
-  "rol": "Propietario"
+  "rol": "Propietario",
+  "telefono": "123456789",
+  "cargo": "Cajero"
 }
 ### 
 POST {{api}}/login
 Content-Type: application/json
 
 {
-  "email": "ana@gmail.com",
+  "email": "maria@gmail.com",
   "password": "12345"
 }
 ###P

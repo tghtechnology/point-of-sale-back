@@ -1,6 +1,7 @@
 import * as CategoriaServicio from "../Services/CategoriaServicio";
 
 export const crearCategoria = async (req, res) => {
+  console.log(res)
   try {
     const { nombre, color } = req.body;
     const newCategoria = await CategoriaServicio.crearCategoria(nombre, color);
