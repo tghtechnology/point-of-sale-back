@@ -45,7 +45,7 @@ export const CrearRecibo = async () => {
 
   const id_venta = lastVenta.id
 
-  const ref = await generarRef(ref)
+  const ref = await generarRef()
 
   //Buscar venta
   const Rec = await prisma.venta.findFirst({
@@ -106,40 +106,64 @@ export const CrearRecibo = async () => {
 
 export const Reembolsar = async (id, detalles) => {
   const ref = await generarRef();
-  // Buscar recibo original
-  const rec = await prisma.recibo.findUnique({
+  const ventaAsociada = await prisma.venta.findUnique({
     where: {
       id: id,
     },
+    include: {
+      detalles: true,
+      descuento: true,
+    },
   });
-  let subtotal = 0;
-    const detallesArticulos = [];
-    for (const detalle of detalles) {
-        const articulo = await prisma.articulo.findUnique({
-            where: {
-                id: detalle.articuloId
-            }
-        });
-        subtotal += articulo.precio * detalle.cantidad;
 
-        detallesArticulos.push({
-            producto: articulo.nombre,
-            cantidad: detalle.cantidad,
-            precioUnitario: articulo.precio
-        });
+  if (!ventaAsociada) {
+    throw new Error('No se encontró la venta asociada al recibo original');
+  }
+
+  let montoReembolsado = 0;
+
+  // Crear un mapa para realizar un seguimiento de los reembolsos realizados para cada artículo
+  const reembolsosRealizados = new Map();
+
+  for (const detalle of detalles) {
+    const detalleOriginal = ventaAsociada.detalles.find(det => det.articuloId === detalle.articuloId);
+
+    if (!detalleOriginal) {
+      throw new Error(`No se encontró el detalle de la venta original para el artículo ${detalle.articuloId}`);
     }
 
-    let monto_reembolsado = subtotal;
-
-    const todayISO = new Date().toISOString()
-    const fecha_creacion = getUTCTime(todayISO)
-    const recibo_reembolsado = await prisma.recibo.create({
-      data: {
-        ref: ref,
-        fecha_creacion:fecha_creacion,
-        id_venta: rec.id_venta,
-        monto_reembolsado:monto_reembolsado
+    const reembolsosAnteriores = await prisma.recibo.count({
+      where: {
+        id_venta: id,
+        monto_reembolsado: { not: null },
       },
-    });
-  return recibo_reembolsado;
+    }); 
+    const cantidadVendida = detalleOriginal.cantidad;
+
+    // Verificar si se ha alcanzado el límite de reembolsos para este artículo
+    if (reembolsosAnteriores >= cantidadVendida) {
+      throw new Error(`Ya se han realizado todos los reembolsos para el artículo ${detalle.articuloId}`);
+    }
+
+    // Calcular el monto a reembolsar utilizando la fórmula
+    const montoArticulo = (ventaAsociada.total / cantidadVendida) * detalle.cantidad;
+    montoReembolsado += montoArticulo;
+
+    // Incrementar el contador de reembolsos para este artículo
+    reembolsosRealizados.set(detalle.articuloId, (reembolsosRealizados.get(detalle.articuloId) || 0) + 1);
+  }
+
+  // Crear el recibo de reembolso en la base de datos
+  const todayISO = new Date().toISOString();
+  const fechaCreacion = getUTCTime(todayISO);
+  const reciboReembolso = await prisma.recibo.create({
+    data: {
+      ref: ref,
+      fecha_creacion: fechaCreacion,
+      id_venta: id,
+      monto_reembolsado: montoReembolsado,
+    },
+  });
+
+  return reciboReembolso;
 };
