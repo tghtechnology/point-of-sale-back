@@ -85,7 +85,7 @@ model Articulo {
   precio       Decimal?       @db.Decimal(10, 2)
   ref          String         @db.VarChar(255)
   representacion String @default("color")
-  color        String?        @db.VarChar(255)
+  color        Color?
   imagen       String?        @db.VarChar(255)
   id_categoria Int?           @map("id_categoria") @db.Int
   estado       Boolean
@@ -99,6 +99,17 @@ model Articulo {
 enum TipoVenta {
   Peso
   Unidad
+}
+
+enum Color {
+  Rojo
+  Verde_limon
+  Azul
+  Amarillo
+  Turquesa
+  Fucsia
+  Gris_claro
+  Gris_oscuro
 }
 
 model ResetToken {

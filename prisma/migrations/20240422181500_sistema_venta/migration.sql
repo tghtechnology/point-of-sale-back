@@ -55,21 +55,13 @@ CREATE TABLE `articulo` (
     `tipo_venta` ENUM('Peso', 'Unidad') NOT NULL,
     `precio` DECIMAL(10, 2) NULL,
     `ref` VARCHAR(255) NOT NULL,
-    `color` VARCHAR(255) NOT NULL,
-    `imagen` VARCHAR(191) NULL,
+    `representacion` VARCHAR(191) NOT NULL DEFAULT 'color',
+    `color` ENUM('Rojo', 'Verde_limon', 'Azul', 'Amarillo', 'Turquesa', 'Fucsia', 'Gris_claro', 'Gris_oscuro') NULL,
+    `imagen` VARCHAR(255) NULL,
     `id_categoria` INTEGER NULL,
     `estado` BOOLEAN NOT NULL,
 
     PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `imagen` (
-    `public_id` VARCHAR(191) NOT NULL,
-    `secure_url` VARCHAR(191) NOT NULL,
-
-    UNIQUE INDEX `imagen_secure_url_key`(`secure_url`),
-    PRIMARY KEY (`public_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -113,6 +105,7 @@ CREATE TABLE `cliente` (
 CREATE TABLE `Recibo` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `fecha_creacion` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `ref` VARCHAR(100) NOT NULL,
     `id_venta` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -147,9 +140,6 @@ CREATE TABLE `Venta` (
 
 -- AddForeignKey
 ALTER TABLE `articulo` ADD CONSTRAINT `articulo_id_categoria_fkey` FOREIGN KEY (`id_categoria`) REFERENCES `categoria`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `articulo` ADD CONSTRAINT `articulo_imagen_fkey` FOREIGN KEY (`imagen`) REFERENCES `imagen`(`public_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `reset_tokens` ADD CONSTRAINT `reset_tokens_usuario_id_fkey` FOREIGN KEY (`usuario_id`) REFERENCES `usuario`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

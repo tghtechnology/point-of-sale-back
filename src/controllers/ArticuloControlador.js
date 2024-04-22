@@ -34,6 +34,8 @@ export const crearArticulo = async (req, res) => {
   return res.status(400).json({ error: "El tipo de venta no es válido" });
   } else if (error.message === "Categoría inexistente") {
     return res.status(400).json({ error: "La categoría no existe" });
+  } else if (error.message === "Color no valido") {
+    return res.status(400).json({ error: "El color no es válido" });
   } else {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al crear el artículo' });

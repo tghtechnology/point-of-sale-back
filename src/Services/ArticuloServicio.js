@@ -18,6 +18,15 @@ export const crearArticulo = async (nombre, tipo_venta, precio, representacion, 
 
   if (representacion !== 'color' && representacion !== 'imagen') {throw new Error("Representacion no valida")}
 
+  //Validacion colores
+    if (representacion === 'color') {
+      if (!Object.keys(colorMapping).includes(color)) {
+        throw new Error("Color no valido");
+      }
+  
+      color = colorMapping[color];
+    }
+
   //Generar ref
   const ref = await generarRef(ref)
 
@@ -28,16 +37,12 @@ export const crearArticulo = async (nombre, tipo_venta, precio, representacion, 
       precio: Number(precio),
       ref: ref,
       representacion: representacion,
-      id_categoria: parseInt(id_categoria),
+      color: representacion === 'color' ? color : null,
+      imagen: representacion === 'imagen' ? imagen : null,
+      id_categoria: id_categoria ? parseInt(id_categoria) : null,
       estado: true
     },
   })
-
-  if(representacion === 'color') {
-    newArticulo.color = color
-  } else if(representacion === 'imagen') {
-    newArticulo.imagen = imagen
-  }
 
 if (id_categoria == "" || categoria == null) {
   const articuloSincatFormato = {
@@ -257,4 +262,17 @@ const generarRef = async () => {
     console.error("Error al generar el valor de ref:", error);
     throw error;
   }
+};
+
+
+//Mapeo de colores de hexadecimal a string
+const colorMapping = {
+  '#FF0000': 'Rojo',
+  '#00FF00': 'Verde_limon',
+  '#0000FF': 'Azul',
+  '#FFFF00': 'Amarillo',
+  '#00FFFF': 'Turquesa',
+  '#FF00FF': 'Fucsia',
+  '#C0C0C0': 'Gris_claro',
+  '#808080': 'Gris_oscuro',
 };
