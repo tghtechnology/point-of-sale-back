@@ -1,25 +1,22 @@
 import { PrismaClient } from "@prisma/client";
-import * as CategoriaServicio from "../Services/CategoriaServicio";
 
 const prisma = new PrismaClient();
 
 //Crear un nuevo artículo
-export const crearArticulo = async (nombre, tipo_venta, precio, color, imagen, id_categoria) => {
+export const crearArticulo = async (nombre, tipo_venta, precio, representacion, color, imagen, id_categoria) => {
 
   //Validación campos vacíos
   if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
   if (!tipo_venta || tipo_venta.length < 1) {throw new Error("Campo tipo_venta vacío")}
   if (!precio || precio.length < 1) {throw new Error("Campo precio vacío")}
-  //if (!representacion || representacion.length < 1) {throw new Error("Campo representación vacío")}1
-
-  //Validación tipo de dato de precio
-  //if (typeof precio !== 'number' || isNaN(parseFloat(precio)) || !isFinite(precio)) {throw new Error("Precio no es número válido")}
 
   //Validación tipo de venta
   const TiposPermitidos = ['Peso', 'Unidad'];
   if (!TiposPermitidos.includes(tipo_venta)) {throw new Error("Tipo de venta no válido");}
 
   let categoria = await buscarCategoria(id_categoria);
+
+  if (representacion !== 'color' && representacion !== 'imagen') {throw new Error("Representacion no valida")}
 
   //Generar ref
   const ref = await generarRef(ref)
@@ -30,12 +27,17 @@ export const crearArticulo = async (nombre, tipo_venta, precio, color, imagen, i
       tipo_venta: tipo_venta,
       precio: Number(precio),
       ref: ref,
-      color: color,
-      imagen: imagen,
+      representacion: representacion,
       id_categoria: parseInt(id_categoria),
       estado: true
     },
   })
+
+  if(representacion === 'color') {
+    newArticulo.color = color
+  } else if(representacion === 'imagen') {
+    newArticulo.imagen = imagen
+  }
 
 if (id_categoria == "" || categoria == null) {
   const articuloSincatFormato = {

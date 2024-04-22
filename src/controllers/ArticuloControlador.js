@@ -3,7 +3,7 @@ import { uploadImage, deleteImage } from "../Utils/cloudinary.js";
 
 export const crearArticulo = async (req, res) => {
   try {
-    const { nombre, tipo_venta, precio, color, id_categoria} = req.body;
+    const { nombre, tipo_venta, precio, representacion, color, id_categoria} = req.body;
     let imagen = req.body.imagen
     console.log(req.body)
 
@@ -14,7 +14,7 @@ export const crearArticulo = async (req, res) => {
       console.log(result)
     }
 
-    const newArticulo = await ArticuloServicio.crearArticulo(nombre, tipo_venta, precio, color, imagen, id_categoria);
+    const newArticulo = await ArticuloServicio.crearArticulo(nombre, tipo_venta, precio, representacion, color, imagen, id_categoria);
 
     res.status(201).json(newArticulo)
 
@@ -26,8 +26,8 @@ export const crearArticulo = async (req, res) => {
       return res.status(400).json({ error: "El campo tipo de venta no puede estar vacío" });
   } else if (error.message === "Campo precio vacío") {
     return res.status(400).json({ error: "El campo precio no puede estar vacío" });
-  } else if (error.message === "Campo representación vacío") {
-    return res.status(400).json({ error: "El campo representacion no puede estar vacío" });
+  } else if (error.message === "Representacion no valida") {
+    return res.status(400).json({ error: "El campo representacion no es válido" });
   } else if (error.message === "Precio no es número válido") {
     return res.status(400).json({ error: "El campo precio solo puede ser un número" });
   } else if (error.message === "Tipo de venta no válido") {
