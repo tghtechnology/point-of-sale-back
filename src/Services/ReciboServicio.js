@@ -122,7 +122,6 @@ export const Reembolsar = async (id, detalles) => {
 
   let montoReembolsado = 0;
 
-  // Crear un mapa para realizar un seguimiento de los reembolsos realizados para cada artículo
   const reembolsosRealizados = new Map();
 
   for (const detalle of detalles) {
@@ -136,20 +135,25 @@ export const Reembolsar = async (id, detalles) => {
       where: {
         id_venta: id,
         monto_reembolsado: { not: null },
+        venta: {
+          detalles: {
+            some: {
+              articuloId: detalle.articuloId,
+            },
+          },
+        },
       },
-    }); 
+    });
+    
+    console.log('Reembolsos anteriores para el artículo', detalle.articuloId, ':', reembolsosAnteriores);
+
     const cantidadVendida = detalleOriginal.cantidad;
 
-    // Verificar si se ha alcanzado el límite de reembolsos para este artículo
     if (reembolsosAnteriores >= cantidadVendida) {
       throw new Error(`Ya se han realizado todos los reembolsos para el artículo ${detalle.articuloId}`);
     }
-
-    // Calcular el monto a reembolsar utilizando la fórmula
     const montoArticulo = (ventaAsociada.total / cantidadVendida) * detalle.cantidad;
     montoReembolsado += montoArticulo;
-
-    // Incrementar el contador de reembolsos para este artículo
     reembolsosRealizados.set(detalle.articuloId, (reembolsosRealizados.get(detalle.articuloId) || 0) + 1);
   }
 
