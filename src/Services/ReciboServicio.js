@@ -132,8 +132,7 @@ export const Reembolsar = async (id, detalles) => {
       const impuesto=ventaAsociada.impuesto;
       if(impuesto.tipo_impuesto=="Anadido_al_precio"){
         const iValor=detalleOriginal.subtotal*(impuesto.tasa/100);
-        const valor=detalleOriginal.subtotal-iValor
-        
+        montoArticulo+=iValor
       }
       const descuento = ventaAsociada.descuento;
       if (descuento.tipo_descuento === "PORCENTAJE") {
