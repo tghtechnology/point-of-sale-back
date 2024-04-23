@@ -113,15 +113,13 @@ export const Reembolsar = async (id, detalles) => {
     include: {
       detalles: true,
       descuento: true,
+      impuesto:true,
     },
   });
-
   if (!ventaAsociada) {
     throw new Error('No se encontró la venta asociada al recibo original');
   }
-
   let montoReembolsado = 0;
-
   for (const detalle of detalles) {
     const detalleOriginal = ventaAsociada.detalles.find(det => det.articuloId === detalle.articuloId);
 
@@ -131,6 +129,12 @@ export const Reembolsar = async (id, detalles) => {
 
     let montoArticulo = detalleOriginal.subtotal;
     if (ventaAsociada.descuento) {
+      const impuesto=ventaAsociada.impuesto;
+      if(impuesto.tipo_impuesto=="Anadido_al_precio"){
+        const iValor=detalleOriginal.subtotal*(impuesto.tasa/100);
+        const valor=detalleOriginal.subtotal-iValor
+        
+      }
       const descuento = ventaAsociada.descuento;
       if (descuento.tipo_descuento === "PORCENTAJE") {
         const proporcionalidad=detalle.cantidad/detalleOriginal.cantidad
@@ -144,6 +148,7 @@ export const Reembolsar = async (id, detalles) => {
         const monto=(detalleOriginal.subtotal-valor)*proporcionalidad
         montoArticulo = monto;
       }
+      
     }
     // Actualizar el monto total de reembolso
     montoReembolsado += montoArticulo;
