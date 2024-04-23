@@ -133,16 +133,18 @@ export const Reembolsar = async (id, detalles) => {
     if (ventaAsociada.descuento) {
       const descuento = ventaAsociada.descuento;
       if (descuento.tipo_descuento === "PORCENTAJE") {
+        const proporcionalidad=detalle.cantidad/detalleOriginal.cantidad
         const valor = (detalleOriginal.subtotal * descuento.valor_calculado);
-        montoArticulo -= valor;
-      } else if (descuento.tipo_descuento === "MONTO") {
+        const monto=(detalleOriginal.subtotal-valor)*proporcionalidad
+        montoArticulo = monto;
+      } 
+      else if (descuento.tipo_descuento === "MONTO") {
         const proporcionalidad=detalle.cantidad/detalleOriginal.cantidad
         const valor = (descuento.valor / ventaAsociada.subtotal) * detalleOriginal.subtotal;
         const monto=(detalleOriginal.subtotal-valor)*proporcionalidad
         montoArticulo = monto;
       }
     }
-
     // Actualizar el monto total de reembolso
     montoReembolsado += montoArticulo;
   }
