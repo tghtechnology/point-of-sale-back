@@ -6,20 +6,33 @@ Content-Type: application/json
 {
   "detalles": [
     {
-      "cantidad": 2,
+      "cantidad": 4,
       "articuloId": 1
     },
     {
         "cantidad": 1,
-        "articuloId": 2
+        "articuloId": 3
     }
   ],
   "tipoPago": "Efectivo",
-  "impuestoId": 2,
-  "descuentoId": 2,
+  "impuestoId": 1,
+  "descuentoId": 3,
   "clienteId":1,
   "usuarioId":1,
   "dineroRecibido":500
 }
 ###
 GET {{api}}/recibo
+###
+POST {{api}}/reembolsar
+Content-Type: application/json
+
+{
+  "id": 4, 
+  "detalles": [
+    {
+      "articuloId": 3,
+      "cantidad": 1
+    }
+  ]
+}
