@@ -31,7 +31,13 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
                 id: impuestoId
             }
         });
-        total += impuesto.tipo_impuesto === "Anadido_al_precio" ? subtotal * (impuesto.tasa / 100) : subtotal * (impuesto.tasa / 100);
+        if(impuesto.tipo_impuesto=="Anadido_al_precio"){
+            const totalimpuesto=subtotal*(impuesto.tasa/100);
+            total=subtotal+totalimpuesto;
+        }
+        if (impuesto.tipo_impuesto=="Incluido_en_el_precio"){
+            total=subtotal
+        }
     }
 
     // Aplicar descuento
@@ -41,11 +47,16 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
                 id: descuentoId
             }
         });
+        if(descuento.tipo_descuento=="PORCENTAJE"){
         total -= total * (descuento.valor_calculado);
+        }
+        if(descuento.tipo_descuento=="MONTO"){
+            total=total-descuento.valor_calculado
+        }
     }
-
     // Calcular cambio
     const cambio = dineroRecibido - total;
+
 
     // Crear la venta en la base de datos
     const nuevaVenta = await prisma.venta.create({
@@ -85,9 +96,6 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
         })
     
         const id_venta = nuevaVenta.id
-        //Crear un recibo
-        /*const recibo = await ReciboServicio.crearRecibo({ params: { id: id_venta } }req, res)*/
-        //const recibo = await ReciboServicio.CrearRecibo()
 
     // Obtener información del cliente para el correo electrónico
     const usuarioInfo = await prisma.cliente.findUnique({
@@ -99,10 +107,10 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
             nombre: true
         }
     });
-
+    //Crear un recibo
+    const recibo= await ReciboServicio.CrearRecibo()
     // Generar cuerpo del correo con los detalles de la venta
     const cuerpo = cuerpoVenta(usuarioInfo.nombre, detallesArticulos, subtotal, total);
-
     // Enviar el correo electrónico
     await envioCorreo(usuarioInfo.email, "Venta realizada", cuerpo);
 

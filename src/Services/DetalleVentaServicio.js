@@ -25,7 +25,16 @@ const ListarDetalles=async()=>{
     const detalles= await prisma.detalleVenta.findMany()
     return detalles
 }
+const ListarDetallesByVenta=async(ventaId)=>{
+    const detallesByVenta= await prisma.detalleVenta.findUnique({
+        where: {
+            ventaId: ventaId
+}
+})
+return detallesByVenta
+}
 module.exports={
     CrearDetalle,
-    ListarDetalles
+    ListarDetalles,
+    ListarDetallesByVenta
 }

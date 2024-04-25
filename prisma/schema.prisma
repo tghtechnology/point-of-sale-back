@@ -61,6 +61,7 @@ model Usuario {
   cargo                    String    @db.VarChar(255)
   telefono                 String    @db.VarChar(255)
   password                 String    @db.VarChar(255)
+  nombreNegocio            String    @db.VarChar(255)
   pais                     String?   @db.VarChar(255)
   rol                      Rol
   estado                   Boolean   @db.Bit(1)
@@ -143,6 +144,8 @@ model Cliente {
   region        String  @db.VarChar(255)
   codigo_postal String  @db.VarChar(255)
   pais          String  @db.VarChar(255)
+  fecha_creacion DateTime
+  fecha_modificacion DateTime?
   estado        Boolean
   ventas        Venta[]
 
@@ -153,6 +156,7 @@ model Recibo {
   id Int @id @default(autoincrement())
   fecha_creacion DateTime @default(now())
   ref String @db.VarChar(100)
+  monto_reembolsado Decimal? @db.Decimal(10,2)
   id_venta Int @db.Int @map("id_venta")
 
   venta Venta? @relation(fields: [id_venta], references: [id])
@@ -173,23 +177,23 @@ model Venta {
   id            Int      @id @default(autoincrement())
   subtotal      Decimal @db.Decimal(10,2)
   total         Decimal @db.Decimal(10,2)
-  tipoPago      String
+  tipoPago      TipoPago
   impuesto      Impuesto? @relation(fields: [impuestoId], references: [id])
   descuento     Descuento? @relation(fields: [descuentoId], references: [id])
-  cliente       Cliente   @relation(fields: [clienteId], references: [id])
+  cliente       Cliente?   @relation(fields: [clienteId], references: [id])
   usuario       Usuario   @relation(fields: [usuarioId], references: [id])
-  dineroRecibido Decimal @db.Decimal(10,2) 
-  cambio        Decimal @db.Decimal(10,2)
+  dineroRecibido Decimal? @db.Decimal(10,2) 
+  cambio        Decimal? @db.Decimal(10,2)
   detalles      DetalleVenta[]
   impuestoId    Int?
   descuentoId   Int?
-  clienteId     Int
+  clienteId     Int?
   usuarioId     Int
 
   recibo Recibo[]
 }
 
 enum TipoPago {
-  EFECTIVO
-  TARJETA
+  Efectivo
+  Tarjeta
 }

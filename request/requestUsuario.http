@@ -5,20 +5,19 @@ POST {{api}}/registro
 Content-Type: application/json
 
 {
-  "nombre": "Mani",
-  "email": "manimani@gmail.com",
+  "nombre": "Estefany Torres",
+  "email": "estefanyt3101@gmail.com",
   "password": "12345",
+  "nombreNegocio": "Digital",
   "pais": "Perú",
-  "rol": "Propietario",
-  "telefono": "123456789",
-  "cargo": "Manager"
+  "telefono": "92983293"
 }
 ### 
 POST {{api}}/login
 Content-Type: application/json
 
 {
-  "email": "manimani@gmail.com",
+  "email": "estefanyt3101@gmail.com",
   "password": "12345"
 }
 ###P

@@ -7,12 +7,11 @@ POST {{api}}/articulo/crear
 Content-Type: application/json
 
 {
-  "nombre": "Camisa",
+  "nombre": "Zapatos de vestir",
   "tipo_venta":"Unidad",
-  "precio": 12,
-  "ref": "82323",
-  "representacion": "imagen",
-  "id_categoria": 1
+  "precio": 50,
+  "color":"rosado",
+  "id_categoria": 1 
 }
 ###
 GET {{api}}/articulo/listar/11
