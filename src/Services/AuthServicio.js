@@ -4,7 +4,7 @@ import nodemailer from "nodemailer";
 import getVerificationEmailTemplate from "../helpers/helperPlantilla";
 import { PrismaClient } from "@prisma/client";
 import { restaurarCuenta } from "./UsuarioServicio";
-import { getUTCTime } from "../Utils/Time";
+import { getUTCTime, getPeruTime } from "../Utils/Time";
 
 const prisma = new PrismaClient();
 
@@ -93,8 +93,9 @@ export const enviarCorreoCambioPass = async (email) => {
   );
 
   //Creacion de registro en resetTokens
-  const expiracion = new Date();
+  const expiracion = getPeruTime();
   expiracion.setHours(expiracion.getHours() + 1);
+
   await prisma.resetToken.create({
     data: {
       token: token,
@@ -102,6 +103,7 @@ export const enviarCorreoCambioPass = async (email) => {
       usuario_id: usuario.id,
     },
   });
+
 
   // Generar el enlace para cambiar la contraseña
   const resetPasswordLink = `http://${process.env.URL}/cambiar?token=${token}`;
@@ -137,13 +139,14 @@ const decodedToken = jwt.verify(
     token,
     "secreto_del_token_para_cambio_password"
 );
+
   //Verificacion de token
 const resetToken = await prisma.resetToken.findFirst({
     where: {
         token: token,
-        expiracion: {
-            gt: new Date(),
-        },
+        /*expiracion: {
+          gt: new Date(),
+        },*/
     },
 });
 
