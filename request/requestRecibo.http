@@ -11,12 +11,12 @@ Content-Type: application/json
     },
     {
         "cantidad": 1,
-        "articuloId": 3
+        "articuloId": 2
     }
   ],
   "tipoPago": "Efectivo",
-  "impuestoId": 1,
-  "descuentoId": 5,
+  "impuestoId": 2,
+  "descuentoId": 2,
   "clienteId":1,
   "usuarioId":1,
   "dineroRecibido":500
@@ -28,10 +28,10 @@ POST {{api}}/reembolsar
 Content-Type: application/json
 
 {
-  "id": 20, 
+  "id": 3, 
   "detalles": [
     {
-      "articuloId": 3,
+      "articuloId": 1,
       "cantidad": 1
     }
   ]

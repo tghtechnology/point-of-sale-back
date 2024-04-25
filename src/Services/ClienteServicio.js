@@ -5,7 +5,7 @@ import { getUTCTime } from "../Utils/Time";
 //Inicialización de prisma
 const prisma = new PrismaClient();
 //Crear clientes
-const crearCliente = async (nombre, email, telefono, direccion, ciudad, region, codigo_postal, pais) => {
+const crearCliente = async (nombre, email, telefono, direccion, ciudad, region, pais) => {
     if (!validarNombrePais(pais)) {
       throw new Error("País inválido");
     }
@@ -19,7 +19,6 @@ const crearCliente = async (nombre, email, telefono, direccion, ciudad, region, 
             direccion: direccion,
             ciudad: ciudad,
             region: region,
-            codigo_postal: codigo_postal,
             pais: pais,
             fecha_creacion:fecha_creacion,
             fecha_modificacion: null,
@@ -50,7 +49,7 @@ const obtenerClienteById=async (id) => {
 }
 
 //Editar cliente
-const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, region, codigo_postal, pais) => {
+const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, region, pais) => {
     if (!validarNombrePais(pais)) {
       throw new Error("País inválido");
     }
@@ -68,7 +67,6 @@ const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, reg
             direccion: direccion,
             ciudad: ciudad,
             region: region,
-            codigo_postal: codigo_postal,
             pais: pais,
             fecha_modificacion: fecha_modificacion,
             estado:true
@@ -81,7 +79,6 @@ const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, reg
         direccion:cliente.direccion,
         ciudad:cliente.ciudad,
         region:cliente.region,
-        codigo_postal:cliente.codigo_postal,
         pais:cliente.pais,
         fecha_creacion:cliente.fecha_creacion,
         fecha_modificacion:cliente.fecha_modificacion,
