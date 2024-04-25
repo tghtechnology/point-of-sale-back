@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 
-//Inicialización de prisma
 const prisma = new PrismaClient();
 
 const crearDescuento = async (nombre, tipo_descuento, valor) => {

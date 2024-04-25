@@ -8,7 +8,20 @@ import { getUTCTime, getPeruTime } from "../Utils/Time";
 
 const prisma = new PrismaClient();
 
-//Lógica para iniciar sesión
+
+
+/**
+ * Autentica a un usuario y crea una nueva sesión.
+ * 
+ * @param {string} email - El correo electrónico del usuario que intenta iniciar sesión.
+ * @param {string} password - La contraseña asociada a la cuenta del usuario.
+ * 
+ * @returns {Object} - Un objeto que contiene el ID del usuario autenticado y un token JWT válido por 24 horas.
+ * 
+ * @throws {Error} - Si el correo electrónico no corresponde a ningún usuario en la base de datos.
+ * @throws {Error} - Si la contraseña no coincide con la del usuario encontrado.
+ * @throws {Error} - Si hay algún problema al restaurar la cuenta o al crear una nueva sesión.
+ */
 export const login = async (email, password) => {
   const results = await prisma.usuario.findMany({
     where: {
@@ -57,7 +70,16 @@ export const login = async (email, password) => {
   };
 };
 
-//Lógica para cerrar sesión
+
+
+
+/**
+ * Cierra la sesión de un usuario eliminando su token de autenticación.
+ * 
+ * @param {string} token - El token JWT del usuario que desea cerrar sesión.
+ * @throws {Error} - Si el token no es válido o la verificación con la clave secreta falla.
+ * @returns {void} - No devuelve ningún valor. Simplemente elimina la sesión del usuario.
+ */
 export const logout = async (token) => {
   
     const decodedToken = jwt.verify(token, "secreto_del_token"); 
@@ -70,7 +92,25 @@ export const logout = async (token) => {
     });
 };
 
-// Función para enviar un correo electrónico al usuario con un enlace para cambiar la contraseña
+
+
+
+
+/**
+ * Envía un correo electrónico al usuario con un enlace para cambiar la contraseña.
+ * 
+ * @param {string} email - La dirección de correo electrónico del usuario al que se enviará el enlace.
+ * @throws {Error} - Si el correo no se encuentra en la base de datos.
+ * @returns {void} - No devuelve ningún valor. Solo envía el correo electrónico.
+ * 
+ * @description 
+ * 1. Verifica si el correo electrónico proporcionado existe en la base de datos.
+ * 2. Genera un token JWT con una validez de 1 hora para el cambio de contraseña.
+ * 3. Crea un registro en la base de datos para el token de restablecimiento de contraseña.
+ * 4. Genera un enlace con el token para que el usuario pueda cambiar su contraseña.
+ * 5. Configura el transporte de correo electrónico con nodemailer usando las credenciales proporcionadas.
+ * 6. Envía el correo electrónico al usuario con el enlace de restablecimiento de contraseña.
+ */
 export const enviarCorreoCambioPass = async (email) => {
   // Verificar si el correo electrónico existe en la base de datos
   const usuario=await prisma.usuario.findUnique({
@@ -104,7 +144,6 @@ export const enviarCorreoCambioPass = async (email) => {
     },
   });
 
-
   // Generar el enlace para cambiar la contraseña
   const resetPasswordLink = `http://${process.env.URL}/cambiar?token=${token}`;
 
@@ -127,7 +166,27 @@ export const enviarCorreoCambioPass = async (email) => {
 
 };
 
-// Cambiar la contraseña del usuario a través de un enlace con token
+
+
+
+
+/**
+ * Cambia la contraseña del usuario a través de un enlace con un token de restablecimiento.
+ * 
+ * @param {string} token - El token JWT que se ha enviado al usuario para el cambio de contraseña.
+ * @param {string} password - La nueva contraseña que se asignará al usuario.
+ * 
+ * @throws {Error} - Si el token está vacío, es inválido o ha expirado, o si el usuario no se encuentra.
+ * 
+ * @returns {void} - No devuelve ningún valor. Realiza la acción de cambio de contraseña.
+ * 
+ * @description 
+ * 1. Verifica si el token proporcionado es válido y no ha expirado.
+ * 2. Busca al usuario asociado con el token para verificar su existencia.
+ * 3. Encripta la nueva contraseña con bcrypt y la actualiza en la base de datos.
+ * 4. Elimina el token de restablecimiento de contraseña una vez que se ha cambiado la contraseña.
+ * 5. Comprueba si el usuario tiene sesiones activas y las cierra para seguridad.
+ */
 export const cambiarPassword = async (token, password) => {
 // Verificar si el token está vacío
 if (!token) {
@@ -200,7 +259,21 @@ if (activeSessions.length > 0) {
 }
 };
 
-// Función para eliminar tokens de sesión expirados y tokens de cambio de contraseña expirados de la base de datos
+
+
+
+/**
+ * Elimina los tokens de sesión expirados y los tokens de cambio de contraseña expirados de la base de datos.
+ * 
+ * @returns {void} - No devuelve ningún valor. Realiza la acción de eliminación de tokens expirados.
+ * 
+ * @description
+ * 1. Elimina todos los tokens de sesión cuyo campo de expiración sea menor que la fecha actual.
+ * 2. Elimina todos los tokens de restablecimiento de contraseña con un campo de expiración menor que la fecha actual.
+ * 3. Si se eliminan tokens, muestra un mensaje de éxito en la consola.
+ * 
+ * @throws {Error} - Si ocurre algún error durante la eliminación de tokens.
+ */
 export const eliminarTokensExpirados = async () => {
   const eliminarTokenSesion = await prisma.resetToken.deleteMany({
     where: {
