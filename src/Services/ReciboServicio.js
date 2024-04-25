@@ -120,12 +120,22 @@ export const Reembolsar = async (id, detalles) => {
     throw new Error('No se encontró la venta asociada al recibo original');
   }
   let montoReembolsado = 0;
-  for (const detalle of detalles) {
-    const detalleOriginal = ventaAsociada.detalles.find(det => det.articuloId === detalle.articuloId);
 
-    if (!detalleOriginal) {
-      throw new Error(`No se encontró el detalle de la venta original para el artículo ${detalle.articuloId}`);
-    }
+  for (const detalle of detalles) {
+      const detalleOriginal = ventaAsociada.detalles.find(det => det.articuloId === detalle.articuloId);
+
+      if (!detalleOriginal) {
+          throw new Error(`No se encontró el detalle de la venta original para el artículo ${detalle.articuloId}`);
+      }
+
+      const cantidadRestanteReembolso = detalleOriginal.cantidad - detalleOriginal.cantidadReembolsada;
+      if (cantidadRestanteReembolso < detalle.cantidad) {
+          throw new Error(`La cantidad a reembolsar para el artículo ${detalle.articuloId} excede la cantidad restante`);
+      }
+      await prisma.detalleVenta.update({
+        where: { id: detalleOriginal.id },
+        data: { cantidadReembolsada: detalleOriginal.cantidadReembolsada + detalle.cantidad },
+      });
 
     let montoArticulo = (detalle.cantidad/detalleOriginal.cantidad)*detalleOriginal.subtotal
     if (ventaAsociada.descuento) {
@@ -146,9 +156,8 @@ export const Reembolsar = async (id, detalles) => {
         const monto=montoArticulo-valor;
         montoArticulo = monto;
       }
-      
     }
-    // Actualizar el monto total de reembolso
+    detalleOriginal.cantidadReembolsada += detalle.cantidad;
     montoReembolsado += montoArticulo;
   }
   // Crear un recibo de reembolso para todos los detalles

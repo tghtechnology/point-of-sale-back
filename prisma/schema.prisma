@@ -153,6 +153,7 @@ model DetalleVenta {
   id         Int      @id @default(autoincrement())
   cantidad   Int
   subtotal   Decimal  @db.Decimal(10, 2)
+  cantidadReembolsada Int @default(0)
   articulo   Articulo @relation(fields: [articuloId], references: [id])
   articuloId Int
   venta      Venta    @relation(fields: [ventaId], references: [id])
