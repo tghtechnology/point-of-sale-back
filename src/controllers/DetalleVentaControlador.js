@@ -22,9 +22,9 @@ export const ListarDetalles = async (req, res) => {
 }
 export const ListarDetallesByVenta=async(req,res)=>{
   try{
-    const {ventaId}=req.body;
-    const detalle=await DetalleVentaServicio.ListarDetallesByVenta(ventaId);
-    res.status(200).json(detalle);
+    const { ventaId } = req.params;
+    const detalles = await DetalleVentaServicio.ListarDetallesByVenta(ventaId);
+    res.status(200).json(detalles);
 
   }
   catch(error){

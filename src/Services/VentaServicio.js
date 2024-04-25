@@ -120,7 +120,7 @@ const ListarVentas=async()=>{
     const ventas = await prisma.venta.findMany();
     return ventas;
 }
-const ObtenerVentaPorId=async()=>{
+const ObtenerVentaPorId=async(id)=>{
     const ventas = await prisma.venta.findUnique({
         where: {
             id: Number(id)
