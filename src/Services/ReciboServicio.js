@@ -127,24 +127,23 @@ export const Reembolsar = async (id, detalles) => {
       throw new Error(`No se encontró el detalle de la venta original para el artículo ${detalle.articuloId}`);
     }
 
-    let montoArticulo = detalleOriginal.subtotal;
+    let montoArticulo = (detalle.cantidad/detalleOriginal.cantidad)*detalleOriginal.subtotal
     if (ventaAsociada.descuento) {
       const impuesto=ventaAsociada.impuesto;
       if(impuesto.tipo_impuesto=="Anadido_al_precio"){
-        const iValor=detalleOriginal.subtotal*(impuesto.tasa/100);
-        montoArticulo+=iValor
+        const iValor=montoArticulo*(impuesto.tasa/100);
+        const Vimpuesto=montoArticulo+iValor;
+        montoArticulo=Vimpuesto
       }
       const descuento = ventaAsociada.descuento;
       if (descuento.tipo_descuento === "PORCENTAJE") {
-        const proporcionalidad=detalle.cantidad/detalleOriginal.cantidad
-        const valor = (detalleOriginal.subtotal * descuento.valor_calculado);
-        const monto=(detalleOriginal.subtotal-valor)*proporcionalidad
+        const valor = (montoArticulo * descuento.valor_calculado);
+        const monto=montoArticulo-valor;
         montoArticulo = monto;
       } 
       else if (descuento.tipo_descuento === "MONTO") {
-        const proporcionalidad=detalle.cantidad/detalleOriginal.cantidad
-        const valor = (descuento.valor / ventaAsociada.subtotal) * detalleOriginal.subtotal;
-        const monto=(detalleOriginal.subtotal-valor)*proporcionalidad
+        const valor = (descuento.valor / ventaAsociada.subtotal) * montoArticulo;
+        const monto=montoArticulo-valor;
         montoArticulo = monto;
       }
       
