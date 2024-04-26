@@ -236,10 +236,7 @@ const buscarCategoria = async (id_categoria) => {
   return categoriaFormato
 }
 
-
-
 //Generar código de referencia de cada artículo
-
 const generarRef = async () => {
   try {
     const ultimaVenta = await prisma.venta.findFirst({

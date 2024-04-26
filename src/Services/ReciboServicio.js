@@ -168,9 +168,6 @@ export const Reembolsar = async (id, detalles) => {
       montoArticulo += iValor;
       valorImpuestoTotal += iValor; 
     }
-
-    
-
     detalleOriginal.cantidadReembolsada += detalle.cantidad;
     montoReembolsado += montoArticulo;
   }
@@ -207,5 +204,3 @@ export const Reembolsar = async (id, detalles) => {
   
   return reciboReembolsado;
 };
-
-

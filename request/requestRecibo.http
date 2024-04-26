@@ -33,10 +33,6 @@ Content-Type: application/json
     {
       "cantidad": 1,
       "articuloId": 1
-    },
-    {
-        "cantidad": 1,
-        "articuloId": 2
     }
   ]
 }
