@@ -8,21 +8,18 @@ const prisma = new PrismaClient();
 
 const calcularTotal = (subtotal, impuesto, descuento) => {
     let total = subtotal;
-
-    if (impuesto) {
-        if (impuesto.tipo_impuesto === "Anadido_al_precio") {
-            total += subtotal * (impuesto.tasa / 100);
-        }
-    }
-
     if (descuento) {
         if (descuento.tipo_descuento === "PORCENTAJE") {
-            total -= total * descuento.valor_calculado;
+            total -= subtotal * descuento.valor_calculado;
         } else if (descuento.tipo_descuento === "MONTO") {
             total -= descuento.valor_calculado;
         }
     }
-
+    if (impuesto) {
+        if (impuesto.tipo_impuesto === "Anadido_al_precio") {
+            total += total * (impuesto.tasa / 100);
+        }
+    }
     return total;
 };
 
