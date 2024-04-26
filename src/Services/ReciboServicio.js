@@ -117,15 +117,15 @@ export const Reembolsar = async (id, detalles) => {
       descuento: true,
       impuesto:true,
       cliente:true,
-    
     },
   });
   if (!ventaAsociada) {
     throw new Error('No se encontró la venta asociada al recibo original');
   }
   let montoReembolsado = 0;
-  let iValor = 0;
-    let valor = 0;
+  let valorImpuestoTotal = 0; // Suma total de los valores de impuesto
+  let valorDescuentoTotal = 0; // Suma total de los valores de descuento
+
   for (const detalle of detalles) {
     const detalleOriginal = ventaAsociada.detalles.find(
       (det) => det.articuloId === detalle.articuloId
@@ -150,23 +150,26 @@ export const Reembolsar = async (id, detalles) => {
     });
 
     let montoArticulo = (detalle.cantidad / detalleOriginal.cantidad) * detalleOriginal.subtotal;
-
-
+    let valor = 0;
     if (ventaAsociada.descuento) {
-      const impuesto = ventaAsociada.impuesto;
-      if (impuesto.tipo_impuesto == 'Anadido_al_precio') {
-        iValor = montoArticulo * (impuesto.tasa / 100);
-        montoArticulo += iValor;
-      }
-      const descuento = ventaAsociada.descuento;
-      if (descuento.tipo_descuento === 'PORCENTAJE') {
-        valor = montoArticulo * descuento.valor_calculado;
+      if (ventaAsociada.descuento.tipo_descuento === 'PORCENTAJE') {
+        valor = montoArticulo * ventaAsociada.descuento.valor_calculado;
         montoArticulo -= valor;
-      } else if (descuento.tipo_descuento === 'MONTO') {
-        valor = (descuento.valor / ventaAsociada.subtotal) * montoArticulo;
+        valorDescuentoTotal += valor; 
+      } else if (ventaAsociada.descuento.tipo_descuento === 'MONTO') {
+        valor = (ventaAsociada.descuento.valor / ventaAsociada.subtotal) * montoArticulo;
         montoArticulo -= valor;
+        valorDescuentoTotal += valor; 
       }
     }
+    let iValor = 0;
+    if (ventaAsociada.impuesto && ventaAsociada.impuesto.tipo_impuesto === 'Anadido_al_precio') {
+      iValor = montoArticulo * (ventaAsociada.impuesto.tasa / 100);
+      montoArticulo += iValor;
+      valorImpuestoTotal += iValor; 
+    }
+
+    
 
     detalleOriginal.cantidadReembolsada += detalle.cantidad;
     montoReembolsado += montoArticulo;
@@ -183,16 +186,26 @@ export const Reembolsar = async (id, detalles) => {
       monto_reembolsado: montoReembolsado,
     },
   });
+  
   const detallesReembolso = await Promise.all(detalles.map(async (detalle) => {
     const nombreArticulo = await obtenerNombreArticulo(detalle.articuloId);
+    const precioUnitario = await prisma.articulo.findUnique({
+      where: { id: detalle.articuloId },
+      select: { precio: true }
+    });
+    const precio = precioUnitario ? precioUnitario.precio : null;
     return {
-        nombreArticulo: nombreArticulo,
-        cantidad: detalle.cantidad,
+      nombreArticulo: nombreArticulo,
+      cantidad: detalle.cantidad,
+      precioUnitario: precioUnitario.precio
     };
-}));
+  }));
+  
   const clienteInfo = ventaAsociada.cliente;
-  const cuerpo = cuerpoReembolso(clienteInfo.nombre, detallesReembolso, montoReembolsado, iValor, valor);
+  const cuerpo = cuerpoReembolso(clienteInfo.nombre, detallesReembolso, montoReembolsado, valorDescuentoTotal, valorImpuestoTotal);
   await envioCorreo(clienteInfo.email, "Reembolso realizado", cuerpo);
+  
   return reciboReembolsado;
 };
+
 

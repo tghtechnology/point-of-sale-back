@@ -1,11 +1,21 @@
-export const cuerpoReembolso = (nombreUsuario, detallesReembolso, montoReembolsado, valorDescuento, valorImpuesto) => {
+export const cuerpoReembolso = (nombreUsuario, detallesReembolso, montoReembolsado, valorDescuentoTotal, valorImpuestoTotal) => {
     const detallesHTML = detallesReembolso.map(detalle => {
+        const subtotalArticulo = (detalle.cantidad * detalle.precioUnitario).toFixed(2);
+        const precioUnitario = detalle.precioUnitario ? detalle.precioUnitario.toFixed(2) : 'N/A';
         return `
-            <p>${detalle.nombreArticulo}: ${detalle.cantidad} </p>
+            <p>Nombre del artículo: ${detalle.nombreArticulo}</p>
+            <p>Cantidad reembolsada: ${detalle.cantidad}</p>
+            <p>Precio unitario: S/. ${precioUnitario}</p>
+            <p>Subtotal por artículo: S/. ${subtotalArticulo}</p>
+            <br>
         `;
     }).join('');
-    valorImpuesto=valorImpuesto.toFixed(2);
-    valorDescuento= valorDescuento.toFixed(2);
+    const subtotal= detallesReembolso.reduce((total, detalle) => {
+        const subtotalArticulo = detalle.cantidad * detalle.precioUnitario;
+        return total + subtotalArticulo;
+    }, 0).toFixed(2);
+    valorImpuestoTotal = valorImpuestoTotal.toFixed(2);
+    valorDescuentoTotal = valorDescuentoTotal.toFixed(2);
     montoReembolsado = montoReembolsado.toFixed(2);
     return `
     <html>
@@ -76,8 +86,9 @@ export const cuerpoReembolso = (nombreUsuario, detallesReembolso, montoReembolsa
             Aquí están los detalles de su reembolso realizado:</p>
             <div class="detalles-venta">
                 ${detallesHTML}
-                <p>Valor de impuesto: + S/.${valorImpuesto}</p>
-                <p>valor de descuento: - S/.${valorDescuento}</p>
+                <p>Subtotal: S/. ${subtotal}</p>
+                <p>Valor de impuesto total: + S/.${valorImpuestoTotal}</p>
+                <p>Valor de descuento total: - S/.${valorDescuentoTotal}</p>
                 <p>Monto reembolsado: S/.${montoReembolsado}</p>
             </div>
             <p>¡Esperamos volver a verte pronto! 👏</p>
