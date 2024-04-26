@@ -389,8 +389,6 @@ const generarRef = async () => {
   }
 };
 
-
-
 //Mapeo de colores de hexadecimal a string
 const colorMapping = {
   '#FF0000': 'Rojo',

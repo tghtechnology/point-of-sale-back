@@ -16,10 +16,6 @@ const prisma = new PrismaClient();
  */
 export const crearCategoria = async (nombre, color) => {
 
-  //Validación campos vacíos
-  if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
-  if (!color || color.length < 1) {throw new Error("Campo color vacío")}
-
   const categoriaExistente = await prisma.categoria.findFirst({
     where:{
       nombre: nombre,
@@ -28,6 +24,11 @@ export const crearCategoria = async (nombre, color) => {
   })
 
   if (categoriaExistente) {throw new Error("Categoría existente")}
+
+    if (!Object.keys(colorMapping).includes(color)) {
+      throw new Error("Color no valido");
+    }
+    color = colorMapping[color];
 
   const newCategoria = await prisma.categoria.create({
     data: {
@@ -87,9 +88,6 @@ export const listarCategorias = async ()=>{
  */
 export const listarCategoriaPorId = async (id) => {
 
-  //Validación campo vacío
-  if (id == undefined) { throw new Error("Campo ID vacío")}
-
   const categoria = await prisma.categoria.findUnique({
     where: {
       id: parseInt(id),
@@ -124,11 +122,6 @@ export const listarCategoriaPorId = async (id) => {
  */
 
 export const modificarCategoria = async (id, nombre, color) => {
-
-    //Validación campos vacíos
-    if (id == undefined) {throw new Error("Campo ID vacío")}
-    if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
-    if (!color || color.length < 1) {throw new Error("Campo color vacío")}
 
     //Buscar si existe una categoría con el nombre
     const categoriaExistenteNombre = await prisma.categoria.findFirst({
@@ -212,6 +205,17 @@ export const eliminarCategoria = async (id) => {
 }
 
 
+//Mapeo de colores de hexadecimal a string
+const colorMapping = {
+  '#FF0000': 'Rojo',
+  '#00FF00': 'Verde_limon',
+  '#0000FF': 'Azul',
+  '#FFFF00': 'Amarillo',
+  '#00FFFF': 'Turquesa',
+  '#FF00FF': 'Fucsia',
+  '#C0C0C0': 'Gris_claro',
+  '#808080': 'Gris_oscuro',
+};
 
 /*export const buscarCategoria = async (search) => {
     //const page = parseInt(req.query.page) - 1 || 0;
