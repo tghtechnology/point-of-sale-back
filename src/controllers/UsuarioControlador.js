@@ -12,7 +12,7 @@ export const listaPaises = async (_req, res) => {
 
 export const crearUsuario = async (req, res) => {
   try {
-    const { nombre, email, password, pais, telefono} = req.body;
+    const { nombre, email, password, pais, telefono } = req.body;
     const newUsuario = await UsuarioServicio.crearUsuario(
       nombre,
       email,
@@ -49,7 +49,12 @@ export const cambiarContraseña = async (req, res) => {
   try {
     const { id } = req.params;
     const { contraseñaActual, nuevaContraseña, verificarContraseña } = req.body;
-    const result = await UsuarioServicio.cambiarContraseña(id, contraseñaActual, nuevaContraseña, verificarContraseña);
+    const result = await UsuarioServicio.cambiarContraseña(
+      id,
+      contraseñaActual,
+      nuevaContraseña,
+      verificarContraseña
+    );
     res.status(200).json(result);
   } catch (error) {
     console.error("Error al cambiar la contraseña:", error.message);
@@ -67,7 +72,7 @@ export const listarUsuarios = async (_req, res) => {
   }
 };
 
-
+//Eliminar temporalmente durante 1 semana
 export const eliminarTemporalmente = async (req, res) => {
   try {
     const { usuario_id, password, token } = req.body;
@@ -78,17 +83,17 @@ export const eliminarTemporalmente = async (req, res) => {
     );
     res
       .status(200)
-      .json({ mensaje: "Cuenta eliminada temporalmente con éxito" });
+      .json({ mensaje: "Cuenta eliminada con éxito por un plazo de 1 semana" });
   } catch (error) {
-    console.error("Error al eliminar temporalmente la cuenta:", error);
+    console.error("Error al eliminar:", error);
     if (error.message === "Debe iniciar sesión") {
-      return res.status(400).json({ error: "Inicie sesión" });
+      return res.status(400).json({ error: "Inicie sesion" });
     } else if (error.message === "Token no proporcionado") {
-      return res.status(404).json({ error: "Ingrese el token" });
+      return res.status(404).json({ error: "Ingrese token" });
     } else if (error.message === "Usuario no encontrado") {
-      return res.status(404).json({ error: "Usuario no encontrado" });
+      return res.status(404).json({ error: "No se encontró el usuario" });
     } else if (error.message === "Contraseña incorrecta") {
-      return res.status(404).json({ error: "Contraseña incorrecta" });
+      return res.status(404).json({ error: "No coincide la contraseña" });
     } else if (error.message === "Cuenta eliminada") {
       return res
         .status(401)
@@ -99,6 +104,7 @@ export const eliminarTemporalmente = async (req, res) => {
   }
 };
 
+//Restaurar la cuenta dentro de una semana de eliminación temporal
 export const restaurarCuenta = async (req, res) => {
   try {
     const id = req.params.id;
@@ -106,31 +112,34 @@ export const restaurarCuenta = async (req, res) => {
 
     if (results) {
       res.status(200).json({ mensaje: "Cuenta restaurada" });
-    } else {
-      res.status(404).json({ mensaje: "La cuenta no existe o no se puede restaurar" });
     }
   } catch (error) {
-    console.error("Error al restaurar la cuenta:", error);
+    console.error(error);
     res.status(500).json({ mensaje: "Error al restaurar la cuenta" });
   }
 };
 
-export const eliminarCuentasVencidas = async (_req, res) => {
+//Eliminar cuenta automaticamente luego de pasada la semana
+export const eliminarCuentasVencidas = async (req, res) => {
   try {
-    const results = await UsuarioServicio.eliminarCuentasVencidas();
+    const id = req.params.id;
+    const results = await UsuarioServicio.eliminarCuentasVencidas(id);
+
     if (results) {
-      res.status(200).json({ mensaje: "Cuentas vencidas eliminadas" });
-    } else {
-      res.status(404).json({ mensaje: "No se encontraron cuentas vencidas" });
+      res.status(200).json({ mensaje: "La cuenta ha sido eliminada" });
+    } else if (results == false) {
+      res.status(400).json({ mensaje: "La cuenta no está vencida" });
+    } else if (!results) {
+      res.status(404).json({ mensaje: "Usuario no encontrado" });
     }
   } catch (error) {
-    console.error("Error al eliminar cuentas vencidas:", error);
-    res.status(500).json({ mensaje: "Error interno del servidor" });
+    console.error(error);
   }
 };
+// Programar la tarea para ejecutarse periódicamente
+setInterval(eliminarCuentasVencidas, 24 * 60 * 60 * 1000); // Ejecutar cada 24 horas
 
-setInterval(eliminarCuentasVencidas, 24 * 60 * 60 * 1000);
-
+/** Eliminar cuenta permanentemente */
 export const eliminarPermanentemente = async (req, res) => {
   try {
     const { usuario_id, password, token } = req.body;
@@ -144,15 +153,15 @@ export const eliminarPermanentemente = async (req, res) => {
       res.status(200).json({ mensaje: "Cuenta eliminada permanentemente" });
     }
   } catch (error) {
-    console.error("Error al eliminar permanentemente la cuenta:", error);
+    console.error("Error al eliminar:", error);
     if (error.message === "Debe iniciar sesión") {
       return res
         .status(400)
         .json({ error: "Token no proporcionado o inválido" });
     } else if (error.message === "Usuario no encontrado") {
-      return res.status(404).json({ error: "Usuario no encontrado" });
+      return res.status(404).json({ error: "No se encontró el usuario" });
     } else if (error.message === "Contraseña incorrecta") {
-      return res.status(404).json({ error: "Contraseña incorrecta" });
+      return res.status(404).json({ error: "No coincide la contraseña" });
     } else {
       return res.status(500).json({ error: "Error interno del servidor" });
     }

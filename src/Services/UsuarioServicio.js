@@ -1,10 +1,10 @@
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcrypt";
 import { validarNombrePais } from "../helpers/helperPais";
+import bcrypt from "bcrypt";
+import { PrismaClient } from "@prisma/client";
+import { logout } from "../Services/AuthServicio";
 import { cuerpoCorreo } from "../helpers/helperEmail";
 import { envioCorreo } from "../Utils/SendEmail";
 import { getUTCTime } from "../Utils/Time";
-import { logout } from "./AuthServicio";
 const prisma = new PrismaClient();
 
 export const crearUsuario = async (nombre, email, password, pais, telefono) => {
@@ -57,7 +57,7 @@ export const editarUsuarioPorId = async (id, nombre, email, telefono, pais) => {
       email,
       telefono,
       pais,
-      fecha_modificacion: getUTCTime(new Date().toISOString())
+      fecha_modificacion: getUTCTime(new Date().toISOString()),
     },
   });
 
@@ -70,7 +70,12 @@ export const listarUsuarios = async () => {
   });
 };
 
-export const cambiarContraseña = async (id, contraseñaActual, nuevaContraseña, verificarContraseña) => {
+export const cambiarContraseña = async (
+  id,
+  contraseñaActual,
+  nuevaContraseña,
+  verificarContraseña
+) => {
   if (nuevaContraseña !== verificarContraseña) {
     throw new Error("La nueva contraseña y la verificación no coinciden");
   }
@@ -93,7 +98,7 @@ export const cambiarContraseña = async (id, contraseñaActual, nuevaContraseña
   await prisma.usuario.update({
     where: { id: usuario.id },
     data: { password: hashedNuevaContraseña },
-  });  
+  });
 
   return { message: "Contraseña actualizada correctamente" };
 };
@@ -137,7 +142,9 @@ export const eliminarSesionesActivas = async (usuario_id) => {
   if (activeSessions.length > 0) await logout(activeSessions[0].token);
 };
 
+// Eliminar cuenta temporalmente
 export const eliminarTemporalmente = async (usuario_id, password, token) => {
+  // Verificar si la cuenta ya está eliminada temporalmente
   const usuarioverificado = await prisma.usuario.findUnique({
     where: {
       id: parseInt(usuario_id),
@@ -147,9 +154,9 @@ export const eliminarTemporalmente = async (usuario_id, password, token) => {
   if (usuarioverificado) {
     throw new Error("Cuenta eliminada");
   }
-
+  // Validar usuario con el token
   const usuario = await validarUsuario(usuario_id, password, token);
-
+  //Encontrar el email y nombre del usuario
   const usuarioInfo = await prisma.usuario.findUnique({
     where: {
       id: parseInt(usuario_id),
@@ -166,8 +173,8 @@ export const eliminarTemporalmente = async (usuario_id, password, token) => {
     "Cuenta eliminada temporalmente",
     cuerpo
   );
-  await actualizarEstadoSesion(token, false);
 
+  await eliminarSesionesActivas(usuario_id);
   const todayISO = new Date().toISOString();
   const eliminado_temporal_fecha = getUTCTime(todayISO);
   const results = await prisma.usuario.update({
@@ -177,7 +184,34 @@ export const eliminarTemporalmente = async (usuario_id, password, token) => {
       eliminado_temporal_fecha: eliminado_temporal_fecha,
     },
   });
+
   return results;
+};
+
+export const eliminarPermanentemente = async (usuario_id, password, token) => {
+  const usuario = await validarUsuario(usuario_id, password, token);
+  await eliminarSesionesActivas(usuario_id);
+  const results = await prisma.usuario.delete({
+    where: {
+      id: parseInt(usuario_id),
+    },
+  });
+  return results;
+};
+
+export const eliminarCuentasVencidas = async (id) => {
+  const fechaUnaSemanaAtras = new Date();
+  fechaUnaSemanaAtras.setDate(fechaUnaSemanaAtras.getDate() - 7);
+
+  const results = await prisma.usuario.deleteMany({
+    where: {
+      id: parseInt(id),
+      estado: false,
+      eliminado_temporal_fecha: { lte: fechaUnaSemanaAtras },
+    },
+  });
+
+  return results.count > 0;
 };
 
 export const restaurarCuenta = async (id) => {
@@ -196,77 +230,8 @@ export const restaurarCuenta = async (id) => {
       where: { id: parseInt(id) },
       data: { estado: true, eliminado_temporal_fecha: null },
     });
-    const session = await prisma.sesion.findFirst({
-      where: {
-        usuario_id: parseInt(id),
-        estado: false,
-      },
-    });
-    if (session) {
-      await prisma.sesion.update({
-        where: { id: session.id },
-        data: { estado: true },
-      });
-    }
     return true;
   } else {
     return false;
   }
-};
-
-const actualizarEstadoSesion = async (token, estado) => {
-  await prisma.sesion.updateMany({
-    where: {
-      token: token,
-    },
-    data: {
-      estado: estado,
-    },
-  });
-};
-
-export const eliminarPermanentemente = async (usuario_id, password, token) => {
-  if (!token) {
-    throw new Error("Token no proporcionado");
-  }
-
-  const sesion = await prisma.sesion.findFirst({
-    where: {
-      token,
-    },
-  });
-
-  if (!sesion) {
-    throw new Error("Debe iniciar sesión");
-  }
-
-  const usuario = await prisma.usuario.findUnique({
-    where: {
-      id: parseInt(usuario_id),
-      estado: true,
-    },
-  });
-
-  if (!usuario) {
-    throw new Error("Usuario no encontrado");
-  }
-
-  const match = await bcrypt.compare(password, usuario.password);
-
-  if (!match) {
-    throw new Error("Contraseña incorrecta");
-  }
-
-  const cuerpo = "Su cuenta ha sido eliminada permanentemente.";
-  await envioCorreo(usuario.email, "Cuenta eliminada permanentemente", cuerpo);
-
-  await actualizarEstadoSesion(token, false);
-
-  await prisma.usuario.update({
-    where: { id: parseInt(usuario_id) },
-    data: {
-      estado: false,
-    },
-  });
-  return { message: "Cuenta eliminada permanentemente correctamente" };
 };
