@@ -1,4 +1,4 @@
-export const cuerpoVenta = (nombreUsuario, detallesVenta, subtotal, total) => {
+export const cuerpoVenta = (nombreUsuario, detallesVenta, subtotal, total, valorImpuesto, valorDescuento) => {
     const detallesHTML = detallesVenta.map(detalle => {
         const subtotalItem = (detalle.cantidad * detalle.precioUnitario).toFixed(2);
         return `
@@ -6,9 +6,12 @@ export const cuerpoVenta = (nombreUsuario, detallesVenta, subtotal, total) => {
         `;
     }).join('');
 
-    // Convertir subtotal y total a dos decimales
+    // Convertir subtotal, total, valorImpuesto y valorDescuento a dos decimales
     subtotal = subtotal.toFixed(2);
     total = total.toFixed(2);
+    valorImpuesto = valorImpuesto.toFixed(2);
+    valorDescuento = valorDescuento.toFixed(2);
+
     return `
     <html>
     <head>
@@ -79,6 +82,8 @@ export const cuerpoVenta = (nombreUsuario, detallesVenta, subtotal, total) => {
             <div class="detalles-venta">
                 ${detallesHTML}
                 <p>Subtotal: S/.${subtotal}</p>
+                <p>Valor de impuesto: S/.${valorImpuesto}</p>
+                <p>Valor de descuento: S/.${valorDescuento}</p>
                 <p>Total: S/.${total}</p>
             </div>
             <p>¡Esperamos volver a verte pronto! 👏</p>
