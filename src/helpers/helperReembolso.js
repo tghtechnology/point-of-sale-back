@@ -3,11 +3,7 @@ export const cuerpoReembolso = (nombreUsuario, detallesReembolso, montoReembolsa
         const subtotalArticulo = (detalle.cantidad * detalle.precioUnitario).toFixed(2);
         const precioUnitario = detalle.precioUnitario ? detalle.precioUnitario.toFixed(2) : 'N/A';
         return `
-            <p>Nombre del artículo: ${detalle.nombreArticulo}</p>
-            <p>Cantidad reembolsada: ${detalle.cantidad}</p>
-            <p>Precio unitario: S/. ${precioUnitario}</p>
-            <p>Subtotal por artículo: S/. ${subtotalArticulo}</p>
-            <br>
+            <p>Artículo: ${detalle.nombreArticulo}: ${detalle.cantidad} X S/. ${precioUnitario} = S/. ${subtotalArticulo}</p>
         `;
     }).join('');
     const subtotal= detallesReembolso.reduce((total, detalle) => {

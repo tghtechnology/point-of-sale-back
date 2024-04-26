@@ -123,8 +123,8 @@ export const Reembolsar = async (id, detalles) => {
     throw new Error('No se encontró la venta asociada al recibo original');
   }
   let montoReembolsado = 0;
-  let valorImpuestoTotal = 0; // Suma total de los valores de impuesto
-  let valorDescuentoTotal = 0; // Suma total de los valores de descuento
+  let valorImpuestoTotal = 0;
+  let valorDescuentoTotal = 0; 
 
   for (const detalle of detalles) {
     const detalleOriginal = ventaAsociada.detalles.find(
