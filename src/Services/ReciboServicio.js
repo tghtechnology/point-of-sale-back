@@ -204,3 +204,11 @@ export const Reembolsar = async (id, detalles) => {
   
   return reciboReembolsado;
 };
+export const ListarReciboById=async(id)=>{
+  const recibos = await prisma.recibo.findMany({
+    where:{
+      id_venta:id
+    }
+  })
+  return recibos
+}

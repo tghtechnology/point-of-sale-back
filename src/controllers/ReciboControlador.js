@@ -11,21 +11,8 @@ export const ListarRecibo = async(req, res) => {
 }
 
 export const CrearRecibo = async (req, res) => {
-
     const Rec = await ReciboServicio.CrearRecibo()
-    
-    res.status(201).json({
-      ref: ref,
-      usuario: Rec.usuario.nombre,
-      cliente: Rec.cliente.nombre,
-      detalles: detallesFormato,
-      descuento: Rec.descuento.nombre,
-      impuesto: Rec.impuesto.nombre,
-      tipoPago: Rec.tipoPago,
-      subtotal: Rec.subtotal,
-      total: Rec.total
-    
-    })
+    res.status(201).json(Rec)
 }
 export const Reembolsar=async(req,res)=>{
   try {
