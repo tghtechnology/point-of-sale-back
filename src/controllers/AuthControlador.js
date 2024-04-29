@@ -1,5 +1,10 @@
 import * as AuthServicio from "../Services/AuthServicio";
 
+const handleError = (res, error) => {
+  console.error("Error:", error.message);
+  res.status(500).json({ error: "Error interno del servidor" });
+};
+
 // Iniciar sesión
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -19,13 +24,12 @@ export const login = async (req, res) => {
 // Cerrar sesión
 export const logout = async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
-  
+
   try {
     await AuthServicio.logout(token);
     return res.json({ message: "Sesión cerrada exitosamente" });
   } catch (error) {
-    console.error("Error al cerrar sesión:", error.message);
-    return res.status(500).json({ error: "Error interno del servidor" });
+    handleError(res, error);
   }
 };
 
@@ -44,8 +48,7 @@ export const obtenerDatosUsuarioPorId = async (req, res) => {
     }
     return res.status(200).json(usuario);
   } catch (error) {
-    console.error("Error al obtener datos del usuario:", error.message);
-    return res.status(500).json({ error: "Error interno del servidor" });
+    handleError(res, error);
   }
 };
 
@@ -61,8 +64,7 @@ export const enviarTokenCambioPassword = async (req, res) => {
       message: "Se ha enviado un correo electrónico de cambio de contraseña",
     });
   } catch (error) {
-    console.error("Error al enviar correo de cambio de contraseña:", error);
-    return res.status(500).json({ error: "Error interno del servidor" });
+    handleError(res, error);
   }
 };
 
@@ -73,7 +75,6 @@ export const cambiarPassword = async (req, res) => {
     await AuthServicio.cambiarPassword(token, password);
     return res.json({ message: "Contraseña actualizada" });
   } catch (error) {
-    console.error("Error al cambiar la contraseña:", error.message);
-    return res.status(500).json({ error: "Error interno del servidor" });
+    handleError(res, error);
   }
 };

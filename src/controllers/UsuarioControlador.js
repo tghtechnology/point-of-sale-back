@@ -1,15 +1,36 @@
 import * as UsuarioServicio from "../Services/UsuarioServicio";
 import { obtenerListaPaises } from "../helpers/helperPais";
 
+const handleError = (res, error) => {
+  console.error("Error:", error.message);
+  if (error.message === "Debe iniciar sesión") {
+    return res.status(400).json({ error: "Inicie sesión" });
+  } else if (error.message === "Token no proporcionado") {
+    return res.status(404).json({ error: "Ingrese token" });
+  } else if (error.message === "Usuario no encontrado") {
+    return res.status(404).json({ error: "No se encontró el usuario" });
+  } else if (error.message === "Contraseña incorrecta") {
+    return res.status(404).json({ error: "No coincide la contraseña" });
+  } else if (error.message === "Cuenta eliminada") {
+    return res
+      .status(401)
+      .json({ error: "Esta cuenta ya fue eliminada temporalmente" });
+  } else {
+    return res.status(500).json({ error: "Error interno del servidor" });
+  }
+};
+
+// Listar Paises
 export const listaPaises = async (_req, res) => {
   try {
     const listaPaises = obtenerListaPaises();
     res.json(listaPaises);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    handleError(res, error);
   }
 };
 
+// Crear Propietario
 export const crearUsuario = async (req, res) => {
   try {
     const { nombre, email, password, pais, telefono } = req.body;
@@ -22,11 +43,11 @@ export const crearUsuario = async (req, res) => {
     );
     res.json(newUsuario);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    handleError(res, error);
   }
 };
 
+// Editar Propietario por ID
 export const editarUsuarioPorId = async (req, res) => {
   try {
     const { id } = req.params;
@@ -40,11 +61,11 @@ export const editarUsuarioPorId = async (req, res) => {
     );
     res.status(200).json(usuario);
   } catch (error) {
-    console.error("Error al editar el usuario:", error.message);
-    res.status(500).json({ mensaje: "Error al editar el usuario." });
+    handleError(res, error);
   }
 };
 
+// Cambiar Contraseña
 export const cambiarContraseña = async (req, res) => {
   try {
     const { id } = req.params;
@@ -57,22 +78,21 @@ export const cambiarContraseña = async (req, res) => {
     );
     res.status(200).json(result);
   } catch (error) {
-    console.error("Error al cambiar la contraseña:", error.message);
-    res.status(400).json({ error: error.message });
+    handleError(res, error);
   }
 };
 
+// Listar Propietarios
 export const listarUsuarios = async (_req, res) => {
   try {
     const usuarios = await UsuarioServicio.listarUsuarios();
     res.status(200).json(usuarios);
   } catch (error) {
-    console.error("Error al obtener la lista de usuarios:", error.message);
-    res.status(500).json({ mensaje: "Error al obtener la lista de usuarios." });
+    handleError(res, error);
   }
 };
 
-//Eliminar temporalmente durante 1 semana
+// Eliminar Temporalmente la cuenta
 export const eliminarTemporalmente = async (req, res) => {
   try {
     const { usuario_id, password, token } = req.body;
@@ -85,26 +105,11 @@ export const eliminarTemporalmente = async (req, res) => {
       .status(200)
       .json({ mensaje: "Cuenta eliminada con éxito por un plazo de 1 semana" });
   } catch (error) {
-    console.error("Error al eliminar:", error);
-    if (error.message === "Debe iniciar sesión") {
-      return res.status(400).json({ error: "Inicie sesion" });
-    } else if (error.message === "Token no proporcionado") {
-      return res.status(404).json({ error: "Ingrese token" });
-    } else if (error.message === "Usuario no encontrado") {
-      return res.status(404).json({ error: "No se encontró el usuario" });
-    } else if (error.message === "Contraseña incorrecta") {
-      return res.status(404).json({ error: "No coincide la contraseña" });
-    } else if (error.message === "Cuenta eliminada") {
-      return res
-        .status(401)
-        .json({ error: "Esta cuenta ya fue eliminada temporalmente" });
-    } else {
-      return res.status(500).json({ error: "Error interno del servidor" });
-    }
+    handleError(res, error);
   }
 };
 
-//Restaurar la cuenta dentro de una semana de eliminación temporal
+// Restaurar Cuenta
 export const restaurarCuenta = async (req, res) => {
   try {
     const id = req.params.id;
@@ -114,12 +119,11 @@ export const restaurarCuenta = async (req, res) => {
       res.status(200).json({ mensaje: "Cuenta restaurada" });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: "Error al restaurar la cuenta" });
+    handleError(res, error);
   }
 };
 
-//Eliminar cuenta automaticamente luego de pasada la semana
+// Eliminar Cuentas Vencidas
 export const eliminarCuentasVencidas = async (req, res) => {
   try {
     const id = req.params.id;
@@ -133,13 +137,11 @@ export const eliminarCuentasVencidas = async (req, res) => {
       res.status(404).json({ mensaje: "Usuario no encontrado" });
     }
   } catch (error) {
-    console.error(error);
+    handleError(res, error);
   }
 };
-// Programar la tarea para ejecutarse periódicamente
-setInterval(eliminarCuentasVencidas, 24 * 60 * 60 * 1000); // Ejecutar cada 24 horas
 
-/** Eliminar cuenta permanentemente */
+// Eliminar Permanentemente la cuenta
 export const eliminarPermanentemente = async (req, res) => {
   try {
     const { usuario_id, password, token } = req.body;
@@ -150,20 +152,14 @@ export const eliminarPermanentemente = async (req, res) => {
     );
 
     if (results) {
-      res.status(200).json({ mensaje: "Cuenta eliminada permanentemente" });
+      res
+        .status(200)
+        .json({ mensaje: "Cuenta eliminada permanentemente" });
     }
   } catch (error) {
-    console.error("Error al eliminar:", error);
-    if (error.message === "Debe iniciar sesión") {
-      return res
-        .status(400)
-        .json({ error: "Token no proporcionado o inválido" });
-    } else if (error.message === "Usuario no encontrado") {
-      return res.status(404).json({ error: "No se encontró el usuario" });
-    } else if (error.message === "Contraseña incorrecta") {
-      return res.status(404).json({ error: "No coincide la contraseña" });
-    } else {
-      return res.status(500).json({ error: "Error interno del servidor" });
-    }
+    handleError(res, error);
   }
 };
+
+// Programar la tarea para ejecutarse periódicamente
+setInterval(eliminarCuentasVencidas, 24 * 60 * 60 * 1000); // Ejecutar cada 24 horas
