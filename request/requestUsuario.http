@@ -5,8 +5,8 @@ POST {{api}}/registro
 Content-Type: application/json
 
 {
-  "nombre": "Martina Martinez",
-  "email": "marti@gmail.com",
+  "nombre": "Elsa Pato",
+  "email": "elsa@gmail.com",
   "password": "12345",
   "nombreNegocio": "Digital",
   "pais": "Perú",
@@ -17,7 +17,7 @@ POST {{api}}/login
 Content-Type: application/json
 
 {
-  "email": "marti@gmail.com",
+  "email": "elsa@gmail.com",
   "password": "12345"
 }
 ###P

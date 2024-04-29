@@ -126,12 +126,11 @@ export const eliminarArticulo = async (req, res) => {
 
     //Eliminar imagen de la nube
     const Articulo = await ArticuloServicio.listarArticuloPorId(id)
-    const imagen = Articulo.imagen
-    
-      const ImgId = imagen;
-      if (ImgId) {
-        const result = await deleteImage(imagen)
-      }
+    const secure_url = Articulo.imagen; // Asegúrate de que este campo tenga el `secure_url` de la imagen
+
+    if (secure_url) {
+      await deleteImage(secure_url);
+    }
 
     const articulo = await ArticuloServicio.eliminarArticulo(id);
 

@@ -374,13 +374,13 @@ const buscarCategoria = async (id_categoria) => {
 
 const generarRef = async () => {
   try {
-    const ultimaVenta = await prisma.venta.findFirst({
+    const ultimoArticulo = await prisma.articulo.findFirst({
       orderBy: { id: "desc" },
     });
 
-    const ultimoIdVenta = ultimaVenta ? ultimaVenta.id : 0;
+    const ultimoArticuloID = ultimoArticulo ? ultimoArticulo.id : 0;
 
-    const nuevoRef = `#1-${ultimoIdVenta + 1000}`;
+    const nuevoRef = `#1-${ultimoArticuloID + 1000}`;
 
     return nuevoRef;
   } catch (error) {

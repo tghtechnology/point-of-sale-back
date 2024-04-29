@@ -123,16 +123,6 @@ export const listarCategoriaPorId = async (id) => {
 
 export const modificarCategoria = async (id, nombre, color) => {
 
-    //Buscar si existe una categoría con el nombre
-    const categoriaExistenteNombre = await prisma.categoria.findFirst({
-      where:{
-        nombre: nombre,
-        estado: true
-      }
-    })
-  
-    if (categoriaExistenteNombre) {throw new Error("Categoría existente")}
-
     //Buscar si existe una categoría con el id
     const categoriaExistente = await prisma.categoria.findUnique({
       where: {
