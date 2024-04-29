@@ -27,12 +27,12 @@ const handleError = (res, error) => {
 
 /**
  * Obtiene la lista de países.
- * @param {Object} _req - La solicitud HTTP.
+ * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
  * @returns {Object} - La lista de países.
  * @throws {Error} - Devuelve un error si hay un problema al obtener la lista de países.
  */
-export const listaPaises = async (_req, res) => {
+export const listaPaises = async (req, res) => {
   try {
     const listaPaises = obtenerListaPaises();
     res.json(listaPaises);
@@ -116,12 +116,12 @@ export const cambiarContraseña = async (req, res) => {
 
 /**
  * Obtiene la lista de propietarios.
- * @param {Object} _req - La solicitud HTTP.
+ * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
  * @returns {Object[]} - La lista de propietarios.
  * @throws {Error} - Devuelve un error si hay un problema al obtener la lista de usuarios.
  */
-export const listarUsuarios = async (_req, res) => {
+export const listarUsuarios = async (req, res) => {
   try {
     const usuarios = await UsuarioServicio.listarUsuarios();
     res.status(200).json(usuarios);
