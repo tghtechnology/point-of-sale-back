@@ -59,7 +59,7 @@ const validarContraseña = async (usuario, contraseña) => {
  *
  * @description Esta función crea un nuevo usuario en la base de datos con los datos proporcionados.
  **/
-export const crearUsuario = async (nombre, email, password, pais, telefono) => {
+export const crearUsuario = async (nombre, email, password, pais, telefono, nombreNegocio) => {
   if (!validarNombrePais(pais)) {
     throw new Error("País inválido");
   }
@@ -75,6 +75,7 @@ export const crearUsuario = async (nombre, email, password, pais, telefono) => {
       telefono,
       cargo: "Gerente",
       estado: true,
+      nombreNegocio:nombreNegocio,
       fecha_creacion: fechaCreacion,
     },
   });

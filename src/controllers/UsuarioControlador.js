@@ -33,13 +33,14 @@ export const listaPaises = async (_req, res) => {
 // Crear Propietario
 export const crearUsuario = async (req, res) => {
   try {
-    const { nombre, email, password, pais, telefono } = req.body;
+    const { nombre, email, password, pais, telefono, nombreNegocio } = req.body;
     const newUsuario = await UsuarioServicio.crearUsuario(
       nombre,
       email,
       password,
       pais,
-      telefono
+      telefono,
+      nombreNegocio
     );
     res.json(newUsuario);
   } catch (error) {
