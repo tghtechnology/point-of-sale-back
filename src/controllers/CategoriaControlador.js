@@ -1,5 +1,14 @@
 import * as CategoriaServicio from "../Services/CategoriaServicio";
 
+/**
+ * Crea una nueva categoría.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {string} req.body.nombre - El nombre de la categoría.
+ * @param {string} req.body.color - El color de la categoría.
+ * @returns {Object} - La nueva categoría creada.
+ * @throws {Error} - Devuelve un error si hay un problema al crear la categoría en la base de datos.
+ */
 export const crearCategoria = async (req, res) => {
   console.log(res)
   try {
@@ -22,6 +31,13 @@ export const crearCategoria = async (req, res) => {
   }
 }
 
+/**
+ * Obtiene una lista de todas las categorías almacenadas en la base de datos.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @returns {Object} - Una lista de todas las categorías.
+ * @throws {Error} - Devuelve un error si hay un problema al obtener la lista de categorías de la base de datos.
+ */
 export const listarCategorias = async (req, res) => {
   try {
     const categorias = await CategoriaServicio.listarCategorias();
@@ -33,6 +49,14 @@ export const listarCategorias = async (req, res) => {
   }
 }
 
+/**
+ * Obtiene una categoría por su ID.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {number} req.params.id - El ID de la categoría.
+ * @returns {Object} - La categoría encontrada.
+ * @throws {Error} - Devuelve un error si el ID de la categoría está vacío o si hay un problema al buscar la categoría en la base de datos.
+ */
 export const obtenerCategoriaPorId = async (req, res) => {
   try {
     const id = req.params.id;
@@ -54,6 +78,16 @@ export const obtenerCategoriaPorId = async (req, res) => {
   }
 }
 
+/**
+ * Actualiza una categoría existente en la base de datos.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {number} req.params.id - El ID de la categoría a actualizar.
+ * @param {string} req.body.nombre - El nuevo nombre de la categoría.
+ * @param {string} req.body.color - El nuevo color de la categoría.
+ * @returns {Object} - La categoría actualizada.
+ * @throws {Error} - Devuelve un error si el ID de la categoría está vacío, si el nombre o el color de la categoría están vacíos, si la categoría ya existe o si hay un problema al actualizar la categoría.
+ */
 export const actualizarCategoria = async (req, res) => {
   try {
     const id = req.params.id;
@@ -82,6 +116,14 @@ export const actualizarCategoria = async (req, res) => {
   }
 }
 
+/**
+ * Elimina una categoría por su ID.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {number} req.params.id - El ID de la categoría a eliminar.
+ * @returns {Object} - Un mensaje de confirmación de que la categoría se ha eliminado correctamente.
+ * @throws {Error} - Devuelve un error si el ID de la categoría está vacío o si hay un problema al eliminar la categoría.
+ */
 export const eliminarCategoria = async (req, res) => {
   try {
     const id = req.params.id;
@@ -101,14 +143,3 @@ export const eliminarCategoria = async (req, res) => {
     }
   }
 }
-
-/*export const buscarCategoria = async (req, res) => {
-  try {
-    const search = req.query.search
-    const result = await CategoriaServicio.buscarCategoria(search)
-    res.status(200).json(result)
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: 'Error al buscar las categorías' });
-  }
-}*/
