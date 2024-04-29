@@ -21,6 +21,7 @@
     "express": "^4.19.2",
     "express-fileupload": "^1.5.0",
     "express-session": "^1.18.0",
+    "fs": "^0.0.1-security",
     "i18n-iso-countries": "^7.11.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",

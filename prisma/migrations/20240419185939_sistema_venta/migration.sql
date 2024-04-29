@@ -43,6 +43,8 @@ CREATE TABLE `usuario` (
     `pais` VARCHAR(255) NULL,
     `rol` ENUM('Propietario', 'Empleado') NOT NULL,
     `estado` BIT(1) NOT NULL,
+    `fecha_creacion` DATETIME(3) NOT NULL,
+    `fecha_modificacion` DATETIME(3) NULL,
     `eliminado_temporal_fecha` DATETIME(3) NULL,
 
     UNIQUE INDEX `usuario_email_key`(`email`),
