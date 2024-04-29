@@ -1,10 +1,21 @@
-export const enviarCorreoBienvenida = async (
-  destinatario,
-  nombre,
-  email,
-  contrasena,
-  urlEmpleado
-) => {
+/**
+ * Envía un correo electrónico de bienvenida a un nuevo empleado.
+ *
+ * @param {string} destinatario - Dirección de correo electrónico del destinatario.
+ * @param {string} nombre - Nombre del nuevo empleado.
+ * @param {string} email - Correo electrónico del nuevo empleado.
+ * @param {string} contrasena - Contraseña generada para el nuevo empleado.
+ * @param {string} urlEmpleado - URL de la página de inicio de sesión del empleado.
+ * @returns {Object} - Objeto de mensaje de correo electrónico configurado.
+ *
+ * @description Esta función envía un correo electrónico de bienvenida a un nuevo empleado de la empresa.
+ * El correo electrónico contiene un mensaje de bienvenida personalizado, las credenciales de inicio de sesión del empleado (correo electrónico y contraseña)
+ * y un enlace para acceder a su cuenta.
+ * Se utiliza una plantilla HTML para el cuerpo del correo electrónico, que incluye el nombre del empleado, sus credenciales y el enlace de acceso.
+ * El remitente del correo electrónico es configurado con la dirección de correo electrónico del servidor.
+ * Devuelve un objeto de mensaje de correo electrónico configurado listo para ser enviado.
+ **/
+export const enviarCorreoBienvenida = async (destinatario, nombre, email, contrasena, urlEmpleado) => {
   const invitacionLink = `${urlEmpleado}`;
   const mensajeCorreo = {
     from: process.env.EMAIL_USER,
