@@ -28,6 +28,16 @@ const crearCliente = async (nombre, email, telefono, direccion, ciudad, region, 
     if (!validarNombrePais(pais)) {
       throw new Error("País inválido");
     }
+    const clienteExistente = await prisma.cliente.findUnique({
+      where: {
+          email: email,
+          estado:true
+      }
+      });
+
+      if (clienteExistente) {
+          throw new Error("El correo electrónico ya está en uso");
+      }
     const todayISO = new Date().toISOString()
     const fecha_creacion = getUTCTime(todayISO)
     const newCliente=await prisma.cliente.create({
@@ -84,7 +94,8 @@ const listarClientes= async()=>{
 const obtenerClienteById=async (id) => {
     const cliente= await prisma.cliente.findFirst({
         where: {
-          id: Number(id)
+          id: Number(id),
+          estado: true
         }
       })
       return cliente;
@@ -114,12 +125,24 @@ const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, reg
     if (!validarNombrePais(pais)) {
       throw new Error("País inválido");
     }
+    const clienteExistente = await prisma.cliente.findUnique({
+      where: {
+          email: email
+      }
+      });
+      if(clienteExistente.estado==false){
+        throw new Error("Cliente no encontrado");
+      }
+      if (clienteExistente) {
+          throw new Error("El correo electrónico ya está en uso");
+      }
+      
     const todayISO = new Date().toISOString()
-   // const fecha_creacion = getUTCTime(todayISO)
     const fecha_modificacion = getUTCTime(todayISO)
     const cliente=await prisma.cliente.update({
       where: {
-        id: Number(id)
+        id: Number(id),
+        estado: true
       },
       data:{
             nombre: nombre,

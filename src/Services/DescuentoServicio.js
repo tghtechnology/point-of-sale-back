@@ -52,13 +52,7 @@ const obtenerDescuentoById = async (id) => {
   return descuento;
 };
 
-const modificarDescuento = async (
-  id,
-  nombre,
-  tipo_descuento,
-  valor,
-  estado
-) => {
+const modificarDescuento = async (id,nombre,tipo_descuento,valor,estado) => {
   const tiposValidos = ["PORCENTAJE", "MONTO"];
   // Validar tipo de descuento
   if (!tiposValidos.includes(tipo_descuento)) {
