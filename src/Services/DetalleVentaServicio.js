@@ -26,11 +26,11 @@ const ListarDetalles=async()=>{
     return detalles
 }
 const ListarDetallesByVenta=async(ventaId)=>{
-    const detallesByVenta= await prisma.detalleVenta.findUnique({
+    const detallesByVenta= await prisma.detalleVenta.findMany({
         where: {
-            ventaId: ventaId
-}
-})
+            ventaId: Number(ventaId)
+        }
+    })
 return detallesByVenta
 }
 module.exports={

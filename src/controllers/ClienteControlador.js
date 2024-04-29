@@ -11,8 +11,8 @@ export const listaPaises = async (req, res) => {
 };
 export const crearCliente = async (req, res)=>{
     try {
-        const {nombre,email,telefono,direccion, ciudad, region, codigo_postal, pais}=req.body
-        const newCliente=await ClienteServicio.crearCliente(nombre,email,telefono,direccion, ciudad, region, codigo_postal, pais) ;
+        const {nombre,email,telefono,direccion, ciudad, region, pais}=req.body
+        const newCliente=await ClienteServicio.crearCliente(nombre,email,telefono,direccion, ciudad, region, pais) ;
         res.json(newCliente);
       } catch (error) {
         console.error(error);
@@ -41,8 +41,8 @@ export const obtenerClienteById= async (req, res)=>{
 export const editarCliente=async (req,res) => {
     try {
         const id = req.params.id;
-        const {nombre,email,telefono,direccion, ciudad, region,codigo_postal, pais}=req.body
-        const cliente=await ClienteServicio.editarCliente(id,nombre,email,telefono,direccion, ciudad, region,codigo_postal, pais);
+        const {nombre,email,telefono,direccion, ciudad, region, pais}=req.body
+        const cliente=await ClienteServicio.editarCliente(id,nombre,email,telefono,direccion, ciudad, region, pais);
         res.status(200).json(cliente);
       } catch (error) {
         console.error(error);

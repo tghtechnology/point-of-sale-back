@@ -139,11 +139,10 @@ model Cliente {
   nombre        String  @db.VarChar(255)
   email         String  @unique @db.VarChar(255)
   telefono      String  @db.VarChar(255)
-  direccion     String  @db.VarChar(255)
-  ciudad        String  @db.VarChar(255)
-  region        String  @db.VarChar(255)
-  codigo_postal String  @db.VarChar(255)
-  pais          String  @db.VarChar(255)
+  direccion     String?  @db.VarChar(255)
+  ciudad        String?  @db.VarChar(255)
+  region        String?  @db.VarChar(255)
+  pais          String?  @db.VarChar(255)
   fecha_creacion DateTime
   fecha_modificacion DateTime?
   estado        Boolean
@@ -165,6 +164,7 @@ model DetalleVenta {
   id         Int      @id @default(autoincrement())
   cantidad   Int
   subtotal   Decimal  @db.Decimal(10, 2)
+  cantidadReembolsada Int @default(0)
   articulo   Articulo @relation(fields: [articuloId], references: [id])
   articuloId Int
   venta      Venta    @relation(fields: [ventaId], references: [id])
