@@ -59,7 +59,7 @@ export const crearArticulo = async (req, res) => {
  * Obtiene una lista de todos los artículos almacenados en la base de datos.
  * @param {Object} req - La solicitud HTTP (no utilizado).
  * @param {Object} res - La respuesta HTTP.
- * @returns {Array} - Una lista de todos los artículos.
+ * @returns {Object} - Una lista de todos los artículos.
  * @throws {Error} - Devuelve un error si hay un problema al obtener la lista de artículos de la base de datos.
  */
 export const listarArticulos = async (req, res) => {
