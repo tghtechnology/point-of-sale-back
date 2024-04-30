@@ -70,6 +70,8 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
             clienteId: parseInt(clienteId),
             usuarioId: parseInt(usuarioId),
             dineroRecibido: dineroRecibido,
+            VImpuesto: VImpuesto,
+            vDescuento, vDescuento,
             cambio: cambio
         }
     });

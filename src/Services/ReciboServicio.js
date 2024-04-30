@@ -181,6 +181,8 @@ export const Reembolsar = async (id, detalles) => {
       fecha_creacion: fecha_creacion,
       id_venta: id,
       monto_reembolsado: montoReembolsado,
+      valorDescuentoTotal: valorDescuentoTotal,
+      valorImpuestoTotal: valorImpuestoTotal,
     },
   });
   
