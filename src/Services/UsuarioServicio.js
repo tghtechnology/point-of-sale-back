@@ -23,31 +23,24 @@ const prisma = new PrismaClient();
  * @returns {Object} - El objeto representando el usuario creado.
  * @throws {Error} - Si el país no es válido o si ocurre un error durante la creación del usuario.
  */
-export const crearUsuario = async (
-  nombre,
-  email,
-  password,
-  pais,
-  telefono,
-  nombreNegocio
-) => {
+export const crearUsuario = async (nombre, email, password, pais, telefono, nombreNegocio) => {
   if (!validarNombrePais(pais)) {
     throw new Error("País inválido");
   }
-
   const hashedPassword = await bcrypt.hash(password, 10);
-
+  const fechaCreacion = getUTCTime(new Date().toISOString());
   const newUsuario = await prisma.usuario.create({
     data: {
-      nombre: nombre,
-      email: email,
-      pais: pais,
+      nombre,
+      email,
+      pais,
       password: hashedPassword,
       nombreNegocio:nombreNegocio,
       rol: "Propietario",
-      telefono: telefono,
+      telefono,
       cargo: "Gerente",
       estado: true,
+      fecha_creacion: fechaCreacion,
     },
   });
   return newUsuario;
