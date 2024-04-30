@@ -1,9 +1,22 @@
-export const enviarCorreoBienvenida = async (
-  destinatario,
-  nombre,
-  email,
-  contrasena
-) => {
+/**
+ * Envía un correo electrónico de bienvenida a un nuevo empleado.
+ *
+ * @param {string} destinatario - Dirección de correo electrónico del destinatario.
+ * @param {string} nombre - Nombre del nuevo empleado.
+ * @param {string} email - Correo electrónico del nuevo empleado.
+ * @param {string} contrasena - Contraseña generada para el nuevo empleado.
+ * @param {string} urlEmpleado - URL de la página de inicio de sesión del empleado.
+ * @returns {Object} - Objeto de mensaje de correo electrónico configurado.
+ *
+ * @description Esta función envía un correo electrónico de bienvenida a un nuevo empleado de la empresa.
+ * El correo electrónico contiene un mensaje de bienvenida personalizado, las credenciales de inicio de sesión del empleado (correo electrónico y contraseña)
+ * y un enlace para acceder a su cuenta.
+ * Se utiliza una plantilla HTML para el cuerpo del correo electrónico, que incluye el nombre del empleado, sus credenciales y el enlace de acceso.
+ * El remitente del correo electrónico es configurado con la dirección de correo electrónico del servidor.
+ * Devuelve un objeto de mensaje de correo electrónico configurado listo para ser enviado.
+ **/
+export const enviarCorreoBienvenida = async (destinatario, nombre, email, contrasena, urlEmpleado) => {
+  const invitacionLink = `${urlEmpleado}`;
   const mensajeCorreo = {
     from: process.env.EMAIL_USER,
     to: destinatario,
@@ -15,59 +28,23 @@ export const enviarCorreoBienvenida = async (
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Bienvenida</title>
-          <style>
-            /* Estilos CSS para el correo electrónico */
-            body {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              height: 100%;
-              margin: 0;
-              padding: 0;
-              background-color: #f5f5f5;
-            }
-            #panel {
-              width: 60%; /* Ancho del panel */
-              border: 2px solid #808080; /* Borde del panel */
-              padding: 20px; /* Espaciado interno del panel */
-              background-color: white;
-              text-align: center;
-              margin: 0 auto;
-            }
-            button {
-              background-color: #007bff;
-              border: none;
-              color: white;
-              padding: 10px 20px;
-              text-align: center;
-              text-decoration: none;
-              display: inline-block;
-              font-size: 16px;
-              margin: 4px 2px;
-              border-radius: 5px; /* Added border-radius to make the corners rounded */
-              cursor: pointer;
-            }
-            a {
-              text-decoration: none;
-              color: white;
-            }
-          </style>
       </head>
       <body>
           <div id="panel">
+              <img src="https://res.cloudinary.com/dzhstkyeu/image/upload/v1712764127/logo_oficial_empresa_uewoz4.png" alt="Logo de la empresa" class="logo">
               <p>Hola ${nombre},</p>
               <p>¡Bienvenido a nuestra empresa! Te damos la bienvenida como nuevo empleado.</p>
-              <p>Tus credenciales de inicio de sesión son:</p>
-              <p>Correo electrónico: ${email}</p>
-              <p>Contraseña: ${contrasena}</p>
+              <div class="credentials">
+                  <p>Tus credenciales de inicio de sesión son:</p>
+                  <p>Correo electrónico: ${email}</p>
+                  <p>Contraseña: ${contrasena}</p>
+              </div>
               <p>Por favor, asegúrate de mantener seguras tus credenciales de inicio de sesión.</p>
-              <p>¡Gracias!</p>
-              <button id="resetButton">Acceder a tu cuenta</button>
+              <a href="${invitacionLink}" class="resetButton">Acceder a tu cuenta</a>
           </div>
       </body>
       </html>
     `,
   };
-
   return mensajeCorreo;
 };
