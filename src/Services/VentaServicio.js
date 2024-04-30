@@ -30,7 +30,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     if (descuentoId) {
         const descuento = await prisma.descuento.findUnique({
             where: {
-                id: descuentoId
+                id: parseInt(descuentoId)
             }
         });
         if(descuento.tipo_descuento=="PORCENTAJE"){
@@ -45,7 +45,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     if (impuestoId) {
         const impuesto = await prisma.impuesto.findUnique({
             where: {
-                id: impuestoId
+                id: parseInt(impuestoId)
             }
         });
         if(impuesto.tipo_impuesto=="Anadido_al_precio"){
@@ -65,10 +65,10 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
             subtotal: subtotal,
             total: total,
             tipoPago: tipoPago,
-            impuestoId: impuestoId,
-            descuentoId: descuentoId,
-            clienteId: clienteId,
-            usuarioId: usuarioId,
+            impuestoId: parseInt(impuestoId),
+            descuentoId: parseInt(descuentoId),
+            clienteId: parseInt(clienteId),
+            usuarioId: parseInt(usuarioId),
             dineroRecibido: dineroRecibido,
             cambio: cambio
         }
@@ -82,7 +82,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
         //Buscar nombre de empleado
         const empleado = await prisma.usuario.findUnique({
             where: {
-                id: usuarioId
+                id: parseInt(usuarioId)
             },
             select: {
                 nombre: true
@@ -101,7 +101,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     // Obtener información del cliente para el correo electrónico
     const usuarioInfo = await prisma.cliente.findUnique({
         where: {
-            id: clienteId
+            id: parseInt(clienteId)
         },
         select: {
             email: true,
