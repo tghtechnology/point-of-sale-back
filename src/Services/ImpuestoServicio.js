@@ -2,7 +2,20 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-//Crear un impuesto
+
+
+
+/**
+ * Crea un nuevo impuesto y lo guarda en la base de datos.
+ * 
+ * @param {string} nombre - El nombre del impuesto. No debe estar vacío.
+ * @param {number} tasa - La tasa del impuesto. Debe ser un número válido.
+ * @param {string} tipo_impuesto - El tipo de impuesto (Incluido_en_el_precio o Anadido_al_precio).
+ * 
+ * @returns {Object} - Objeto representando el impuesto creado.
+ * @throws {Error} - Si algún campo requerido está vacío, si la tasa no es un número válido, o si el tipo de impuesto no es uno de los permitidos.
+ */
+
 export const crearImpuesto = async (nombre, tasa, tipo_impuesto) => {
     
     //Validación tipo de dato de tasa
@@ -36,6 +49,16 @@ export const crearImpuesto = async (nombre, tasa, tipo_impuesto) => {
       return impuestoFormato; 
 }
 
+
+
+
+/**
+ * Obtiene todos los impuestos activos de la base de datos.
+ * 
+ * @returns {Array<Object>} - Una lista de objetos representando todos los impuestos activos, con sus detalles relevantes.
+ * @throws {Error} - Si ocurre un error al buscar los impuestos.
+ */
+
 export const listarImpuestos = async () => {
 
     const allImpuestos = await prisma.impuesto.findMany({
@@ -54,6 +77,17 @@ export const listarImpuestos = async () => {
       });
       return impuestoFormato;
 }
+
+
+
+/**
+ * Obtiene un impuesto por su ID, siempre y cuando esté activo.
+ * 
+ * @param {number|string} id - El ID del impuesto que se quiere obtener.
+ * 
+ * @returns {Object|null} - El objeto representando el impuesto encontrado, o null si no se encuentra o si está desactivado.
+ * @throws {Error} - Si el ID no es válido o si ocurre un error al buscar el impuesto.
+ */
 
 export const listarImpuestoPorId = async (id) => {
 
@@ -75,6 +109,20 @@ export const listarImpuestoPorId = async (id) => {
     }
       return impuestoFormato;
 }
+
+
+
+/**
+ * Modifica un impuesto existente en la base de datos.
+ * 
+ * @param {number|string} id - El ID del impuesto a modificar.
+ * @param {string} nombre - El nuevo nombre del impuesto. No debe estar vacío.
+ * @param {number} tasa - La nueva tasa del impuesto. Debe ser un número válido.
+ * @param {string} tipo_impuesto - El nuevo tipo de impuesto (Incluido_en_el_precio o Anadido_al_precio).
+ * 
+ * @returns {Object} - El objeto representando el impuesto modificado.
+ * @throws {Error} - Si el ID no es válido, si el campo "nombre" está vacío, si la tasa no es un número válido, o si el tipo de impuesto no es uno de los permitidos.
+ */
 
 export const modificarImpuesto = async (id, nombre, tasa, tipo_impuesto) => {
 
@@ -110,6 +158,18 @@ export const modificarImpuesto = async (id, nombre, tasa, tipo_impuesto) => {
       }
       return impuestoFormato;
 }
+
+
+
+
+/**
+ * Desactiva un impuesto en la base de datos.
+ * 
+ * @param {number|string} id - El ID del impuesto a desactivar.
+ * 
+ * @returns {Object|null} - El objeto representando el impuesto desactivado, o null si no se encuentra un impuesto activo con el ID especificado.
+ * @throws {Error} - Si el ID no es válido o si ocurre un error al desactivar el impuesto.
+ */
 
 export const eliminarImpuesto = async (id) => {
 

@@ -5,7 +5,24 @@ import { envioCorreo } from "../Utils/SendEmail";
 import {cuerpoVenta} from "../helpers/helperVenta";
 
 const prisma = new PrismaClient();
-//Crear venta
+
+
+
+
+/**
+ * Crea una nueva venta, incluyendo detalles, impuestos, descuentos, y genera un recibo.
+ * 
+ * @param {Array<Object>} detalles - Los detalles de la venta, con información sobre los artículos vendidos.
+ * @param {string} tipoPago - El tipo de pago (efectivo, tarjeta, etc.).
+ * @param {number|string|null} [impuestoId] - El ID del impuesto aplicado a la venta (opcional).
+ * @param {number|string|null} [descuentoId] - El ID del descuento aplicado a la venta (opcional).
+ * @param {number|string|null} [clienteId] - El ID del cliente asociado a la venta (opcional).
+ * @param {number|string} usuarioId - El ID del usuario que realizó la venta.
+ * @param {number} dineroRecibido - El monto de dinero recibido por la venta.
+ * 
+ * @returns {Object} - El objeto representando la venta creada.
+ * @throws {Error} - Si ocurre un error durante la creación de la venta, la generación de recibos, o el envío de correos electrónicos.
+ */
 const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId, usuarioId, dineroRecibido) => {
     let subtotal = 0;
     const detallesArticulos = [];
@@ -116,10 +133,32 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
 
     return nuevaVenta;
 };
+
+
+/**
+ * Obtiene todas las ventas registradas en la base de datos.
+ * 
+ * @returns {Array<Object>} - Una lista de objetos representando todas las ventas.
+ * @throws {Error} - Si ocurre un error al buscar las ventas.
+ */
+
 const ListarVentas=async()=>{
     const ventas = await prisma.venta.findMany();
     return ventas;
 }
+
+
+
+
+/**
+ * Obtiene una venta por su ID.
+ * 
+ * @param {number|string} id - El ID de la venta a buscar.
+ * 
+ * @returns {Object|null} - El objeto representando la venta encontrada, o null si no se encuentra.
+ * @throws {Error} - Si el ID no es válido o si ocurre un error durante la búsqueda de la venta.
+ */
+
 const ObtenerVentaPorId=async()=>{
     const ventas = await prisma.venta.findUnique({
         where: {

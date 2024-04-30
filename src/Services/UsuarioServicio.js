@@ -7,6 +7,22 @@ import { envioCorreo } from "../Utils/SendEmail";
 import { getUTCTime } from "../Utils/Time";
 const prisma = new PrismaClient();
 
+
+
+
+/**
+ * Crea un nuevo usuario (propietario) y lo guarda en la base de datos.
+ * 
+ * @param {string} nombre - El nombre del usuario.
+ * @param {string} email - El correo electrónico del usuario.
+ * @param {string} password - La contraseña del usuario, que será encriptada.
+ * @param {string} pais - El país del usuario. Debe ser válido.
+ * @param {string} telefono - El número de teléfono del usuario.
+ * @param {string} nombreNegocio - El nombre del negocio del usuario.
+ * 
+ * @returns {Object} - El objeto representando el usuario creado.
+ * @throws {Error} - Si el país no es válido o si ocurre un error durante la creación del usuario.
+ */
 export const crearUsuario = async (
   nombre,
   email,
@@ -68,6 +84,18 @@ const validarUsuario = async (id, password, token) => {
   return usuario;
 };
 
+
+
+
+/**
+ * Elimina todas las sesiones activas para un usuario específico.
+ * 
+ * @param {number|string} usuario_id - El ID del usuario para el cual se eliminarán las sesiones activas.
+ * 
+ * @returns {void}
+ * @throws {Error} - Si ocurre un error durante la eliminación de las sesiones.
+ */
+
 const eliminarSesionesActivas = async (usuario_id) => {
   const activeSessions = await prisma.sesion.findMany({
     where: { usuario_id: usuario_id, expiracion: { gt: new Date() } },
@@ -75,6 +103,20 @@ const eliminarSesionesActivas = async (usuario_id) => {
 
   if (activeSessions.length > 0) await logout(activeSessions[0].token);
 };
+
+
+
+
+/**
+ * Elimina temporalmente un usuario por ID, desactivando su cuenta.
+ * 
+ * @param {number|string} usuario_id - El ID del usuario a eliminar temporalmente.
+ * @param {string} password - La contraseña del usuario para verificación.
+ * @param {string} token - El token de sesión para autenticación.
+ * 
+ * @returns {Object} - El objeto representando el usuario actualizado después de la eliminación temporal.
+ * @throws {Error} - Si la cuenta ya está eliminada, si las credenciales no son válidas, o si ocurre un error durante el proceso.
+ */
 
 export const eliminarTemporalmente = async (usuario_id, password, token) => {
   const usuarioverificado = await prisma.usuario.findUnique({
@@ -121,6 +163,20 @@ export const eliminarTemporalmente = async (usuario_id, password, token) => {
   return results;
 };
 
+
+
+
+/**
+ * Elimina permanentemente un usuario por su ID, removiéndolo de la base de datos.
+ * 
+ * @param {number|string} usuario_id - El ID del usuario a eliminar permanentemente.
+ * @param {string} password - La contraseña del usuario para verificación.
+ * @param {string} token - El token de sesión para autenticación.
+ * 
+ * @returns {Object} - El objeto representando el usuario eliminado.
+ * @throws {Error} - Si las credenciales no son válidas, si ocurre un error durante la eliminación, o si no se encuentra el usuario.
+ */
+
 export const eliminarPermanentemente = async (usuario_id, password, token) => {
   const usuario = await validarUsuario(usuario_id, password, token);
   await eliminarSesionesActivas(usuario_id);
@@ -131,6 +187,18 @@ export const eliminarPermanentemente = async (usuario_id, password, token) => {
   });
   return results;
 };
+
+
+
+
+/**
+ * Elimina las cuentas que fueron desactivadas hace más de una semana.
+ * 
+ * @param {number|string} id - El ID de la cuenta a verificar para eliminación.
+ * 
+ * @returns {boolean} - Verdadero si al menos una cuenta fue eliminada, falso si no se eliminó ninguna.
+ * @throws {Error} - Si ocurre un error durante la eliminación de las cuentas vencidas.
+ */
 
 export const eliminarCuentasVencidas = async (id) => {
   const fechaUnaSemanaAtras = new Date();
@@ -146,6 +214,18 @@ export const eliminarCuentasVencidas = async (id) => {
 
   return results.count > 0;
 };
+
+
+
+
+/**
+ * Restaura una cuenta eliminada temporalmente si se encuentra dentro del período de gracia de una semana.
+ * 
+ * @param {number|string} id - El ID del usuario a restaurar.
+ * 
+ * @returns {boolean} - Verdadero si la cuenta fue restaurada, falso si el período de gracia ya pasó o la cuenta no puede ser restaurada.
+ * @throws {Error} - Si ocurre un error durante la restauración de la cuenta.
+ */
 
 export const restaurarCuenta = async (id) => {
   const usuario = await prisma.usuario.findUnique({
