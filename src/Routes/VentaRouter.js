@@ -1,5 +1,4 @@
 import { CrearVenta, ListarVentas,ObtenerVentaPorId } from "../controllers/VentaControlador";
-import { CrearRecibo } from "../controllers/ReciboControlador";
 import { Router } from "express";
 
 const routerVenta =Router()

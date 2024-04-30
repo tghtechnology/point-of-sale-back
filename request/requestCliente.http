@@ -7,21 +7,20 @@ POST {{api}}
 Content-Type: application/json
 
 {
-  "nombre": "Mario gomez",
-  "email": "micky@gmail.com",
+  "nombre": "Maria Llosa",
+  "email": "maria4@gmail.com",
   "telefono": "921448207",
   "direccion": "Calle Las Pasionarias",
   "ciudad": "Lima",
   "region": "Lima",
-  "codigo_postal":"15313",
   "pais": "Perú"
   
 }
 
 ###
-GET {{api}}/1
+GET {{api}}/2
 ###
-PUT {{api}}/1
+PUT {{api}}/2
 Content-Type: application/json
 
 {

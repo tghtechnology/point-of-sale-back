@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import * as DetalleVentaServicio from "./DetalleVentaServicio";
-import * as ReciboServicio from "./ReciboServicio"
+import * as ReciboServicio from "./ReciboServicio";
 import { envioCorreo } from "../Utils/SendEmail";
-import {cuerpoVenta} from "../helpers/helperVenta";
+import { cuerpoVenta } from "../helpers/helperVenta";
 
 const prisma = new PrismaClient();
 
@@ -42,22 +42,8 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     }
 
     let total = subtotal;
-    if (impuestoId) {
-        const impuesto = await prisma.impuesto.findUnique({
-            where: {
-                id: impuestoId
-            }
-        });
-        if(impuesto.tipo_impuesto=="Anadido_al_precio"){
-            const totalimpuesto=subtotal*(impuesto.tasa/100);
-            total=subtotal+totalimpuesto;
-        }
-        if (impuesto.tipo_impuesto=="Incluido_en_el_precio"){
-            total=subtotal
-        }
-    }
-
-    // Aplicar descuento
+    let VImpuesto=0;
+    let vDescuento=0;
     if (descuentoId) {
         const descuento = await prisma.descuento.findUnique({
             where: {
@@ -65,16 +51,31 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
             }
         });
         if(descuento.tipo_descuento=="PORCENTAJE"){
-        total -= total * (descuento.valor_calculado);
+            vDescuento= subtotal * (descuento.valor_calculado);
+            total -= vDescuento
         }
         if(descuento.tipo_descuento=="MONTO"){
-            total=total-descuento.valor_calculado
+            vDescuento=descuento.valor_calculado
+            total -= vDescuento
+        }
+    }
+    if (impuestoId) {
+        const impuesto = await prisma.impuesto.findUnique({
+            where: {
+                id: impuestoId
+            }
+        });
+        if(impuesto.tipo_impuesto=="Anadido_al_precio"){
+            const totalimpuesto=total*(impuesto.tasa/100);
+            VImpuesto=totalimpuesto
+            total=total+totalimpuesto;
+        }
+        if (impuesto.tipo_impuesto=="Incluido_en_el_precio"){
+            total=total
         }
     }
     // Calcular cambio
     const cambio = dineroRecibido - total;
-
-
     // Crear la venta en la base de datos
     const nuevaVenta = await prisma.venta.create({
         data: {
@@ -127,7 +128,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     //Crear un recibo
     const recibo= await ReciboServicio.CrearRecibo()
     // Generar cuerpo del correo con los detalles de la venta
-    const cuerpo = cuerpoVenta(usuarioInfo.nombre, detallesArticulos, subtotal, total);
+    const cuerpo = cuerpoVenta(usuarioInfo.nombre, detallesArticulos, subtotal, total, VImpuesto, vDescuento );
     // Enviar el correo electrónico
     await envioCorreo(usuarioInfo.email, "Venta realizada", cuerpo);
 
