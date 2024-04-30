@@ -39,12 +39,13 @@ CREATE TABLE `usuario` (
     `cargo` VARCHAR(255) NOT NULL,
     `telefono` VARCHAR(255) NOT NULL,
     `password` VARCHAR(255) NOT NULL,
+    `nombreNegocio` VARCHAR(255) NOT NULL,
     `pais` VARCHAR(255) NULL,
     `rol` ENUM('Propietario', 'Empleado') NOT NULL,
     `estado` BIT(1) NOT NULL,
+    `eliminado_temporal_fecha` DATETIME(3) NULL,
     `fecha_creacion` DATETIME(3) NOT NULL,
     `fecha_modificacion` DATETIME(3) NULL,
-    `eliminado_temporal_fecha` DATETIME(3) NULL,
 
     UNIQUE INDEX `usuario_email_key`(`email`),
     PRIMARY KEY (`id`)
@@ -58,20 +59,11 @@ CREATE TABLE `articulo` (
     `precio` DECIMAL(10, 2) NULL,
     `ref` VARCHAR(255) NOT NULL,
     `color` VARCHAR(255) NOT NULL,
-    `imagen` VARCHAR(191) NULL,
+    `imagen` VARCHAR(255) NULL,
     `id_categoria` INTEGER NULL,
     `estado` BOOLEAN NOT NULL,
 
     PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `imagen` (
-    `public_id` VARCHAR(191) NOT NULL,
-    `secure_url` VARCHAR(191) NOT NULL,
-
-    UNIQUE INDEX `imagen_secure_url_key`(`secure_url`),
-    PRIMARY KEY (`public_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -100,11 +92,10 @@ CREATE TABLE `cliente` (
     `nombre` VARCHAR(255) NOT NULL,
     `email` VARCHAR(255) NOT NULL,
     `telefono` VARCHAR(255) NOT NULL,
-    `direccion` VARCHAR(255) NOT NULL,
-    `ciudad` VARCHAR(255) NOT NULL,
-    `region` VARCHAR(255) NOT NULL,
-    `codigo_postal` VARCHAR(255) NOT NULL,
-    `pais` VARCHAR(255) NOT NULL,
+    `direccion` VARCHAR(255) NULL,
+    `ciudad` VARCHAR(255) NULL,
+    `region` VARCHAR(255) NULL,
+    `pais` VARCHAR(255) NULL,
     `fecha_creacion` DATETIME(3) NOT NULL,
     `fecha_modificacion` DATETIME(3) NULL,
     `estado` BOOLEAN NOT NULL,
@@ -118,6 +109,7 @@ CREATE TABLE `Recibo` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `fecha_creacion` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `ref` VARCHAR(100) NOT NULL,
+    `monto_reembolsado` DECIMAL(10, 2) NULL,
     `id_venta` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -128,6 +120,7 @@ CREATE TABLE `detalleVenta` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `cantidad` INTEGER NOT NULL,
     `subtotal` DECIMAL(10, 2) NOT NULL,
+    `cantidadReembolsada` INTEGER NOT NULL DEFAULT 0,
     `articuloId` INTEGER NOT NULL,
     `ventaId` INTEGER NOT NULL,
 
@@ -140,11 +133,11 @@ CREATE TABLE `Venta` (
     `subtotal` DECIMAL(10, 2) NOT NULL,
     `total` DECIMAL(10, 2) NOT NULL,
     `tipoPago` ENUM('Efectivo', 'Tarjeta') NOT NULL,
-    `dineroRecibido` DECIMAL(10, 2) NOT NULL,
-    `cambio` DECIMAL(10, 2) NOT NULL,
+    `dineroRecibido` DECIMAL(10, 2) NULL,
+    `cambio` DECIMAL(10, 2) NULL,
     `impuestoId` INTEGER NULL,
     `descuentoId` INTEGER NULL,
-    `clienteId` INTEGER NOT NULL,
+    `clienteId` INTEGER NULL,
     `usuarioId` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -152,9 +145,6 @@ CREATE TABLE `Venta` (
 
 -- AddForeignKey
 ALTER TABLE `articulo` ADD CONSTRAINT `articulo_id_categoria_fkey` FOREIGN KEY (`id_categoria`) REFERENCES `categoria`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `articulo` ADD CONSTRAINT `articulo_imagen_fkey` FOREIGN KEY (`imagen`) REFERENCES `imagen`(`public_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `reset_tokens` ADD CONSTRAINT `reset_tokens_usuario_id_fkey` FOREIGN KEY (`usuario_id`) REFERENCES `usuario`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -178,7 +168,7 @@ ALTER TABLE `Venta` ADD CONSTRAINT `Venta_impuestoId_fkey` FOREIGN KEY (`impuest
 ALTER TABLE `Venta` ADD CONSTRAINT `Venta_descuentoId_fkey` FOREIGN KEY (`descuentoId`) REFERENCES `descuento`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Venta` ADD CONSTRAINT `Venta_clienteId_fkey` FOREIGN KEY (`clienteId`) REFERENCES `cliente`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Venta` ADD CONSTRAINT `Venta_clienteId_fkey` FOREIGN KEY (`clienteId`) REFERENCES `cliente`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Venta` ADD CONSTRAINT `Venta_usuarioId_fkey` FOREIGN KEY (`usuarioId`) REFERENCES `usuario`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
