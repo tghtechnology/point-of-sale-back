@@ -1,17 +1,18 @@
-export const cuerpoVenta = (nombreUsuario, detallesVenta, subtotal, total, valorImpuesto, valorDescuento) => {
-    const detallesHTML = detallesVenta.map(detalle => {
-        const subtotalItem = (detalle.cantidad * detalle.precioUnitario).toFixed(2);
+export const cuerpoReembolso = (nombreUsuario, detallesReembolso, montoReembolsado, valorDescuentoTotal, valorImpuestoTotal) => {
+    const detallesHTML = detallesReembolso.map(detalle => {
+        const subtotalArticulo = (detalle.cantidad * detalle.precioUnitario).toFixed(2);
+        const precioUnitario = detalle.precioUnitario ? detalle.precioUnitario.toFixed(2) : 'N/A';
         return `
-            <p>${detalle.producto}: ${detalle.cantidad} x S/.${detalle.precioUnitario.toFixed(2)} = S/.${subtotalItem}</p>
+            <p>Artículo: ${detalle.nombreArticulo}: ${detalle.cantidad} X S/. ${precioUnitario} = S/. ${subtotalArticulo}</p>
         `;
     }).join('');
-
-    // Convertir subtotal, total, valorImpuesto y valorDescuento a dos decimales
-    subtotal = subtotal.toFixed(2);
-    total = total.toFixed(2);
-    valorImpuesto = valorImpuesto.toFixed(2);
-    valorDescuento = valorDescuento.toFixed(2);
-
+    const subtotal= detallesReembolso.reduce((total, detalle) => {
+        const subtotalArticulo = detalle.cantidad * detalle.precioUnitario;
+        return total + subtotalArticulo;
+    }, 0).toFixed(2);
+    valorImpuestoTotal = valorImpuestoTotal.toFixed(2);
+    valorDescuentoTotal = valorDescuentoTotal.toFixed(2);
+    montoReembolsado = montoReembolsado.toFixed(2);
     return `
     <html>
     <head>
@@ -76,15 +77,15 @@ export const cuerpoVenta = (nombreUsuario, detallesVenta, subtotal, total, valor
             <img src='https://res.cloudinary.com/dnwzliif9/image/upload/q_auto:best/v1711998930/logo__1_-removebg-preview_2_2_tojv4p.png' alt='Welcome Image' style='max-width: 100%; height: auto; margin-bottom: 20px;' /></p>
         </div>
         <div class="content">
-            <h2>Detalles de la venta</h2>
+            <h2>Detalles de reembolso</h2>
             <p>¡Hola ${nombreUsuario}!<br>
-            Aquí están los detalles de tu última compra:</p>
+            Aquí están los detalles de su reembolso realizado:</p>
             <div class="detalles-venta">
                 ${detallesHTML}
-                <p>Subtotal: S/.${subtotal}</p>
-                <p>Valor de impuesto: S/.${valorImpuesto}</p>
-                <p>Valor de descuento: S/.${valorDescuento}</p>
-                <p>Total: S/.${total}</p>
+                <p>Subtotal: S/. ${subtotal}</p>
+                <p>Valor de impuesto total: + S/.${valorImpuestoTotal}</p>
+                <p>Valor de descuento total: - S/.${valorDescuentoTotal}</p>
+                <p>Monto reembolsado: S/.${montoReembolsado}</p>
             </div>
             <p>¡Esperamos volver a verte pronto! 👏</p>
         </div>

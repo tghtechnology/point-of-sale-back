@@ -1,6 +1,4 @@
 @api=http://localhost:3000
-
-
 ###
 POST {{api}}/venta
 Content-Type: application/json
@@ -8,19 +6,33 @@ Content-Type: application/json
 {
   "detalles": [
     {
-      "cantidad": 2,
+      "cantidad": 4,
       "articuloId": 1
     },
     {
         "cantidad": 1,
         "articuloId": 2
-
     }
   ],
-  "tipoPago": "EFECTIVO",
+  "tipoPago": "Efectivo",
   "impuestoId": 1,
-  "descuentoId": 1,
+  "descuentoId": 2,
   "clienteId":1,
   "usuarioId":1,
   "dineroRecibido":500
+}
+###
+GET {{api}}/recibo
+###
+POST {{api}}/reembolsar
+Content-Type: application/json
+
+{
+  "id": 36, 
+  "detalles": [
+    {
+      "cantidad": 2,
+      "articuloId": 1
+    }
+  ]
 }

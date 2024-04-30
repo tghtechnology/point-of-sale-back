@@ -71,6 +71,7 @@ export const crearUsuario = async (nombre, email, password, pais, telefono) => {
       email,
       pais,
       password: hashedPassword,
+      nombreNegocio:nombreNegocio,
       rol: "Propietario",
       telefono,
       cargo: "Gerente",

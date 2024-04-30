@@ -19,7 +19,15 @@ cloudinary.config({
 });
 
 export async function uploadImage(filePath) {
-  return await cloudinary.uploader.upload(filePath, {
-    folder: "articulos",
-  });
+    return await cloudinary.uploader.upload(filePath, {
+        folder: 'articulos'
+    })
+}
+
+export async function deleteImage(secure_url) {
+    const urlParts = secure_url.split('/');
+    const fileNameWithExtension = urlParts[urlParts.length - 1];
+    const public_id = `articulos/${fileNameWithExtension.split('.')[0]}`;
+    
+    return await cloudinary.uploader.destroy(public_id);
 }

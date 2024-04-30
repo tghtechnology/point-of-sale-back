@@ -4,7 +4,7 @@ import nodemailer from "nodemailer";
 import getVerificationEmailTemplate from "../helpers/helperPlantilla";
 import { PrismaClient } from "@prisma/client";
 import { restaurarCuenta } from "./UsuarioServicio";
-import { getUTCTime } from "../Utils/Time";
+import { getUTCTime, getPeruTime } from "../Utils/Time";
 
 const prisma = new PrismaClient();
 

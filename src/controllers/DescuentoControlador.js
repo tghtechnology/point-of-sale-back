@@ -1,13 +1,18 @@
 import * as DescuentoServicio from "../Services/DescuentoServicio";
-//Creacion de un nuevo descuento
+/**
+ * Crea un nuevo descuento.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {string} req.body.nombre - El nombre del descuento.
+ * @param {string} req.body.tipo_descuento - El tipo de descuento.
+ * @param {float} req.body.valor - El valor del descuento.
+ * @returns {Object} - El nuevo descuento creado.
+ * @throws {Error} - Devuelve un error si hay un problema al crear el descuento.
+ */
 export const crearDescuento = async (req, res) => {
   try {
     const { nombre, tipo_descuento, valor } = req.body;
-    const newDescuento = await DescuentoServicio.crearDescuento(
-      nombre,
-      tipo_descuento,
-      valor
-    ); 
+    const newDescuento = await DescuentoServicio.crearDescuento(nombre,tipo_descuento,valor); 
     res.status(201).json(newDescuento);
   }
   catch (error) {
@@ -18,7 +23,14 @@ export const crearDescuento = async (req, res) => {
   }
 };
 
-//Eliminar descuento
+/**
+ * Elimina un descuento por su ID.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {number} req.params.id - El ID del descuento a eliminar.
+ * @returns {Object} - Un mensaje de confirmación de que el descuento se ha eliminado correctamente.
+ * @throws {Error} - Devuelve un error si hay un problema al eliminar el descuento.
+ */
 export const eliminarDescuento = async (req, res) => {
   try {
     const id = req.params.id;
@@ -29,7 +41,14 @@ export const eliminarDescuento = async (req, res) => {
   }
 };
 
-//Obtener descuento por id
+/**
+ * Obtiene un descuento por su ID.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {number} req.params.id - El ID del descuento.
+ * @returns {Object} - El descuento encontrado.
+ * @throws {Error} - Devuelve un error si hay un problema al obtener el descuento.
+ */
 export const obtenerDescuentoById = async (req, res) => {
   try {
     const id = req.params.id;
@@ -44,30 +63,43 @@ export const obtenerDescuentoById = async (req, res) => {
   }
 };
 
-//Modificar un descuento
+/**
+ * Modifica un descuento existente.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {number} req.params.id - El ID del descuento a modificar.
+ * @param {string} req.body.nombre - El nuevo nombre del descuento.
+ * @param {string} req.body.tipo_descuento - El nuevo tipo de descuento.
+ * @param {number} req.body.valor - El nuevo valor del descuento.
+ * @param {boolean} req.body.estado - El nuevo estado del descuento, si se proporciona.
+ * @returns {Object} - El descuento modificado.
+ * @throws {Error} - Devuelve un error si hay un problema al modificar el descuento.
+ */
 export const modificarDescuento = async (req, res) => {
   try {
     const id = req.params.id;
     const { nombre, tipo_descuento, valor, estado } = req.body;
-    const resultado = await DescuentoServicio.modificarDescuento(
-      id,
-      nombre,
-      tipo_descuento,
-      valor,
-      estado
-    );
-
+    const resultado = await DescuentoServicio.modificarDescuento(id, nombre, tipo_descuento, valor, estado);
     if (resultado) {
       res.status(200).json(resultado);
     } else {
       res.status(404).json({ message: "Descuento no encontrado" });
     }
   } catch (error) {
+    if (error.message === "Tipo de descuento no válido") {
+      res.status(401).json({ error: "Ingrese el tipo de descuento válido" });
+    }
     res.status(500).json({ error: error.message });
   }
 };
 
-//Obtener todos los descuentos
+/**
+ * Obtiene todos los descuentos.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @returns {Object} - La lista de todos los descuentos.
+ * @throws {Error} - Devuelve un error si hay un problema al obtener los descuentos.
+ */
 export const obtenerDescuentos = async (req, res) => {
   try {
     const descuentos = await DescuentoServicio.obtenerDescuentos();
@@ -76,7 +108,16 @@ export const obtenerDescuentos = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-//Cambio de estado
+
+/**
+ * Cambia el estado de un descuento.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {number} req.params.id - El ID del descuento.
+ * @param {boolean} req.body.estado - El nuevo estado del descuento.
+ * @returns {Object} - Un mensaje de confirmación de que el estado del descuento se ha cambiado correctamente.
+ * @throws {Error} - Devuelve un error si hay un problema al cambiar el estado del descuento.
+ */
 export const cambiarEstadoDescuento = async (req, res) => {
   try {
     const { id } = req.params;
@@ -88,6 +129,14 @@ export const cambiarEstadoDescuento = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+/**
+ * Obtiene todos los descuentos eliminados.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @returns {Object} - Una lista de todos los descuentos eliminados.
+ * @throws {Error} - Devuelve un error si hay un problema al obtener los descuentos eliminados.
+ */
 export const obtenerDescuentosEliminados = async (req, res) => {
   try {
     const descuentoseliminados =
