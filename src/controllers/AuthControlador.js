@@ -1,5 +1,6 @@
 import * as AuthServicio from "../Services/AuthServicio";
-
+const passport = require("passport");
+require("../Middleware/passport");
 
 /**
  * Maneja los errores de la solicitud HTTP.
