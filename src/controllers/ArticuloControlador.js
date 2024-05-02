@@ -24,6 +24,7 @@ export const crearArticulo = async (req, res) => {
     if(req.files?.imagen) {
       const result = await uploadImage(req.files.imagen.tempFilePath)
       imagen = result.secure_url
+      console.log(result)
     }
 
     const newArticulo = await ArticuloServicio.crearArticulo(nombre, tipo_venta, precio, representacion, color, imagen, id_categoria);

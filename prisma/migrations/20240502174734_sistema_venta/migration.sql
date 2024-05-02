@@ -44,6 +44,8 @@ CREATE TABLE `usuario` (
     `rol` ENUM('Propietario', 'Empleado') NOT NULL,
     `estado` BIT(1) NOT NULL,
     `eliminado_temporal_fecha` DATETIME(3) NULL,
+    `fecha_creacion` DATETIME(3) NOT NULL,
+    `fecha_modificacion` DATETIME(3) NULL,
 
     UNIQUE INDEX `usuario_email_key`(`email`),
     PRIMARY KEY (`id`)
@@ -91,11 +93,10 @@ CREATE TABLE `cliente` (
     `nombre` VARCHAR(255) NOT NULL,
     `email` VARCHAR(255) NOT NULL,
     `telefono` VARCHAR(255) NOT NULL,
-    `direccion` VARCHAR(255) NOT NULL,
-    `ciudad` VARCHAR(255) NOT NULL,
-    `region` VARCHAR(255) NOT NULL,
-    `codigo_postal` VARCHAR(255) NOT NULL,
-    `pais` VARCHAR(255) NOT NULL,
+    `direccion` VARCHAR(255) NULL,
+    `ciudad` VARCHAR(255) NULL,
+    `region` VARCHAR(255) NULL,
+    `pais` VARCHAR(255) NULL,
     `fecha_creacion` DATETIME(3) NOT NULL,
     `fecha_modificacion` DATETIME(3) NULL,
     `estado` BOOLEAN NOT NULL,
@@ -120,6 +121,7 @@ CREATE TABLE `detalleVenta` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `cantidad` INTEGER NOT NULL,
     `subtotal` DECIMAL(10, 2) NOT NULL,
+    `cantidadReembolsada` INTEGER NOT NULL DEFAULT 0,
     `articuloId` INTEGER NOT NULL,
     `ventaId` INTEGER NOT NULL,
 
