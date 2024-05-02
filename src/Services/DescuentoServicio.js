@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
+//Inicialización de prisma
 const prisma = new PrismaClient();
 
 

@@ -17,8 +17,9 @@ import { uploadImage, deleteImage } from "../Utils/cloudinary.js";
 
 export const crearArticulo = async (req, res) => {
   try {
-    const { nombre, tipo_venta, precio, representacion, color, id_categoria} = req.body;
+    const { nombre, tipo_venta, precio, color, id_categoria} = req.body;
     let imagen = req.body.imagen
+    console.log(req.body)
 
     //Subir imagen
     if(req.files?.imagen) {
@@ -27,7 +28,7 @@ export const crearArticulo = async (req, res) => {
       console.log(result)
     }
 
-    const newArticulo = await ArticuloServicio.crearArticulo(nombre, tipo_venta, precio, representacion, color, imagen, id_categoria);
+    const newArticulo = await ArticuloServicio.crearArticulo(nombre, tipo_venta, precio, color, imagen, id_categoria);
 
     res.status(201).json(newArticulo)
 
@@ -39,16 +40,14 @@ export const crearArticulo = async (req, res) => {
       return res.status(400).json({ error: "El campo tipo de venta no puede estar vacío" });
   } else if (error.message === "Campo precio vacío") {
     return res.status(400).json({ error: "El campo precio no puede estar vacío" });
-  } else if (error.message === "Representacion no valida") {
-    return res.status(400).json({ error: "El campo representacion no es válido" });
+  } else if (error.message === "Campo representación vacío") {
+    return res.status(400).json({ error: "El campo representacion no puede estar vacío" });
   } else if (error.message === "Precio no es número válido") {
     return res.status(400).json({ error: "El campo precio solo puede ser un número" });
   } else if (error.message === "Tipo de venta no válido") {
   return res.status(400).json({ error: "El tipo de venta no es válido" });
   } else if (error.message === "Categoría inexistente") {
     return res.status(400).json({ error: "La categoría no existe" });
-  } else if (error.message === "Color no valido") {
-    return res.status(400).json({ error: "El color no es válido" });
   } else {
     console.error(error);
     res.status(500).json({ mensaje: 'Error al crear el artículo' });
@@ -60,7 +59,7 @@ export const crearArticulo = async (req, res) => {
  * Obtiene una lista de todos los artículos almacenados en la base de datos.
  * @param {Object} req - La solicitud HTTP (no utilizado).
  * @param {Object} res - La respuesta HTTP.
- * @returns {Array} - Una lista de todos los artículos.
+ * @returns {Object} - Una lista de todos los artículos.
  * @throws {Error} - Devuelve un error si hay un problema al obtener la lista de artículos de la base de datos.
  */
 export const listarArticulos = async (req, res) => {
@@ -176,11 +175,12 @@ export const eliminarArticulo = async (req, res) => {
 
     //Eliminar imagen de la nube
     const Articulo = await ArticuloServicio.listarArticuloPorId(id)
-    const secure_url = Articulo.imagen; // Asegúrate de que este campo tenga el `secure_url` de la imagen
-
-    if (secure_url) {
-      await deleteImage(secure_url);
-    }
+    const imagen = Articulo.imagen
+    
+      const ImgId = imagen;
+      if (ImgId) {
+        const result = await deleteImage(imagen)
+      }
 
     const articulo = await ArticuloServicio.eliminarArticulo(id);
 

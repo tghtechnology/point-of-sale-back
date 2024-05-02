@@ -14,11 +14,7 @@ export async function uploadImage(filePath) {
 }
 
 export async function deleteImage(secure_url) {
-    const urlParts = secure_url.split('/');
-    const fileNameWithExtension = urlParts[urlParts.length - 1];
-    const public_id = `articulos/${fileNameWithExtension.split('.')[0]}`;
-    
-    return await cloudinary.uploader.destroy(public_id);
+    return await cloudinary.uploader.destroy(ImgId)
 }
 
           
