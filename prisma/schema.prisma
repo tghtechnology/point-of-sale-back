@@ -87,7 +87,8 @@ model Articulo {
   tipo_venta   TipoVenta
   precio       Decimal?       @db.Decimal(10, 2)
   ref          String         @db.VarChar(255)
-  color        String         @db.VarChar(255)
+  representacion String @default("color")
+  color        Color?
   imagen       String?        @db.VarChar(255)
   id_categoria Int?           @map("id_categoria") @db.Int
   estado       Boolean
