@@ -1,4 +1,6 @@
 import * as CategoriaServicio from "../Services/CategoriaServicio";
+import { createCategorySchema, idSchema, editCategorySchema  } from "../Utils/Validations/CategoryValidation";
+import { z } from 'zod';
 
 /**
  * Crea una nueva categoría.
@@ -10,24 +12,25 @@ import * as CategoriaServicio from "../Services/CategoriaServicio";
  * @throws {Error} - Devuelve un error si hay un problema al crear la categoría en la base de datos.
  */
 export const crearCategoria = async (req, res) => {
-  console.log(res)
   try {
-    const { nombre, color } = req.body;
-    const newCategoria = await CategoriaServicio.crearCategoria(nombre, color);
+    const dv = createCategorySchema.parse(req.body);
+
+    const newCategoria = await CategoriaServicio.crearCategoria(
+      dv.nombre, 
+      dv.color
+    );
     res.status(201).json(newCategoria)
 
   } catch (error) {
-    //Manejo bad request
-    if (error.message === "Campo nombre vacío") {
-      return res.status(400).json({ error: "El campo nombre no puede estar vacío" });
-  } else if (error.message === "Campo color vacío") {
-      return res.status(400).json({ error: "El campo color no puede estar vacío" });
-  } else if (error.message === "Categoría existente") {
-    return res.status(400).json({ error: "La categoría ya existe" });
-  } else {
+    if (error instanceof z.ZodError) {
+      const errores = error.errors.map((err) => ({
+        path: err.path[0], 
+        message: err.message, 
+      }));
+      return res.status(400).json(errores);
+    }
     console.error(error);
-    res.status(500).json({ mensaje: 'Error al crear la categoría' });
-  }
+    res.status(500).json({ error: 'Ocurrió un error al crear la categoría' });
   }
 }
 
@@ -59,8 +62,9 @@ export const listarCategorias = async (req, res) => {
  */
 export const obtenerCategoriaPorId = async (req, res) => {
   try {
-    const id = req.params.id;
-    const categoria = await CategoriaServicio.listarCategoriaPorId(id);
+    const dv = idSchema.parse(req.params);
+
+    const categoria = await CategoriaServicio.listarCategoriaPorId(dv.id);
 
     if (categoria == null) {
       return res.status(400).json({ error: "No se encontró la categoria" });
@@ -68,13 +72,15 @@ export const obtenerCategoriaPorId = async (req, res) => {
     res.status (200).json(categoria)
 
   } catch (error) {
-    //Manejo bad request
-    if (error.message === "Campo ID vacío") {
-      return res.status(400).json({ error: "El campo ID no puede estar vacío" });
-    } else {
-    console.error(error);
-    res.status(500).json({ mensaje: 'Error al crear la categoría' });
+    if (error instanceof z.ZodError) {
+      const errores = error.errors.map((err) => ({
+        path: err.path[0],
+        message: err.message,
+      }));
+      return res.status(400).json({ errores });
     }
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener la categoría' });
   }
 }
 
@@ -90,9 +96,15 @@ export const obtenerCategoriaPorId = async (req, res) => {
  */
 export const actualizarCategoria = async (req, res) => {
   try {
-    const id = req.params.id;
-    const { nombre, color } = req.body
-    const categoria = await CategoriaServicio.modificarCategoria(id, nombre, color);
+    const dv = editCategorySchema.parse({
+      id: req.params.id,
+      nombre: req.body.nombre,
+      color: req.body.color,
+    });
+    const categoria = await CategoriaServicio.modificarCategoria(
+      dv.id, 
+      dv.nombre, 
+      dv.color);
 
     if (categoria == null) {
       return res.status(400).json({ error: "No se encontró la categoria" });
@@ -100,20 +112,16 @@ export const actualizarCategoria = async (req, res) => {
     res.status (200).json(categoria)
 
   } catch (error) {
-    //Manejo bad request
-    if (error.message === "Campo ID vacío") {
-      return res.status(400).json({ error: "El campo ID no puede estar vacío" });
-    } else if (error.message === "Campo color vacío") {
-      return res.status(400).json({ error: "El campo color no puede estar vacío" });
-    } else if (error.message === "Campo color vacío") {
-      return res.status(400).json({ error: "El campo color no puede estar vacío" });
-    } else if (error.message === "Categoría existente") {
-      return res.status(400).json({ error: "La categoría ya existe" });
-    } else {
-    console.error(error);
-    res.status(500).json({ mensaje: 'Error al crear la categoría' });
+    if (error instanceof z.ZodError) {
+      const errores = error.errors.map((err) => ({
+        path: err.path[0],
+        message: err.message,
+      }));
+      return res.status(400).json({ errores });
     }
-  }
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al editar la categoría' });
+    }
 }
 
 /**
@@ -126,8 +134,9 @@ export const actualizarCategoria = async (req, res) => {
  */
 export const eliminarCategoria = async (req, res) => {
   try {
-    const id = req.params.id;
-    const categoria = await CategoriaServicio.eliminarCategoria(id);
+    const dv = idSchema.parse(req.params);
+
+    const categoria = await CategoriaServicio.eliminarCategoria(dv.id);
 
     if (categoria == null) {
       return res.status(400).json({ error: "No se encontró la categoria" });
@@ -135,11 +144,14 @@ export const eliminarCategoria = async (req, res) => {
     res.status (200).json({message: 'Categoría eliminada correctamente'})
 
   } catch (error) {
-    if (error.message === "Campo ID vacío") {
-      return res.status(400).json({ error: "El campo ID no puede estar vacío" });
-    } else {
-    console.error(error);
-    res.status(500).json({ mensaje: 'Error al crear la categoría' });
+    if (error instanceof z.ZodError) {
+      const errores = error.errors.map((err) => ({
+        path: err.path[0],
+        message: err.message,
+      }));
+      return res.status(400).json({ errores });
     }
+    console.error(error);
+    res.status(500).json({ mensaje: 'Error al editar la categoría' });
   }
 }

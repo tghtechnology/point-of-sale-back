@@ -47,7 +47,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     if (descuentoId) {
         const descuento = await prisma.descuento.findUnique({
             where: {
-                id: parseInt(descuentoId)
+                id: descuentoId
             }
         });
         if(descuento.tipo_descuento=="PORCENTAJE"){
@@ -62,7 +62,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     if (impuestoId) {
         const impuesto = await prisma.impuesto.findUnique({
             where: {
-                id: parseInt(impuestoId)
+                id: impuestoId
             }
         });
         if(impuesto.tipo_impuesto=="Anadido_al_precio"){
@@ -82,13 +82,11 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
             subtotal: subtotal,
             total: total,
             tipoPago: tipoPago,
-            impuestoId: parseInt(impuestoId),
-            descuentoId: parseInt(descuentoId),
-            clienteId: parseInt(clienteId),
-            usuarioId: parseInt(usuarioId),
+            impuestoId: impuestoId,
+            descuentoId: descuentoId,
+            clienteId: clienteId,
+            usuarioId: usuarioId,
             dineroRecibido: dineroRecibido,
-            VImpuesto: VImpuesto,
-            vDescuento, vDescuento,
             cambio: cambio
         }
     });
@@ -101,7 +99,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
         //Buscar nombre de empleado
         const empleado = await prisma.usuario.findUnique({
             where: {
-                id: parseInt(usuarioId)
+                id: usuarioId
             },
             select: {
                 nombre: true
@@ -120,7 +118,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     // Obtener información del cliente para el correo electrónico
     const usuarioInfo = await prisma.cliente.findUnique({
         where: {
-            id: parseInt(clienteId)
+            id: clienteId
         },
         select: {
             email: true,

@@ -58,7 +58,8 @@ CREATE TABLE `articulo` (
     `tipo_venta` ENUM('Peso', 'Unidad') NOT NULL,
     `precio` DECIMAL(10, 2) NULL,
     `ref` VARCHAR(255) NOT NULL,
-    `color` VARCHAR(255) NOT NULL,
+    `representacion` VARCHAR(191) NOT NULL DEFAULT 'color',
+    `color` ENUM('Rojo', 'Verde_limon', 'Azul', 'Amarillo', 'Turquesa', 'Fucsia', 'Gris_claro', 'Gris_oscuro') NULL,
     `imagen` VARCHAR(255) NULL,
     `id_categoria` INTEGER NULL,
     `estado` BOOLEAN NOT NULL,
@@ -110,8 +111,6 @@ CREATE TABLE `Recibo` (
     `fecha_creacion` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `ref` VARCHAR(100) NOT NULL,
     `monto_reembolsado` DECIMAL(10, 2) NULL,
-    `valorDescuentoTotal` DECIMAL(10, 2) NULL,
-    `valorImpuestoTotal` DECIMAL(10, 2) NULL,
     `id_venta` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -134,8 +133,6 @@ CREATE TABLE `Venta` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `subtotal` DECIMAL(10, 2) NOT NULL,
     `total` DECIMAL(10, 2) NOT NULL,
-    `vDescuento` DECIMAL(10, 2) NOT NULL,
-    `VImpuesto` DECIMAL(10, 2) NOT NULL,
     `tipoPago` ENUM('Efectivo', 'Tarjeta') NOT NULL,
     `dineroRecibido` DECIMAL(10, 2) NULL,
     `cambio` DECIMAL(10, 2) NULL,
