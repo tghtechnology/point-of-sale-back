@@ -6,9 +6,9 @@ Content-Type: application/json
 
 {
   "nombre": "Estefany Torres",
-  "email": "estefanyt31@gmail.com",
+  "email": "estefanyt3101@gmail.com",
   "password": "12345",
-  "nombreNegocio": "Hola",
+  "nombreNegocio": "Digital",
   "pais": "Perú",
   "telefono": "92983293"
 }
@@ -17,7 +17,7 @@ POST {{api}}/login
 Content-Type: application/json
 
 {
-  "email": "estefanyt3101@gmail.com",
+  "email": "eltor@gmail.com",
   "password": "12345"
 }
 ###P
