@@ -205,7 +205,7 @@ const colorMapping = {
   '#FF00FF': 'Fucsia',
   '#C0C0C0': 'Gris_claro',
   '#808080': 'Gris_oscuro',
-};
+};g
 
 /*export const buscarCategoria = async (search) => {
     //const page = parseInt(req.query.page) - 1 || 0;
