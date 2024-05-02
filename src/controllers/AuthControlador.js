@@ -1,11 +1,25 @@
 import * as AuthServicio from "../Services/AuthServicio";
 
+
+/**
+ * Maneja los errores de la solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {Error} error - El error capturado.
+ */
 const handleError = (res, error) => {
   console.error("Error:", error.message);
   res.status(500).json({ error: "Error interno del servidor" });
 };
 
-// Iniciar sesión
+/**
+ * Inicia sesión de usuario.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {string} req.body.email - El correo electrónico del usuario.
+ * @param {string} req.body.password - La contraseña del usuario.
+ * @returns {Object} - El token de sesión y el ID del usuario.
+ * @throws {Error} - Devuelve un error si las credenciales son inválidas.
+ */
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -21,7 +35,13 @@ export const login = async (req, res) => {
   }
 };
 
-// Cerrar sesión
+/**
+ * Cierra sesión de usuario.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @returns {Object} - Un mensaje indicando que la sesión ha sido cerrada correctamente.
+ * @throws {Error} - Devuelve un error si hay un problema al cerrar la sesión.
+ */
 export const logout = async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
 
@@ -33,7 +53,14 @@ export const logout = async (req, res) => {
   }
 };
 
-// Obtener datos de usuario por ID
+/**
+ * Obtiene los datos de un usuario por su ID.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {number} req.params.id - El ID del usuario.
+ * @returns {Object} - Los datos del usuario encontrado.
+ * @throws {Error} - Devuelve un error si el ID de usuario es inválido o si no se encuentra el usuario.
+ */
 export const obtenerDatosUsuarioPorId = async (req, res) => {
   const { id } = req.params;
 
@@ -52,7 +79,14 @@ export const obtenerDatosUsuarioPorId = async (req, res) => {
   }
 };
 
-// Enviar token de cambio de contraseña por correo electrónico
+/**
+ * Envía de correo electrónico generando un token.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {string} req.body.email - El correo electrónico del usuario.
+ * @returns {Object} - Un mensaje indicando que se ha enviado el correo electrónico.
+ * @throws {Error} - Devuelve un error si no se proporciona un correo electrónico o si hay un problema al enviar el correo.
+ */
 export const enviarTokenCambioPassword = async (req, res) => {
   const { email } = req.body;
   if (!email) {
@@ -60,13 +94,23 @@ export const enviarTokenCambioPassword = async (req, res) => {
   }
   try {
     await AuthServicio.enviarCorreoCambioPass(email);
-    return res.status(200).json({message: "Se ha enviado un correo electrónico de cambio de contraseña",});
+    return res.status(200).json({
+      message: "Se ha enviado un correo electrónico de cambio de contraseña",
+    });
   } catch (error) {
     handleError(res, error);
   }
 };
 
-// Cambiar contraseña
+/**
+ * Cambia la contraseña de un usuario para poder reestablecerla.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {string} req.body.token - El token de cambio de contraseña.
+ * @param {string} req.body.password - La nueva contraseña del usuario.
+ * @returns {Object} - Un mensaje indicando que la contraseña ha sido actualizada correctamente.
+ * @throws {Error} - Devuelve un error si hay un problema al cambiar la contraseña.
+ */
 export const cambiarPassword = async (req, res) => {
   const { token, password } = req.body;
   try {

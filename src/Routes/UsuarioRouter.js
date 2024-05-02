@@ -22,6 +22,7 @@ routerUsuario.get("/listar", listarUsuarios);
 
 //RUTAS PARA ELIMINACIÓN DE CUENTA
 routerUsuario.post("/eliminar-temporal", verificarAuth, isPropietario, eliminarTemporalmente);
+routerUsuario.post("/restaurar-cuenta/:id", verificarAuth, isPropietario, restaurarCuenta);
 routerUsuario.post("/eliminar-cuenta-vencida/:id", verificarAuth, eliminarCuentasVencidas);
 routerUsuario.post("/eliminar-permanente", verificarAuth, isPropietario, eliminarPermanentemente);
 

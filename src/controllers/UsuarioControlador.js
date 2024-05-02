@@ -1,6 +1,11 @@
 import * as UsuarioServicio from "../Services/UsuarioServicio";
 import { obtenerListaPaises } from "../helpers/helperPais";
 
+/**
+ * Maneja los errores de la solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {Error} error - El error capturado.
+ */
 const handleError = (res, error) => {
   console.error("Error:", error.message);
   if (error.message === "Debe iniciar sesión") {
@@ -20,8 +25,14 @@ const handleError = (res, error) => {
   }
 };
 
-// Listar Paises
-export const listaPaises = async (_req, res) => {
+/**
+ * Obtiene la lista de países.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @returns {Object} - La lista de países.
+ * @throws {Error} - Devuelve un error si hay un problema al obtener la lista de países.
+ */
+export const listaPaises = async (req, res) => {
   try {
     const listaPaises = obtenerListaPaises();
     res.json(listaPaises);
@@ -30,36 +41,63 @@ export const listaPaises = async (_req, res) => {
   }
 };
 
-// Crear Propietario
+/**
+ * Crea un nuevo propietario.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {string} req.body.nombre - El nombre del usuario.
+ * @param {string} req.body.email - El correo electrónico del usuario.
+ * @param {string} req.body.password - La contraseña del usuario.
+ * @param {string} req.body.pais - El país del usuario.
+ * @param {string} req.body.telefono - El número de teléfono del usuario.
+ * @param {string} req.body.nombreNegocio - El nombre del negocio del usuario.
+ * @returns {Object} - El nuevo usuario creado.
+ * @throws {Error} - Devuelve un error si hay un problema al crear el usuario.
+ */
 export const crearUsuario = async (req, res) => {
   try {
-    const {nombre, email, password, pais, telefono, nombreNegocio} = req.body;
-    const newUsuario = await UsuarioServicio.crearUsuario(nombre, email, password, pais, telefono, nombreNegocio);
+    const { nombre, email, password, pais, telefono, nombreNegocio } = req.body;
+    const newUsuario = await UsuarioServicio.crearUsuario(nombre, email, password, pais, telefono, nombreNegocio );
     res.json(newUsuario);
   } catch (error) {
     handleError(res, error);
   }
 };
 
-// Editar Propietario por ID
+/**
+ * Edita los datos de un propietario por su ID.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {number} req.params.id - El ID del usuario.
+ * @param {string} req.body.nombre - El nuevo nombre del usuario.
+ * @param {string} req.body.email - El nuevo correo electrónico del usuario.
+ * @param {string} req.body.telefono - El nuevo número de teléfono del usuario.
+ * @param {string} req.body.pais - El nuevo país del usuario.
+ * @returns {Object} - Los datos del usuario actualizados.
+ * @throws {Error} - Devuelve un error si hay un problema al editar los datos del usuario.
+ */
 export const editarUsuarioPorId = async (req, res) => {
   try {
     const { id } = req.params;
     const { nombre, email, telefono, pais } = req.body;
-    const usuario = await UsuarioServicio.editarUsuarioPorId(
-      id,
-      nombre,
-      email,
-      telefono,
-      pais
-    );
+    const usuario = await UsuarioServicio.editarUsuarioPorId(id, nombre, email, telefono, pais);
     res.status(200).json(usuario);
   } catch (error) {
     handleError(res, error);
   }
 };
 
-// Cambiar Contraseña
+/**
+ * Cambia la contraseña de un propietario.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {number} req.params.id - El ID del propietario.
+ * @param {string} req.body.contraseñaActual - La contraseña actual del propietario.
+ * @param {string} req.body.nuevaContraseña - La nueva contraseña del propietario.
+ * @param {string} req.body.verificarContraseña - La confirmación de la nueva contraseña del usuario.
+ * @returns {Object} - Un mensaje indicando que la contraseña ha sido cambiada exitosamente.
+ * @throws {Error} - Devuelve un error si hay un problema al cambiar la contraseña del usuario.
+ */
 export const cambiarContraseña = async (req, res) => {
   try {
     const { id } = req.params;
@@ -76,8 +114,14 @@ export const cambiarContraseña = async (req, res) => {
   }
 };
 
-// Listar Propietarios
-export const listarUsuarios = async (_req, res) => {
+/**
+ * Obtiene la lista de propietarios.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @returns {Object[]} - La lista de propietarios.
+ * @throws {Error} - Devuelve un error si hay un problema al obtener la lista de usuarios.
+ */
+export const listarUsuarios = async (req, res) => {
   try {
     const usuarios = await UsuarioServicio.listarUsuarios();
     res.status(200).json(usuarios);
@@ -86,7 +130,16 @@ export const listarUsuarios = async (_req, res) => {
   }
 };
 
-// Eliminar Temporalmente la cuenta
+/**
+ * Elimina temporalmente la cuenta de un usuario.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {number} req.body.usuario_id - El ID del usuario.
+ * @param {string} req.body.password - La contraseña del usuario.
+ * @param {string} req.body.token - El token del usuario.
+ * @returns {Object} - Un mensaje indicando que la cuenta ha sido eliminada temporalmente.
+ * @throws {Error} - Devuelve un error si hay un problema al eliminar temporalmente la cuenta del usuario.
+ */
 export const eliminarTemporalmente = async (req, res) => {
   try {
     const { usuario_id, password, token } = req.body;
@@ -103,7 +156,14 @@ export const eliminarTemporalmente = async (req, res) => {
   }
 };
 
-// Restaurar Cuenta
+/**
+ * Restaura la cuenta de un usuario.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {number} req.params.id - El ID del usuario.
+ * @returns {Object} - Un mensaje indicando que la cuenta ha sido restaurada.
+ * @throws {Error} - Devuelve un error si hay un problema al restaurar la cuenta del usuario.
+ */
 export const restaurarCuenta = async (req, res) => {
   try {
     const id = req.params.id;
@@ -117,7 +177,14 @@ export const restaurarCuenta = async (req, res) => {
   }
 };
 
-// Eliminar Cuentas Vencidas
+/**
+ * Elimina las cuentas de usuario que han expirado.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {number} req.params.id - El ID del usuario.
+ * @returns {Object} - Un mensaje indicando que la cuenta ha sido eliminada o que no está vencida.
+ * @throws {Error} - Devuelve un error si hay un problema al eliminar las cuentas vencidas del usuario.
+ */
 export const eliminarCuentasVencidas = async (req, res) => {
   try {
     const id = req.params.id;
@@ -135,7 +202,16 @@ export const eliminarCuentasVencidas = async (req, res) => {
   }
 };
 
-// Eliminar Permanentemente la cuenta
+/**
+ * Elimina permanentemente la cuenta de un usuario.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {number} req.body.usuario_id - El ID del usuario.
+ * @param {string} req.body.password - La contraseña del usuario.
+ * @param {string} req.body.token - El token del usuario.
+ * @returns {Object} - Un mensaje indicando que la cuenta ha sido eliminada permanentemente.
+ * @throws {Error} - Devuelve un error si hay un problema al eliminar permanentemente la cuenta del usuario.
+ */
 export const eliminarPermanentemente = async (req, res) => {
   try {
     const { usuario_id, password, token } = req.body;

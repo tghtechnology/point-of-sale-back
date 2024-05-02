@@ -87,8 +87,7 @@ model Articulo {
   tipo_venta   TipoVenta
   precio       Decimal?       @db.Decimal(10, 2)
   ref          String         @db.VarChar(255)
-  representacion String @default("color")
-  color        Color?
+  color        String         @db.VarChar(255)
   imagen       String?        @db.VarChar(255)
   id_categoria Int?           @map("id_categoria") @db.Int
   estado       Boolean
@@ -103,7 +102,6 @@ enum TipoVenta {
   Peso
   Unidad
 }
-
 enum Color {
   Rojo
   Verde_limon
@@ -114,6 +112,7 @@ enum Color {
   Gris_claro
   Gris_oscuro
 }
+
 
 model ResetToken {
   id         Int      @id @default(autoincrement())
@@ -137,61 +136,65 @@ model Sesion {
 }
 
 model Cliente {
-  id                 Int       @id @default(autoincrement())
-  nombre             String    @db.VarChar(255)
-  email              String    @unique @db.VarChar(255)
-  telefono           String    @db.VarChar(255)
-  direccion          String?   @db.VarChar(255)
-  ciudad             String?   @db.VarChar(255)
-  region             String?   @db.VarChar(255)
-  pais               String?   @db.VarChar(255)
-  fecha_creacion     DateTime
+  id            Int     @id @default(autoincrement())
+  nombre        String  @db.VarChar(255)
+  email         String  @unique @db.VarChar(255)
+  telefono      String  @db.VarChar(255)
+  direccion     String?  @db.VarChar(255)
+  ciudad        String?  @db.VarChar(255)
+  region        String?  @db.VarChar(255)
+  pais          String?  @db.VarChar(255)
+  fecha_creacion DateTime
   fecha_modificacion DateTime?
-  estado             Boolean
-  ventas             Venta[]
+  estado        Boolean
+  ventas        Venta[]
 
   @@map("cliente")
 }
 
 model Recibo {
-  id                Int      @id @default(autoincrement())
-  fecha_creacion    DateTime @default(now())
-  ref               String   @db.VarChar(100)
-  monto_reembolsado Decimal? @db.Decimal(10, 2)
-  id_venta          Int      @map("id_venta") @db.Int
+  id Int @id @default(autoincrement())
+  fecha_creacion DateTime @default(now())
+  ref String @db.VarChar(100)
+  monto_reembolsado Decimal? @db.Decimal(10,2)
+  valorDescuentoTotal Decimal? @db.Decimal(10,2)
+  valorImpuestoTotal  Decimal? @db.Decimal(10,2)
+
+  id_venta Int @db.Int @map("id_venta")
 
   venta Venta? @relation(fields: [id_venta], references: [id])
 }
-
 model DetalleVenta {
-  id                  Int      @id @default(autoincrement())
-  cantidad            Int
-  subtotal            Decimal  @db.Decimal(10, 2)
-  cantidadReembolsada Int      @default(0)
-  articulo            Articulo @relation(fields: [articuloId], references: [id])
-  articuloId          Int
-  venta               Venta    @relation(fields: [ventaId], references: [id])
-  ventaId             Int
+  id         Int      @id @default(autoincrement())
+  cantidad   Int
+  subtotal   Decimal  @db.Decimal(10, 2)
+  cantidadReembolsada Int @default(0)
+  articulo   Articulo @relation(fields: [articuloId], references: [id])
+  articuloId Int
+  venta      Venta    @relation(fields: [ventaId], references: [id])
+  ventaId    Int
 
   @@map("detalleVenta")
 }
 
 model Venta {
-  id             Int            @id @default(autoincrement())
-  subtotal       Decimal        @db.Decimal(10, 2)
-  total          Decimal        @db.Decimal(10, 2)
-  tipoPago       TipoPago
-  impuesto       Impuesto?      @relation(fields: [impuestoId], references: [id])
-  descuento      Descuento?     @relation(fields: [descuentoId], references: [id])
-  cliente        Cliente?       @relation(fields: [clienteId], references: [id])
-  usuario        Usuario        @relation(fields: [usuarioId], references: [id])
-  dineroRecibido Decimal?       @db.Decimal(10, 2)
-  cambio         Decimal?       @db.Decimal(10, 2)
-  detalles       DetalleVenta[]
-  impuestoId     Int?
-  descuentoId    Int?
-  clienteId      Int?
-  usuarioId      Int
+  id            Int      @id @default(autoincrement())
+  subtotal      Decimal @db.Decimal(10,2)
+  total         Decimal @db.Decimal(10,2)
+  vDescuento    Decimal? @db.Decimal(10,2)
+  VImpuesto     Decimal? @db.Decimal(10,2)
+  tipoPago      TipoPago
+  impuesto      Impuesto? @relation(fields: [impuestoId], references: [id])
+  descuento     Descuento? @relation(fields: [descuentoId], references: [id])
+  cliente       Cliente?   @relation(fields: [clienteId], references: [id])
+  usuario       Usuario   @relation(fields: [usuarioId], references: [id])
+  dineroRecibido Decimal? @db.Decimal(10,2) 
+  cambio        Decimal? @db.Decimal(10,2)
+  detalles      DetalleVenta[]
+  impuestoId    Int?
+  descuentoId   Int?
+  clienteId     Int?
+  usuarioId     Int
 
   recibo Recibo[]
 }
