@@ -61,7 +61,7 @@ model Usuario {
   cargo                    String    @db.VarChar(255)
   telefono                 String    @db.VarChar(255)
   password                 String    @db.VarChar(255)
-  nombreNegocio            String    @db.VarChar(255)
+  nombreNegocio            String?    @db.VarChar(255)
   pais                     String?   @db.VarChar(255)
   rol                      Rol
   estado                   Boolean   @db.Bit(1)
