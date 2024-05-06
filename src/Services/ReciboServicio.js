@@ -234,7 +234,7 @@ export const Reembolsar = async (id, detalles) => {
       valorImpuestoTotal: valorImpuestoTotal,
     },
   });
-  
+  if(ventaAsociada.cliente){
   const detallesReembolso = await Promise.all(detalles.map(async (detalle) => {
     const nombreArticulo = await obtenerNombreArticulo(detalle.articuloId);
     const precioUnitario = await prisma.articulo.findUnique({
@@ -252,7 +252,7 @@ export const Reembolsar = async (id, detalles) => {
   const clienteInfo = ventaAsociada.cliente;
   const cuerpo = cuerpoReembolso(clienteInfo.nombre, detallesReembolso, montoReembolsado, valorDescuentoTotal, valorImpuestoTotal);
   await envioCorreo(clienteInfo.email, "Reembolso realizado", cuerpo);
-  
+  }
   return reciboReembolsado;
 };
 export const ListarReciboById=async(id)=>{
