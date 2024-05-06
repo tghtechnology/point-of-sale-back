@@ -235,7 +235,7 @@ export const listarArticuloPorId = async (id) => {
  *   - `nombre`: El nombre de la categoría.
  *   - `color`: El color de la categoría.
  */
-export const modificarArticulo = async (id, nombre, tipo_venta, precio, color, imagen, id_categoria) => {
+export const modificarArticulo = async (id, nombre, tipo_venta, precio, representacion, color, imagen, id_categoria, id_puntoDeVenta) => {
 
   if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
   if (!tipo_venta || tipo_venta.length < 1) {throw new Error("Campo tipo_venta vacío")}
@@ -253,6 +253,16 @@ export const modificarArticulo = async (id, nombre, tipo_venta, precio, color, i
     }
   })
 
+  if (representacion !== 'color' && representacion !== 'imagen') {throw new Error("Representacion no valida")}
+
+  //Validacion colores
+    if (representacion === 'color') {
+      if (!Object.keys(colorMapping).includes(color)) {
+        throw new Error("Color no valido");
+      }
+      color = colorMapping[color];
+    }
+
   //Si el id no existe
   if (!articuloExistente) {return null}
 
@@ -267,7 +277,7 @@ const articulo = await prisma.articulo.update({
     nombre: nombre,
     tipo_venta: tipo_venta,
     precio: Number(precio),
-    color: color,
+    color: color ? color : null,
     imagen: imagen ? imagen : null,
     id_categoria: parseInt(id_categoria),
   }

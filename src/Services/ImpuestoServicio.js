@@ -1,8 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-
 const prisma = new PrismaClient();
-
-
 
 
 /**
@@ -16,7 +13,9 @@ const prisma = new PrismaClient();
  * @throws {Error} - Si algún campo requerido está vacío, si la tasa no es un número válido, o si el tipo de impuesto no es uno de los permitidos.
  */
 
-export const crearImpuesto = async (nombre, tasa, tipo_impuesto) => {
+export const crearImpuesto = async (usuario_id, nombre, tasa, tipo_impuesto) => {
+
+    const id_puntoDeVenta = usuario_id
     
     //Validación tipo de dato de tasa
     if (!tasa) {throw new Error("Campo tasa vacío")}
@@ -30,21 +29,26 @@ export const crearImpuesto = async (nombre, tasa, tipo_impuesto) => {
 
     //Validación nombre
     if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
+
+    //Obtener id del punto de venta
+
     
     const newImpuesto = await prisma.impuesto.create({
         data: {
           nombre: nombre,
           tasa: tasa,
           tipo_impuesto: tipo_impuesto,
-          estado: true
-        },
+          estado: true,
+          id_puntoDeVenta: id_puntoDeVenta
+        }
       })
     
       const impuestoFormato = {
         id: newImpuesto.id,
         nombre: newImpuesto.nombre,
         tasa: newImpuesto.tasa,
-        tipo_impuesto: newImpuesto.tipo_impuesto
+        tipo_impuesto: newImpuesto.tipo_impuesto,
+        id_puntoDeVenta: newImpuesto.id_puntoDeVenta
       }
       return impuestoFormato; 
 }

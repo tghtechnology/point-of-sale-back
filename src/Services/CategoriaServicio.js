@@ -14,7 +14,7 @@ const prisma = new PrismaClient();
  * 
  * @throws {Error} - Si el nombre o el color están vacíos, o si la categoría ya existe.
  */
-export const crearCategoria = async (nombre, color) => {
+export const crearCategoria = async (nombre, color, id_puntoDeVenta) => {
 
   const categoriaExistente = await prisma.categoria.findFirst({
     where:{

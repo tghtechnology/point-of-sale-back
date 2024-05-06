@@ -114,7 +114,7 @@ export const obtenerArticuloPorId = async (req, res) => {
 export const actualizarArticulo = async (req, res) => {
   try {
     const id = req.params.id;
-    const { nombre, tipo_venta, precio, color, id_categoria} = req.body
+    const { nombre, tipo_venta, precio, representacion, color, id_categoria} = req.body
     let imagen = req.body.imagen
 
     //Quitar imagen
@@ -132,7 +132,7 @@ export const actualizarArticulo = async (req, res) => {
       console.log(imagen)
     }
 
-    const articulo = await ArticuloServicio.modificarArticulo(id, nombre, tipo_venta, precio, color, imagen, id_categoria);
+    const articulo = await ArticuloServicio.modificarArticulo(id, nombre, tipo_venta, precio, representacion, color, imagen, id_categoria);
     
 
     if (articulo == null) {

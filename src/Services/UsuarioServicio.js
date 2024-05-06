@@ -5,6 +5,7 @@ import { logout } from "../Services/AuthServicio";
 import { cuerpoCorreo } from "../helpers/helperEmail";
 import { envioCorreo } from "../Utils/SendEmail";
 import { getUTCTime } from "../Utils/Time";
+import { crearPOS } from "./PuntoDeVentaServicio";
 const prisma = new PrismaClient();
 
 
@@ -31,11 +32,39 @@ export const crearUsuario = async (
   telefono,
   nombreNegocio
 ) => {
+
+  const nombrePOS = nombreNegocio
+  const nombrePropietario = nombre
+  const usuariosExistentes = await prisma.usuario.count();
+
+  let rolAsignado
+  if(usuariosExistentes === 0) {
+    rolAsignado = "Admin"
+  } else if (usuariosExistentes >= 1) {
+    rolAsignado = "Propietario"
+    await crearPOS(nombrePOS, nombrePropietario)
+  }
+
+  const POS = await prisma.puntoDeVenta.findFirst({
+    orderBy: {
+      id: 'desc', // Ordenar por ID de forma descendente
+    },
+    where: {
+      nombre: nombreNegocio
+    },
+    select: {
+      id:true
+    }
+  })
+
   if (!validarNombrePais(pais)) {
     throw new Error("País inválido");
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
+
+  const todayISO = new Date().toISOString()
+  const fecha_creacion = getUTCTime(todayISO)
 
   const newUsuario = await prisma.usuario.create({
     data: {
@@ -44,10 +73,12 @@ export const crearUsuario = async (
       pais: pais,
       password: hashedPassword,
       nombreNegocio:nombreNegocio,
-      rol: "Propietario",
+      rol: rolAsignado,
       telefono: telefono,
       cargo: "Gerente",
       estado: true,
+      fecha_creacion: fecha_creacion,
+      id_puntoDeVenta: POS? POS.id : null
     },
   });
   return newUsuario;
@@ -96,7 +127,7 @@ const validarUsuario = async (id, password, token) => {
  * @throws {Error} - Si ocurre un error durante la eliminación de las sesiones.
  */
 
-const eliminarSesionesActivas = async (usuario_id) => {
+export const eliminarSesionesActivas = async (usuario_id) => {
   const activeSessions = await prisma.sesion.findMany({
     where: { usuario_id: usuario_id, expiracion: { gt: new Date() } },
   });

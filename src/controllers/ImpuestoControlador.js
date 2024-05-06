@@ -12,8 +12,9 @@ import * as ImpuestoServicio from "../Services/ImpuestoServicio"
  */
 export const crearImpuesto = async (req, res) => {
   try{
+    const usuario_id = req.usuario.id;
     const { nombre, tasa, tipo_impuesto } = req.body;
-    const impuesto = await ImpuestoServicio.crearImpuesto(nombre, tasa, tipo_impuesto)
+    const impuesto = await ImpuestoServicio.crearImpuesto(usuario_id, nombre, tasa, tipo_impuesto)
     res.status(201).json(impuesto);
   } catch (error) {
         //Manejo bad request

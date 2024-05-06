@@ -33,6 +33,25 @@ export const verificarAuth = async (req, res, next) => {
     }
 }
 
+export const isAdmin = async (req, res, next) => {
+    try {
+        const usuario = await prisma.usuario.findUnique({
+            where: {
+                id: req.usuario.id,
+            }
+        })
+    
+        if(usuario && usuario.rol === "Admin") {
+            next()
+        } else {
+            return res.status(403).json({message: "Requiere rol de Administrador"})
+        }
+        } catch (error) {
+        console.error("Error en middleware", error);
+        return res.status(500).json({ message: "Error en el servidor" });
+    }
+}
+
 export const isPropietario = async (req, res, next) => {
     try {
     const usuario = await prisma.usuario.findUnique({

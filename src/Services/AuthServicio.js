@@ -60,7 +60,7 @@ export const login = async (email, password) => {
     data: {
       usuario_id: usuario.id,
       token: token,
-      expiracion: expiracion
+      expiracion: expiracion,
     }
   });
 
