@@ -25,8 +25,8 @@ const handleError = (res, error) => {
  */
 export const crearEmpleado = async (req, res) => {
   try {
-    const { nombre, email, telefono, cargo, pais, password } = req.body;
-    const nuevoEmpleado = await EmpleadoServicio.crearEmpleado(nombre, email, telefono, cargo, pais, password);
+    const { nombre, email, telefono, cargo, pais, password, propietarioId } = req.body;
+    const nuevoEmpleado = await EmpleadoServicio.crearEmpleado(nombre, email, telefono, cargo, pais, password, propietarioId);
     res.status(200).json(nuevoEmpleado);
   } catch (error) {
     handleError(res, error);

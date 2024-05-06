@@ -12,8 +12,8 @@ import { Router } from "express";
 const routerEmpleado = Router();
 
 // Rutas para la gestión de empleados
-routerEmpleado.post("/empleado", verificarAuth, isPropietario, crearEmpleado);
-routerEmpleado.put("/empleado/:id", verificarAuth, isPropietario, editarEmpleado);
+routerEmpleado.post("/empleado", /*verificarAuth, isPropietario,*/ crearEmpleado);
+routerEmpleado.put("/empleado/:id", /*verificarAuth, isPropietario,*/ editarEmpleado);
 routerEmpleado.delete("/empleado/:id", verificarAuth, isPropietario, eliminarEmpleadoPorId);
 routerEmpleado.get("/empleado", verificarAuth, listarEmpleados);
 routerEmpleado.get("/empleado/:id", verificarAuth, listarEmpleadoPorId);
