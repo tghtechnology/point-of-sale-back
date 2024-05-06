@@ -28,4 +28,4 @@ Content-Type: application/json
   "id_categoria": 8
 }
 ###
-DELETE {{api}}/articulo/eliminar/11
+DELETE {{api}}/articulo/eliminar/2
