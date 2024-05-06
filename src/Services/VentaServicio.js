@@ -116,6 +116,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
         const id_venta = nuevaVenta.id
 
     // Obtener información del cliente para el correo electrónico
+    if(clienteId){
     const usuarioInfo = await prisma.cliente.findUnique({
         where: {
             id: clienteId
@@ -125,13 +126,13 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
             nombre: true
         }
     });
-    //Crear un recibo
-    const recibo= await ReciboServicio.CrearRecibo()
-    // Generar cuerpo del correo con los detalles de la venta
     const cuerpo = cuerpoVenta(usuarioInfo.nombre, detallesArticulos, subtotal, total, VImpuesto, vDescuento );
     // Enviar el correo electrónico
     await envioCorreo(usuarioInfo.email, "Venta realizada", cuerpo);
-
+}
+    //Crear un recibo
+    const recibo= await ReciboServicio.CrearRecibo()
+    
     return nuevaVenta;
 };
 
