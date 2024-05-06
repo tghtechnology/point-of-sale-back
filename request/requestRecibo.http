@@ -7,16 +7,14 @@ Content-Type: application/json
   "detalles": [
     {
       "cantidad": 1,
-      "articuloId": 1
+      "articuloId": 3
     },
     {
         "cantidad": 4,
-        "articuloId": 2
+        "articuloId": 1
     }
   ],
   "tipoPago": "Efectivo",
-  "impuestoId": 1,
-  "descuentoId": 2,
   "clienteId":1,
   "usuarioId":1,
   "dineroRecibido":500
