@@ -66,14 +66,11 @@ const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, reg
     }
     const clienteExistente = await prisma.cliente.findUnique({
       where: {
-          email: email
+          id: Number(id)
       }
       });
-      if(clienteExistente.estado==false){
+      if(!clienteExistente){
         throw new Error("Cliente no encontrado");
-      }
-      if (clienteExistente) {
-          throw new Error("El correo electrónico ya está en uso");
       }
       
     const todayISO = new Date().toISOString()
