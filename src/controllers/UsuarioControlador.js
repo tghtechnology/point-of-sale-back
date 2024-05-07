@@ -33,8 +33,15 @@ export const listaPaises = async (_req, res) => {
 // Crear Propietario
 export const crearUsuario = async (req, res) => {
   try {
-    const {nombre, email, password, pais, telefono, nombreNegocio} = req.body;
-    const newUsuario = await UsuarioServicio.crearUsuario(nombre, email, password, pais, telefono, nombreNegocio);
+    const { nombre, email, password, pais, telefono, nombreNegocio} = req.body;
+    const newUsuario = await UsuarioServicio.crearUsuario(
+      nombre,
+      email,
+      password,
+      pais,
+      nombreNegocio,
+      telefono
+    );
     res.json(newUsuario);
   } catch (error) {
     handleError(res, error);

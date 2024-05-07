@@ -1,9 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-
-
-
 /**
  * Crea una nueva categoría y la guarda en la base de datos.
  * 

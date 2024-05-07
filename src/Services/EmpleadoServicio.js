@@ -57,17 +57,37 @@ const buscarEmpleadoPorId = async (id) => {
  * @param {string} cargo - El cargo del nuevo empleado.
  * @param {string} pais - El país del nuevo empleado.
  * @param {string} password - La contraseña del nuevo empleado.
+ * @param {string} token - El token de sesión del usuario que está creando el empleado.
  * @returns {Promise<Object>} - Los datos del nuevo empleado creado.
  *
  * @throws {Error} - Si el país proporcionado es inválido.
+ * @throws {Error} - Si hay algún problema al crear el empleado.
  *
  * @description Esta función crea un nuevo empleado en la base de datos con los datos proporcionados.
  **/
-export const crearEmpleado = async (nombre, email, telefono, cargo, pais, password) => {
-  if (!validarNombrePais(pais)) throw new Error("País inválido");
-
+export const crearEmpleado = async (
+  nombre,
+  email,
+  telefono,
+  cargo,
+  pais,
+  password,
+  propietarioId
+) => {
   const hashedPassword = await encryptPassword(password);
   const fechaCreacion = getUTCTime(new Date().toISOString());
+
+
+  if (!validarNombrePais(pais)) {
+    throw new Error("País inválido");
+  }
+  const propietarioInfo=await prisma.usuario.findUnique({
+    where:{
+      id:propietarioId,
+      estado:true,
+      rol:"Propietario"
+    }
+  })
 
   const empleado = await prisma.usuario.create({
     data: {
@@ -76,6 +96,7 @@ export const crearEmpleado = async (nombre, email, telefono, cargo, pais, passwo
       telefono,
       cargo,
       pais,
+      nombreNegocio:propietarioInfo.nombreNegocio,
       rol: "Empleado",
       estado: true,
       password: hashedPassword,
