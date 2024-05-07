@@ -5,10 +5,9 @@ import { logout } from "../Services/AuthServicio";
 import { cuerpoCorreo } from "../helpers/helperEmail";
 import { envioCorreo } from "../Utils/SendEmail";
 import { getUTCTime } from "../Utils/Time";
+import { cuerpoPermanente } from "../helpers/helperPermanente";
+import { cuerpoRestaurado } from "../helpers/helperRestaurado";
 const prisma = new PrismaClient();
-
-
-
 
 /**
  * Crea un nuevo usuario (propietario) y lo guarda en la base de datos.
@@ -77,9 +76,6 @@ const validarUsuario = async (id, password, token) => {
   return usuario;
 };
 
-
-
-
 /**
  * Elimina todas las sesiones activas para un usuario específico.
  * 
@@ -96,9 +92,6 @@ const eliminarSesionesActivas = async (usuario_id) => {
 
   if (activeSessions.length > 0) await logout(activeSessions[0].token);
 };
-
-
-
 
 /**
  * Elimina temporalmente un usuario por ID, desactivando su cuenta.
@@ -156,9 +149,6 @@ export const eliminarTemporalmente = async (usuario_id, password, token) => {
   return results;
 };
 
-
-
-
 /**
  * Elimina permanentemente un usuario por su ID, removiéndolo de la base de datos.
  * 
@@ -171,18 +161,27 @@ export const eliminarTemporalmente = async (usuario_id, password, token) => {
  */
 
 export const eliminarPermanentemente = async (usuario_id, password, token) => {
-  const usuario = await validarUsuario(usuario_id, password, token);
+  const usuario=await validarUsuario(usuario_id, password, token);
   await eliminarSesionesActivas(usuario_id);
-  const results = await prisma.usuario.delete({
+
+  const usuarioInfo = await prisma.usuario.findUnique({
     where: {
-      id: parseInt(usuario_id),
+      id: parseInt(usuario_id)
     },
+    select: {
+      email: true,
+      nombre:true 
+    }
   });
+  const cuerpo = cuerpoPermanente(usuarioInfo.nombre);
+  await envioCorreo(usuarioInfo.email,  "Cuenta eliminada permanente",cuerpo);
+  
+  const results = await prisma.usuario.delete({ 
+    where: { 
+      id: parseInt(usuario_id) 
+    } });
   return results;
 };
-
-
-
 
 /**
  * Elimina las cuentas que fueron desactivadas hace más de una semana.
@@ -208,9 +207,6 @@ export const eliminarCuentasVencidas = async (id) => {
   return results.count > 0;
 };
 
-
-
-
 /**
  * Restaura una cuenta eliminada temporalmente si se encuentra dentro del período de gracia de una semana.
  * 
@@ -223,7 +219,7 @@ export const eliminarCuentasVencidas = async (id) => {
 export const restaurarCuenta = async (id) => {
   const usuario = await prisma.usuario.findUnique({
     where: { id: parseInt(id) },
-    select: { eliminado_temporal_fecha: true },
+    select: { eliminado_temporal_fecha: true }
   });
   if (!usuario || !usuario.eliminado_temporal_fecha) {
     return false;
@@ -234,8 +230,19 @@ export const restaurarCuenta = async (id) => {
   if (Date.now() - fechaEliminacion <= unaSemanaEnMiliseg) {
     await prisma.usuario.update({
       where: { id: parseInt(id) },
-      data: { estado: true, eliminado_temporal_fecha: null },
+      data: { estado: true, eliminado_temporal_fecha: null }
     });
+    const usuarioInfo = await prisma.usuario.findUnique({
+      where: {
+        id: parseInt(id)
+      },
+      select: {
+        email: true,
+        nombre:true 
+      }
+    });
+    const cuerpo = cuerpoRestaurado(usuarioInfo.nombre);
+    await envioCorreo(usuarioInfo.email,  "Cuenta restaurada",cuerpo);
     return true;
   } else {
     return false;
