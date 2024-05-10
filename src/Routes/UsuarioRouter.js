@@ -5,7 +5,6 @@ import {
   listarUsuarios,
   cambiarContraseña,
   eliminarTemporalmente,
-  restaurarCuenta,
   eliminarCuentasVencidas,
   eliminarPermanentemente,
 } from "../controllers/UsuarioControlador";

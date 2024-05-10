@@ -14,7 +14,6 @@ Content-Type: application/json
   "ciudad": "Lima",
   "region": "Lima",
   "pais": "Perú"
-  
 }
 
 ###
@@ -32,7 +31,6 @@ Content-Type: application/json
   "region": "Lima",
   "codigo_postal":"15313",
   "pais": "Perú"
-  
 }
 ###
 DELETE {{api}}/2
