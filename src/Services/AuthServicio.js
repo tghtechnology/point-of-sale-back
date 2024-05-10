@@ -38,7 +38,10 @@ export const login = async (email, password) => {
   const usuario = await asyncErrorHandler(prisma.usuario.findUnique({
     where: { email },
   }));
-  
+    // Verificar si el estado es falso y la fecha de eliminación temporal no es null
+    if ( usuario.eliminado_temporal_fecha === null && usuario.estado===false) {
+      throw new Error("La cuenta está eliminada permanentemente");
+    }
   const match = await bcrypt.compare(password, usuario.password);
   if (!match) throw new Error("Nombre de usuario o contraseña incorrectos");
 

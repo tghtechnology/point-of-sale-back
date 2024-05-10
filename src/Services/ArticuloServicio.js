@@ -252,6 +252,7 @@ export const modificarArticulo = async (id, nombre, tipo_venta, precio, represen
       estado: true
     }
   })
+  console.log(articuloExistente.imagen)
 
   if (representacion !== 'color' && representacion !== 'imagen') {throw new Error("Representacion no valida")}
 
@@ -277,6 +278,7 @@ const articulo = await prisma.articulo.update({
     nombre: nombre,
     tipo_venta: tipo_venta,
     precio: Number(precio),
+    representacion: representacion,
     color: color ? color : null,
     imagen: imagen ? imagen : null,
     id_categoria: parseInt(id_categoria),
@@ -289,6 +291,7 @@ const articuloFormato = {
   tipo_venta: articulo.tipo_venta,
   precio: Number(articulo.precio),
   ref: articulo.ref,
+  representacion:articulo.representacion,
   color: articulo.color,
   imagen: articulo.imagen,
   categoria: categoria,

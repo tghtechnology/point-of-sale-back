@@ -26,6 +26,16 @@ export const crearUsuario = async (nombre, email, password, pais, telefono, nomb
   if (!validarNombrePais(pais)) {
     throw new Error("País inválido");
   }
+  const clienteExistente = await prisma.usuario.findUnique({
+    where: {
+        email: email,
+        estado:true
+    }
+    });
+
+    if (clienteExistente) {
+        throw new Error("El correo electrónico ya está en uso");
+    }
   const hashedPassword = await bcrypt.hash(password, 10);
   const fechaCreacion = getUTCTime(new Date().toISOString());
   const newUsuario = await prisma.usuario.create({
@@ -176,10 +186,13 @@ export const eliminarPermanentemente = async (usuario_id, password, token) => {
   const cuerpo = cuerpoPermanente(usuarioInfo.nombre);
   await envioCorreo(usuarioInfo.email,  "Cuenta eliminada permanente",cuerpo);
   
-  const results = await prisma.usuario.delete({ 
+  const results = await prisma.usuario.update({ 
     where: { 
       id: parseInt(usuario_id) 
-    } });
+    }, 
+  data:{
+    estado:false,
+  }});
   return results;
 };
 
@@ -208,22 +221,25 @@ export const eliminarCuentasVencidas = async (id) => {
 };
 
 /**
- * Restaura una cuenta eliminada temporalmente si se encuentra dentro del período de gracia de una semana.
+ * Restaura una cuenta eliminada temporalmente si se encuentra dentro del período de gracia de una semana y si la fecha de eliminación temporal no es nula.
  * 
  * @param {number|string} id - El ID del usuario a restaurar.
  * 
- * @returns {boolean} - Verdadero si la cuenta fue restaurada, falso si el período de gracia ya pasó o la cuenta no puede ser restaurada.
+ * @returns {boolean} - Verdadero si la cuenta fue restaurada, falso si el período de gracia ya pasó, la cuenta no tiene fecha de eliminación temporal o la cuenta no puede ser restaurada.
  * @throws {Error} - Si ocurre un error durante la restauración de la cuenta.
  */
 
 export const restaurarCuenta = async (id) => {
   const usuario = await prisma.usuario.findUnique({
-    where: { id: parseInt(id) },
-    select: { eliminado_temporal_fecha: true }
+    where: { 
+      id: parseInt(id) 
+    },
+    select: { 
+      eliminado_temporal_fecha: true 
+    }
   });
-  if (!usuario || !usuario.eliminado_temporal_fecha) {
-    return false;
-  }
+  if (usuario.eliminado_temporal_fecha !== null) {
+  
   const unaSemanaEnMiliseg = 7 * 24 * 60 * 60 * 1000;
   const fechaEliminacion = new Date(usuario.eliminado_temporal_fecha);
 
@@ -247,7 +263,9 @@ export const restaurarCuenta = async (id) => {
   } else {
     return false;
   }
+}
 };
+
 
 /**
  * Busca un usuario por su ID en la base de datos.

@@ -13,8 +13,7 @@ export async function uploadImage(filePath) {
     })
 }
 
-export async function deleteImage(secure_url) {
-    return await cloudinary.uploader.destroy(ImgId)
+export async function deleteImage(public_id) {
+    return await cloudinary.uploader.destroy(public_id);
 }
-
           
