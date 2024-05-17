@@ -56,3 +56,14 @@ export const ListarDetallesByVenta=async(req,res)=>{
     res.status(500).json({ mensaje: 'Error al obtener los detalles de la venta de dicha venta' });
   }
 }
+
+export const DetalleById=async(req,res) => {
+  try{
+    const { id } = req.params;
+    const detalle = await DetalleVentaServicio.DetalleById(id);
+    res.status(200).json(detalle);
+  }
+  catch(error){
+    res.status(500).json({ mensaje: 'Error al obtener el detalle de venta de dicho detalle' });
+  }
+}
