@@ -163,7 +163,7 @@ const ListarVentas=async()=>{
  * @throws {Error} - Si el ID no es válido o si ocurre un error durante la búsqueda de la venta.
  */
 
-const ObtenerVentaPorId=async()=>{
+const ObtenerVentaPorId=async(id)=>{
     const ventas = await prisma.venta.findUnique({
         where: {
             id: Number(id)
