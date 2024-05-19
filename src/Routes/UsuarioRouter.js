@@ -18,7 +18,7 @@ routerUsuario.post("/registro", crearUsuario);
 routerUsuario.put("/editar/:id", editarUsuarioPorId);
 routerUsuario.put("/usuario/:id/cambiarPass", cambiarContraseña);
 routerUsuario.get("/listaPaises", listaPaises);
-routerUsuario.get("/listar", listarUsuarios);
+routerUsuario.get("/usuario", listarUsuarios);
 
 //RUTAS PARA ELIMINACIÓN DE CUENTA
 routerUsuario.post("/eliminar-temporal", verificarAuth, isPropietario, eliminarTemporalmente);
