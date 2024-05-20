@@ -11,9 +11,10 @@ import * as DetalleVentaServicio from "../Services/DetalleVentaServicio"
  * @throws {Error} - Devuelve un error si hay un problema al crear el detalle de venta en la base de datos.
  */
 export const CrearDetalle=async(res, req)=>{
+  const usuario_id = req.usuario.id;
     const { cantidad, articuloId, ventaId } = req.body; 
   try {
-    const nuevoDetalle = await DetalleVentaServicio.CrearDetalle(cantidad, articuloId, ventaId);
+    const nuevoDetalle = await DetalleVentaServicio.CrearDetalle(cantidad, articuloId, ventaId, usuario_id);
     res.status(201).json(nuevoDetalle);
   } catch (error) {
     console.error('Error al crear el detalle de venta:', error);
@@ -30,7 +31,8 @@ export const CrearDetalle=async(res, req)=>{
  */
 export const ListarDetalles = async (req, res) => {
     try {
-        const detalles = await DetalleVentaServicio.ListarDetalles();
+      const usuario_id = req.usuario.id;
+        const detalles = await DetalleVentaServicio.ListarDetalles(usuario_id);
         res.status(200).json(detalles);
       } catch (error) {
         console.error(error);
@@ -49,7 +51,8 @@ export const ListarDetalles = async (req, res) => {
 export const ListarDetallesByVenta=async(req,res)=>{
   try{
     const { ventaId } = req.params;
-    const detalles = await DetalleVentaServicio.ListarDetallesByVenta(ventaId);
+    const usuario_id = req.usuario.id;
+    const detalles = await DetalleVentaServicio.ListarDetallesByVenta(ventaId, usuario_id);
     res.status(200).json(detalles);
   }
   catch(error){

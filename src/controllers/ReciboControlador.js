@@ -2,7 +2,8 @@ import * as ReciboServicio from "../Services/ReciboServicio"
 
 export const ListarRecibo = async(req, res) => { 
     try {
-        const recibos = await ReciboServicio.listarRecibo();
+      const usuario_id = req.usuario.id;
+        const recibos = await ReciboServicio.listarRecibo(usuario_id);
         res.status(200).json(recibos);
       } catch (error) {
         console.error(error);
@@ -11,13 +12,15 @@ export const ListarRecibo = async(req, res) => {
 }
 
 export const CrearRecibo = async (req, res) => {
-    const Rec = await ReciboServicio.CrearRecibo()
+  const usuario_id = req.usuario.id;
+    const Rec = await ReciboServicio.CrearRecibo(usuario_id)
     res.status(201).json(Rec)
 }
 export const Reembolsar=async(req,res)=>{
+  const usuario_id = req.usuario.id;
   const { id, detalles } = req.body;
   try {
-    const reciboReembolso = await ReciboServicio.Reembolsar(id, detalles);
+    const reciboReembolso = await ReciboServicio.Reembolsar(id, detalles, usuario_id);
     res.status(201).json( reciboReembolso );
   } catch (error) {
     console.error("Error al realizar el reembolso:", error);
@@ -26,8 +29,9 @@ export const Reembolsar=async(req,res)=>{
 }
 export const ListarReciboById=async(req, res)=>{
   const id = req.params.id;
+  const usuario_id = req.usuario.id;
   try {
-    const recibo = await ReciboServicio.ListarReciboById(id);
+    const recibo = await ReciboServicio.ListarReciboById(id, usuario_id);
     res.status(200).json(recibo);
   } catch (error) {
     console.error("Error al obtener el recibo:", error.message);
@@ -36,8 +40,9 @@ export const ListarReciboById=async(req, res)=>{
 }
 export const ListarRecibosByVenta=async(req,res)=>{
   const { id_venta } = req.params;
+  const usuario_id = req.usuario.id;
   try{
-    const recibos = await ReciboServicio.ListarReciboByVenta(id_venta);
+    const recibos = await ReciboServicio.ListarReciboByVenta(id_venta, usuario_id);
     res.status(200).json(recibos);
   }
   catch(error){

@@ -16,10 +16,30 @@ const prisma = new PrismaClient();
  * @throws {Error} - Si el ID del artículo no es válido o si ocurre un error al crear el detalle.
  */
 
-const CrearDetalle=async(cantidad, articuloId, ventaId )=>{
+const CrearDetalle=async(cantidad, articuloId, ventaId, usuario_id)=>{
+
+    //Obtener el nombre de usuario
+    const usuario = await prisma.usuario.findFirst({
+        where: {id: usuario_id},
+        select: {nombre: true}
+      })
+  
+      const id_punto = await prisma.puntoDeVenta.findFirst({
+        where: {
+          estado: true,
+          propietario: usuario.nombre
+        },
+        select: {id: true}
+      })
+  
+      //Asignar id del punto de venta
+      const id_puntoDeVenta = id_punto.id
+
     const info= await prisma.articulo.findUnique({
         where:{
-            id:articuloId
+            id:articuloId,
+            estado:true,
+            puntoDeVentaId:id_puntoDeVenta,
         }
     })
     const subtotal= info.precio*cantidad
@@ -29,6 +49,7 @@ const CrearDetalle=async(cantidad, articuloId, ventaId )=>{
             subtotal:subtotal,
             articuloId:articuloId,
             ventaId:ventaId,
+            puntoDeVentaId:id_puntoDeVenta,
         }
     })
 
@@ -44,8 +65,15 @@ const CrearDetalle=async(cantidad, articuloId, ventaId )=>{
  * @throws {Error} - Si ocurre un error al recuperar los detalles.
  */
 
-const ListarDetalles=async()=>{
-    const detalles= await prisma.detalleVenta.findMany()
+const ListarDetalles=async(usuario_id)=>{
+
+    const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+
+    const detalles= await prisma.detalleVenta.findMany({
+        where: {
+            id_puntoDeVenta: id_puntoDeVenta
+        }
+    })
     return detalles
 }
 
@@ -61,14 +89,40 @@ const ListarDetalles=async()=>{
  * @throws {Error} - Si el ID de la venta no es válido o si ocurre un error al buscar los detalles.
  */
 
-const ListarDetallesByVenta=async(ventaId)=>{
+const ListarDetallesByVenta=async(ventaId, usuario_id)=>{
+
+    const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+
     const detallesByVenta= await prisma.detalleVenta.findMany({
         where: {
-            ventaId: Number(ventaId)
+            ventaId: Number(ventaId),
+            id_puntoDeVenta: id_puntoDeVenta
         }
     })
 return detallesByVenta
 }
+
+const obtenerIdPunto = async (usuario_id) => {
+    
+    const usuario = await prisma.usuario.findFirst({
+      where: {id: usuario_id},
+      select: {nombre: true}
+    })
+  
+    const id_punto = await prisma.puntoDeVenta.findFirst({
+      where: {
+        estado: true,
+        propietario: usuario.nombre
+      },
+      select: {id: true}
+    })
+  
+    //Asignar id del punto de venta
+    const id_puntoDeVenta = parseInt(id_punto.id)
+  
+    return id_puntoDeVenta;
+  }
+
 module.exports={
     CrearDetalle,
     ListarDetalles,

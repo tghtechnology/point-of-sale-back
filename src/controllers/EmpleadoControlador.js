@@ -1,6 +1,7 @@
 import * as EmpleadoServicio from "../Services/EmpleadoServicio";
 
 export const crearEmpleado = async (req, res) => {
+  const usuario_id = req.usuario.id;
   const { nombre, email, telefono, cargo, pais, password } = req.body;
   try {
     const nuevoEmpleado = await EmpleadoServicio.crearEmpleado(
@@ -9,7 +10,8 @@ export const crearEmpleado = async (req, res) => {
       telefono,
       cargo,
       pais,
-      password
+      password,
+      usuario_id
     );
     res.status(200).json(nuevoEmpleado);
   } catch (error) {
@@ -20,7 +22,8 @@ export const crearEmpleado = async (req, res) => {
 
 export const listarEmpleados = async (_req, res) => {
   try {
-    const empleados = await EmpleadoServicio.listarEmpleados();
+    const usuario_id = req.usuario.id;
+    const empleados = await EmpleadoServicio.listarEmpleados(usuario_id);
     res.status(200).json(empleados);
   } catch (error) {
     console.error("Error al obtener la lista de empleados:", error.message);
@@ -32,8 +35,9 @@ export const listarEmpleados = async (_req, res) => {
 
 export const listarEmpleadoPorId = async (req, res) => {
   const id = req.params.id;
+  const usuario_id = req.usuario.id;
   try {
-    const empleado = await EmpleadoServicio.listarEmpleadoPorId(id);
+    const empleado = await EmpleadoServicio.listarEmpleadoPorId(id, usuario_id);
     res.status(200).json(empleado);
   } catch (error) {
     console.error("Error al obtener el empleado:", error.message);
@@ -44,6 +48,7 @@ export const listarEmpleadoPorId = async (req, res) => {
 export const editarEmpleado = async (req, res) => {
   try {
     const { id } = req.params;
+    const usuario_id = req.usuario.id;
     const { nombre, email, telefono, cargo, pais, password } = req.body;
     const empleado = await EmpleadoServicio.editarEmpleado(
       id,
@@ -52,7 +57,8 @@ export const editarEmpleado = async (req, res) => {
       telefono,
       cargo,
       pais,
-      password
+      password,
+      usuario_id
     );
     res.status(200).json(empleado);
   } catch (error) {
@@ -63,8 +69,9 @@ export const editarEmpleado = async (req, res) => {
 
 export const eliminarEmpleadoPorId = async (req, res) => {
   const id = req.params.id;
+  const usuario_id = req.usuario.id;
   try {
-    await EmpleadoServicio.eliminarEmpleadoPorId(id);
+    await EmpleadoServicio.eliminarEmpleadoPorId(id, usuario_id);
     res.status(200).json({ mensaje: "Empleado eliminado." });
   } catch (error) {
     console.error("Error al eliminar el empleado:", error.message);

@@ -14,8 +14,7 @@ const prisma = new PrismaClient();
  * 
  * @throws {Error} - Si el nombre o el color están vacíos, o si la categoría ya existe.
  */
-export const crearCategoria = async (nombre, color, id_puntoDeVenta) => {
-
+export const crearCategoria = async (nombre, color, usuario_id) => {
   const categoriaExistente = await prisma.categoria.findFirst({
     where:{
       nombre: nombre,
@@ -30,18 +29,37 @@ export const crearCategoria = async (nombre, color, id_puntoDeVenta) => {
     }
     color = colorMapping[color];
 
+    //Obtener el nombre de usuario
+    const usuario = await prisma.usuario.findFirst({
+      where: {id: usuario_id},
+      select: {nombre: true}
+    })
+
+    const id_punto = await prisma.puntoDeVenta.findFirst({
+      where: {
+        estado: true,
+        propietario: usuario.nombre
+      },
+      select: {id: true}
+    })
+
+    //Asignar id del punto de venta
+    const id_puntoDeVenta = id_punto.id
+
   const newCategoria = await prisma.categoria.create({
     data: {
       nombre: nombre,
       color: color,
-      estado: true
+      estado: true,
+      id_puntoDeVenta: id_puntoDeVenta
     },
   })
 
   const categoriaFormato = {
     id: newCategoria.id,
     nombre: newCategoria.nombre,
-    color: newCategoria.color
+    color: newCategoria.color,
+    id_puntoDeVenta: newCategoria.id_puntoDeVenta
   }
   return categoriaFormato; 
 }; 
@@ -56,22 +74,18 @@ export const crearCategoria = async (nombre, color, id_puntoDeVenta) => {
  * 
  * @throws {Error} - Si hay algún error al obtener las categorías de la base de datos.
  */
-export const listarCategorias = async ()=>{
+export const listarCategorias = async (usuario_id)=>{
+
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
 
   const allCategorias = await prisma.categoria.findMany({
     where: {
-      estado: true
+      estado: true,
+      id_puntoDeVenta: id_puntoDeVenta
     }
   })
 
-  const categoriasFormato = allCategorias.map((categoria) => {
-    return {
-      id: categoria.id,
-      nombre: categoria.nombre,
-      color: categoria.color
-    };
-  });
-  return categoriasFormato;
+  return allCategorias;
 }
 
 
@@ -86,24 +100,21 @@ export const listarCategorias = async ()=>{
  * 
  * @throws {Error} - Si el campo ID está vacío o es inválido.
  */
-export const listarCategoriaPorId = async (id) => {
-
+export const listarCategoriaPorId = async (id, usuario_id) => {
+  
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
   const categoria = await prisma.categoria.findUnique({
     where: {
       id: parseInt(id),
-      estado: true
+      estado: true,
+      id_puntoDeVenta: id_puntoDeVenta
     }
   })
 
   //Si el id no existe
   if (!categoria) {return null}
 
-  const categoriaFormato = {
-    id: categoria.id,
-    nombre: categoria.nombre,
-    color: categoria.color
-}
-  return categoriaFormato;
+  return categoria;
 } 
 
 
@@ -123,11 +134,14 @@ export const listarCategoriaPorId = async (id) => {
 
 export const modificarCategoria = async (id, nombre, color) => {
 
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+
     //Buscar si existe una categoría con el id
     const categoriaExistente = await prisma.categoria.findUnique({
       where: {
         id: parseInt(id),
-        estado: true
+        estado: true,
+        id_puntoDeVenta: id_puntoDeVenta
       }
     })
 
@@ -137,7 +151,8 @@ export const modificarCategoria = async (id, nombre, color) => {
   const categoria = await prisma.categoria.update({
     where: {
       id: parseInt(id),
-      estado: true
+      estado: true,
+      id_puntoDeVenta: id_puntoDeVenta
     },
     data: {
       nombre: nombre,
@@ -145,12 +160,7 @@ export const modificarCategoria = async (id, nombre, color) => {
     }
   })
 
-  const categoriaFormato = {
-    id: categoria.id,
-    nombre: categoria.nombre,
-    color: categoria.color
-  }
-  return categoriaFormato;
+  return categoria;
 }
 
 
@@ -166,16 +176,18 @@ export const modificarCategoria = async (id, nombre, color) => {
  * @throws {Error} - Si el campo ID está vacío o si la categoría no se encuentra.
  */
 
-export const eliminarCategoria = async (id) => {
+export const eliminarCategoria = async (id, usuario_id) => {
 
   //Validación campo vacío
   if (id == undefined) {throw new Error("Campo ID vacío")}
 
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
   //Buscar si existe una categoría con el id
   const categoriaExistente = await prisma.categoria.findUnique({
     where: {
       id: parseInt(id),
-      estado: true
+      estado: true,
+      id_puntoDeVenta: id_puntoDeVenta
     }
   })
 
@@ -185,7 +197,8 @@ export const eliminarCategoria = async (id) => {
   const categoria = await prisma.categoria.update({
     where: {
       id: parseInt(id),
-      estado: true
+      estado: true,
+      id_puntoDeVenta: id_puntoDeVenta
     },
     data: {
       estado: false
@@ -206,6 +219,26 @@ const colorMapping = {
   '#C0C0C0': 'Gris_claro',
   '#808080': 'Gris_oscuro',
 };
+
+const obtenerIdPunto = async (usuario_id) => {
+  const usuario = await prisma.usuario.findFirst({
+    where: {id: usuario_id},
+    select: {nombre: true}
+  })
+
+  const id_punto = await prisma.puntoDeVenta.findFirst({
+    where: {
+      estado: true,
+      propietario: usuario.nombre
+    },
+    select: {id: true}
+  })
+
+  //Asignar id del punto de venta
+  const id_puntoDeVenta = parseInt(id_punto.id)
+
+  return id_puntoDeVenta;
+}
 
 /*export const buscarCategoria = async (search) => {
     //const page = parseInt(req.query.page) - 1 || 0;

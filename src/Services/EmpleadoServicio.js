@@ -40,9 +40,16 @@ const encryptPassword = async (password) => {
  *
  * @description Esta función busca un empleado en la base de datos utilizando su ID y devuelve sus datos.
  **/
-const buscarEmpleadoPorId = async (id) => {
+const buscarEmpleadoPorId = async (id, usuario_id) => {
+
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+
   const empleado = await prisma.usuario.findUnique({
-    where: { id: parseInt(id, 10) },
+    where: { 
+      id: parseInt(id, 10),
+      estado: true,
+      id_puntoDeVenta: id_puntoDeVenta
+    },
   });
   if (!empleado) throw new Error(`No se encontró ningún empleado con el ID ${id}`);
   return empleado;
@@ -63,11 +70,28 @@ const buscarEmpleadoPorId = async (id) => {
  *
  * @description Esta función crea un nuevo empleado en la base de datos con los datos proporcionados.
  **/
-export const crearEmpleado = async (nombre, email, telefono, cargo, pais, password) => {
+export const crearEmpleado = async (nombre, email, telefono, cargo, pais, password, usuario_id) => {
   if (!validarNombrePais(pais)) throw new Error("País inválido");
 
   const hashedPassword = await encryptPassword(password);
   const fechaCreacion = getUTCTime(new Date().toISOString());
+
+  //Obtener el nombre de usuario
+  const usuario = await prisma.usuario.findFirst({
+    where: {id: usuario_id},
+    select: {nombre: true}
+  })
+
+  const id_punto = await prisma.puntoDeVenta.findFirst({
+    where: {
+      estado: true,
+      propietario: usuario.nombre
+    },
+    select: {id: true}
+  })
+
+  //Asignar id del punto de venta
+  const id_puntoDeVenta = id_punto.id
 
   const empleado = await prisma.usuario.create({
     data: {
@@ -80,6 +104,7 @@ export const crearEmpleado = async (nombre, email, telefono, cargo, pais, passwo
       estado: true,
       password: hashedPassword,
       fecha_creacion: fechaCreacion,
+      id_puntoDeVenta: id_puntoDeVenta,
     },
   });
 
@@ -100,7 +125,10 @@ export const crearEmpleado = async (nombre, email, telefono, cargo, pais, passwo
  *
  * @description Esta función edita los datos de un empleado en la base de datos utilizando su ID y los nuevos datos proporcionados.
  **/
-export const editarEmpleado = async (id, nombre, email, telefono, cargo, pais) => {
+export const editarEmpleado = async (id, nombre, email, telefono, cargo, pais, usuario_id) => {
+
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+
   const empleadoExistente = await buscarEmpleadoPorId(id);
   const updatedEmpleado = await prisma.usuario.update({
     where: { id: empleadoExistente.id },
@@ -112,6 +140,7 @@ export const editarEmpleado = async (id, nombre, email, telefono, cargo, pais) =
       pais,
       estado: true,
       fecha_modificacion: getUTCTime(new Date().toISOString()),
+      id_puntoDeVenta: id_puntoDeVenta,
     },
   });
   return updatedEmpleado;
@@ -125,8 +154,8 @@ export const editarEmpleado = async (id, nombre, email, telefono, cargo, pais) =
  *
  * @description Esta función busca un empleado en la base de datos utilizando su ID y devuelve sus datos.
  **/
-export const listarEmpleadoPorId = async (id) => {
-  return await buscarEmpleadoPorId(id);
+export const listarEmpleadoPorId = async (id, usuario_id) => {
+  return await buscarEmpleadoPorId(id, usuario_id);
 };
 
 /**
@@ -137,9 +166,15 @@ export const listarEmpleadoPorId = async (id) => {
  *
  * @description Esta función elimina un empleado de la base de datos utilizando su ID.
  **/
-export const eliminarEmpleadoPorId = async (id) => {
+export const eliminarEmpleadoPorId = async (id, usuario_id) => {
+
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+
   return await prisma.usuario.update({
-    where: { id: parseInt(id, 10) },
+    where: { 
+      id: parseInt(id, 10),
+      id_puntoDeVenta: id_puntoDeVenta
+    },
     data: { estado: false },
   });
 };
@@ -151,9 +186,16 @@ export const eliminarEmpleadoPorId = async (id) => {
  *
  * @description Esta función busca y devuelve todos los empleados activos en la base de datos.
  **/
-export const listarEmpleados = async () => {
+export const listarEmpleados = async (usuario_id) => {
+
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+
   return await prisma.usuario.findMany({
-    where: { estado: true, rol: "Empleado" },
+    where: { 
+      estado: true, 
+      rol: "Empleado",
+      id_puntoDeVenta: id_puntoDeVenta
+    },
   });
 };
 
@@ -172,8 +214,8 @@ export const listarEmpleados = async () => {
  *
  * @description Esta función cambia la contraseña de un empleado en la base de datos, verificando primero la validez de la contraseña actual.
  **/
-export const cambiarContraseña = async (id, contraseñaActual, nuevaContraseña, confirmarNuevaContraseña) => {
-  const empleado = await buscarEmpleadoPorId(id);
+export const cambiarContraseña = async (id, contraseñaActual, nuevaContraseña, confirmarNuevaContraseña, usuario_id ) => {
+  const empleado = await buscarEmpleadoPorId(id, usuario_id);
 
   if (!await bcrypt.compare(contraseñaActual, empleado.password))
     throw new Error(`La contraseña actual no es válida para el empleado con el ID ${id}`);
@@ -190,3 +232,24 @@ export const cambiarContraseña = async (id, contraseñaActual, nuevaContraseña
     data: { password: hashedPassword },
   });
 };
+
+const obtenerIdPunto = async (usuario_id) => {
+    
+  const usuario = await prisma.usuario.findFirst({
+    where: {id: usuario_id},
+    select: {nombre: true}
+  })
+
+  const id_punto = await prisma.puntoDeVenta.findFirst({
+    where: {
+      estado: true,
+      propietario: usuario.nombre
+    },
+    select: {id: true}
+  })
+
+  //Asignar id del punto de venta
+  const id_puntoDeVenta = parseInt(id_punto.id)
+
+  return id_puntoDeVenta;
+}

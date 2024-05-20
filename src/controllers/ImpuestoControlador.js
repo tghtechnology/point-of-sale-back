@@ -42,7 +42,8 @@ export const crearImpuesto = async (req, res) => {
  */
 export const listarImpuestos = async (req, res) => {
     try {
-      const impuestos = await ImpuestoServicio.listarImpuestos();
+      const usuario_id = req.usuario.id;
+      const impuestos = await ImpuestoServicio.listarImpuestos(usuario_id);
       res.status(200).json(impuestos)
     } catch (error) {
       console.error(error);
@@ -60,8 +61,9 @@ export const listarImpuestos = async (req, res) => {
  */
 export const listarImpuestoPorId = async (req, res) => {
     try {
+      const usuario_id = req.usuario.id;
         const id = req.params.id;
-        const impuesto = await ImpuestoServicio.listarImpuestoPorId(id);
+        const impuesto = await ImpuestoServicio.listarImpuestoPorId(id, usuario_id);
         if (impuesto == null) {
             return res.status(400).json({ error: "No se encontró el impuesto" });
         }
@@ -86,8 +88,9 @@ export const listarImpuestoPorId = async (req, res) => {
 export const actualizarImpuesto = async (req, res) => {
     try {
       const id=req.params.id;
+      const usuario_id = req.usuario.id;
       const{nombre, tasa, tipo_impuesto}=req.body
-      const impuesto = await ImpuestoServicio.modificarImpuesto(id, nombre, tasa, tipo_impuesto);
+      const impuesto = await ImpuestoServicio.modificarImpuesto(id, nombre, tasa, tipo_impuesto, usuario_id);
   
       if (impuesto == null) {
         return res.status(404).json({ error: 'Impuesto no encontrado' });

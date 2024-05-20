@@ -24,14 +24,33 @@ const prisma = new PrismaClient();
  * @throws {Error} - Si el país es inválido.
  */
 
-const crearCliente = async (nombre, email, telefono, direccion, ciudad, region, pais) => {
+const crearCliente = async (nombre, email, telefono, direccion, ciudad, region, pais, usuario_id) => {
     if (!validarNombrePais(pais)) {
       throw new Error("País inválido");
     }
+
+    //Obtener el nombre de usuario
+    const usuario = await prisma.usuario.findFirst({
+      where: {id: usuario_id},
+      select: {nombre: true}
+    })
+
+    const id_punto = await prisma.puntoDeVenta.findFirst({
+      where: {
+        estado: true,
+        propietario: usuario.nombre
+      },
+      select: {id: true}
+    })
+
+    //Asignar id del punto de venta
+    const id_puntoDeVenta = id_punto.id
+
     const clienteExistente = await prisma.cliente.findUnique({
       where: {
           email: email,
-          estado:true
+          estado:true,
+          id_puntoDeVenta: id_puntoDeVenta
       }
       });
 
@@ -51,7 +70,8 @@ const crearCliente = async (nombre, email, telefono, direccion, ciudad, region, 
             pais: pais,
             fecha_creacion:fecha_creacion,
             fecha_modificacion: null,
-            estado:true
+            estado:true,
+            id_puntoDeVenta: id_puntoDeVenta,
       }
     })
     return newCliente
@@ -69,10 +89,13 @@ const crearCliente = async (nombre, email, telefono, direccion, ciudad, region, 
  * @throws {Error} - Si ocurre un error durante la recuperación de datos de la base de datos.
  */
 
-const listarClientes= async()=>{
+const listarClientes= async(usuario_id)=>{
+
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
     const clientes= await prisma.cliente.findMany({
         where: {
-          estado: true
+          estado: true,
+          id_puntoDeVenta: id_puntoDeVenta
         }
       })
       return clientes;
@@ -91,11 +114,14 @@ const listarClientes= async()=>{
  * @throws {Error} - Si ocurre un error durante la búsqueda en la base de datos.
  */
 
-const obtenerClienteById=async (id) => {
+const obtenerClienteById=async (id, usuario_id) => {
+
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
     const cliente= await prisma.cliente.findFirst({
         where: {
           id: Number(id),
-          estado: true
+          estado: true,
+          id_puntoDeVenta: id_puntoDeVenta
         }
       })
       return cliente;
@@ -121,13 +147,17 @@ const obtenerClienteById=async (id) => {
  * @throws {Error} - Si el país es inválido o si el ID no se encuentra en la base de datos.
  */
 
-const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, region, pais) => {
+const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, region, pais, usuario_id) => {
     if (!validarNombrePais(pais)) {
       throw new Error("País inválido");
     }
+
+    const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+
     const clienteExistente = await prisma.cliente.findUnique({
       where: {
-          email: email
+          email: email,
+          id_puntoDeVenta: id_puntoDeVenta
       }
       });
       if(clienteExistente.estado==false){
@@ -142,7 +172,8 @@ const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, reg
     const cliente=await prisma.cliente.update({
       where: {
         id: Number(id),
-        estado: true
+        estado: true,
+        id_puntoDeVenta: id_puntoDeVenta
       },
       data:{
             nombre: nombre,
@@ -166,7 +197,8 @@ const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, reg
         pais:cliente.pais,
         fecha_creacion:cliente.fecha_creacion,
         fecha_modificacion:cliente.fecha_modificacion,
-        estado:cliente.estado
+        estado:cliente.estado,
+        id_puntoDeVenta:cliente.id_puntoDeVenta,
     }
     return updatedCliente
 };
@@ -182,16 +214,39 @@ const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, reg
  * @throws {Error} - Si no se puede encontrar un cliente con el ID proporcionado.
  */
 
-const eliminarCliente = async (id) => {
+const eliminarCliente = async (id, usuario_id) => {
+
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
     const cliente=await prisma.cliente.update({
       where: {
-        id: Number(id)
+        id: Number(id),
+        id_puntoDeVenta: id_puntoDeVenta
       },
       data:{
-            estado: false
+        estado: false
       }
     })
 };
+
+const obtenerIdPunto = async (usuario_id) => {
+  const usuario = await prisma.usuario.findFirst({
+    where: {id: usuario_id},
+    select: {nombre: true}
+  })
+
+  const id_punto = await prisma.puntoDeVenta.findFirst({
+    where: {
+      estado: true,
+      propietario: usuario.nombre
+    },
+    select: {id: true}
+  })
+
+  //Asignar id del punto de venta
+  const id_puntoDeVenta = parseInt(id_punto.id)
+
+  return id_puntoDeVenta;
+}
 
 module.exports={
     crearCliente,
