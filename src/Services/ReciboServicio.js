@@ -277,6 +277,15 @@ export const Reembolsar = async (id, detalles) => {
 
   return reembolso;
 };
+
+/**
+ * Obtiene un recibo específico por su ID.
+ * 
+ * @param {number|string} id - El ID del recibo a buscar.
+ * 
+ * @returns {Object|null} - El objeto representando el recibo, o null si no se encuentra.
+ * @throws {Error} - Si ocurre un error al buscar el recibo por su ID.
+ */
 export const ListarReciboById=async(id)=>{
   const recibo= await prisma.recibo.findMany({
     where: {
@@ -285,6 +294,16 @@ export const ListarReciboById=async(id)=>{
 })
 return recibo
 }
+
+
+/**
+ * Obtiene los recibos relacionados a una venta específica por el ID de la venta.
+ * 
+ * @param {number|string} id_venta - El ID de la venta cuyos recibos se desean buscar.
+ * 
+ * @returns {Array<Object>} - Una lista de objetos representando los recibos relacionados a la venta.
+ * @throws {Error} - Si ocurre un error al buscar los recibos por el ID de la venta.
+ */
 export const ListarReciboByVenta=async(id_venta)=>{
   const recibos= await prisma.recibo.findMany({
     where: {

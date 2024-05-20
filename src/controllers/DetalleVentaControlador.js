@@ -57,6 +57,15 @@ export const ListarDetallesByVenta=async(req,res)=>{
   }
 }
 
+/**
+ * Obtiene un detalle de venta específico por su ID.
+ * 
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {number} req.params.id - El ID del detalle de venta.
+ * @returns {Object} - El detalle de venta correspondiente al ID especificado.
+ * @throws {Error} - Devuelve un error si hay un problema al obtener el detalle de venta de la base de datos.
+ */
 export const DetalleById=async(req,res) => {
   try{
     const { id } = req.params;

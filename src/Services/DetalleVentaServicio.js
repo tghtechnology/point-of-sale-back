@@ -70,6 +70,14 @@ const ListarDetallesByVenta=async(ventaId)=>{
 return detallesByVenta
 }
 
+/**
+ * Obtiene un detalle de venta específico por su ID.
+ * 
+ * @param {number|string} id - El ID del detalle de venta a buscar.
+ * 
+ * @returns {Object|null} - El objeto representando el detalle de venta encontrado o null si no se encuentra.
+ * @throws {Error} - Si el ID del detalle no es válido o si ocurre un error al buscar el detalle.
+ */
 const DetalleById=async(id) => {
     const detalle= await prisma.detalleVenta.findUnique({
         where: {
