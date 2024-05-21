@@ -3,9 +3,9 @@ import { CrearDetalleReembolso, ListarDetallesReembolso, ListarDetallesReembolso
 
 const routerDetalleReembolso = Router();
 
-routerDetalleReembolso.get("/detalleReembolso", ListarDetallesReembolso)
-routerDetalleReembolso.post("/detalleReembolso", CrearDetalleReembolso)
-routerDetalleReembolso.get("/detalleReembolso/recibo/:reciboId", ListarDetallesReembolsoByRecibo)
-routerDetalleReembolso.get("/detalleReembolso/:id", ListarDetallesReembolsoById)
+routerDetalleReembolso.get("/reembolso", ListarDetallesReembolso)
+routerDetalleReembolso.post("/reembolso", CrearDetalleReembolso)
+routerDetalleReembolso.get("/reembolso/recibo/:reciboId", ListarDetallesReembolsoByRecibo)
+routerDetalleReembolso.get("/reembolso/:id", ListarDetallesReembolsoById)
 
 export default routerDetalleReembolso;

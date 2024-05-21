@@ -22,7 +22,7 @@ Content-Type: application/json
   "dineroRecibido":500
 }
 ###
-GET {{api}}/detalleReembolso/recibo/56
+GET {{api}}/reembolso/recibo/56
 ###
 POST {{api}}/reembolsar
 Content-Type: application/json
