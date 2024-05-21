@@ -13,11 +13,13 @@ import { z } from 'zod';
  */
 export const crearCategoria = async (req, res) => {
   try {
+    const usuario_id = req.usuario.id;
     const dv = createCategorySchema.parse(req.body);
 
     const newCategoria = await CategoriaServicio.crearCategoria(
       dv.nombre, 
-      dv.color
+      dv.color,
+      usuario_id
     );
     res.status(201).json(newCategoria)
 
@@ -43,7 +45,8 @@ export const crearCategoria = async (req, res) => {
  */
 export const listarCategorias = async (req, res) => {
   try {
-    const categorias = await CategoriaServicio.listarCategorias();
+    const usuario_id = req.usuario.id;
+    const categorias = await CategoriaServicio.listarCategorias(usuario_id);
     res.status(200).json(categorias)
 
   } catch (error) {
@@ -63,8 +66,9 @@ export const listarCategorias = async (req, res) => {
 export const obtenerCategoriaPorId = async (req, res) => {
   try {
     const dv = idSchema.parse(req.params);
+    const usuario_id = req.usuario.id;
 
-    const categoria = await CategoriaServicio.listarCategoriaPorId(dv.id);
+    const categoria = await CategoriaServicio.listarCategoriaPorId(dv.id, usuario_id);
 
     if (categoria == null) {
       return res.status(400).json({ error: "No se encontró la categoria" });
@@ -96,6 +100,7 @@ export const obtenerCategoriaPorId = async (req, res) => {
  */
 export const actualizarCategoria = async (req, res) => {
   try {
+    const usuario_id = req.usuario.id;
     const dv = editCategorySchema.parse({
       id: req.params.id,
       nombre: req.body.nombre,
@@ -104,7 +109,9 @@ export const actualizarCategoria = async (req, res) => {
     const categoria = await CategoriaServicio.modificarCategoria(
       dv.id, 
       dv.nombre, 
-      dv.color);
+      dv.color,
+      usuario_id
+    );
 
     if (categoria == null) {
       return res.status(400).json({ error: "No se encontró la categoria" });
@@ -135,8 +142,9 @@ export const actualizarCategoria = async (req, res) => {
 export const eliminarCategoria = async (req, res) => {
   try {
     const dv = idSchema.parse(req.params);
+    const usuario_id = req.usuario.id;
 
-    const categoria = await CategoriaServicio.eliminarCategoria(dv.id);
+    const categoria = await CategoriaServicio.eliminarCategoria(dv.id, usuario_id);
 
     if (categoria == null) {
       return res.status(400).json({ error: "No se encontró la categoria" });

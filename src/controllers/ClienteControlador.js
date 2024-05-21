@@ -1,4 +1,5 @@
 import * as ClienteServicio from "../Services/ClienteServicio"
+import { crearUsuario } from "../Services/UsuarioServicio";
 import { obtenerListaPaises } from "../helpers/helperPais";
 
 /**
@@ -33,8 +34,9 @@ export const listaPaises = async (req, res) => {
  */
 export const crearCliente = async (req, res)=>{
     try {
+      const usuario_id = req.usuario.id;
         const {nombre,email,telefono,direccion, ciudad, region, pais}=req.body
-        const newCliente=await ClienteServicio.crearCliente(nombre,email,telefono,direccion, ciudad, region, pais) ;
+        const newCliente=await ClienteServicio.crearCliente(nombre,email,telefono,direccion, ciudad, region, pais, usuario_id) ;
         res.json(newCliente);
       } catch (error) {
         console.error(error);
@@ -57,7 +59,8 @@ export const crearCliente = async (req, res)=>{
  */
 export const listarClientes = async (req, res) => { 
     try {
-        const clientes = await ClienteServicio.listarClientes();
+      const usuario_id = req.usuario.id;
+        const clientes = await ClienteServicio.listarClientes(usuario_id);
         res.status(200).json(clientes);
       } catch (error) {
         console.error(error);
@@ -76,7 +79,8 @@ export const listarClientes = async (req, res) => {
 export const obtenerClienteById= async (req, res)=>{
     try {
         const id = req.params.id;
-        const cliente=await ClienteServicio.obtenerClienteById(id);
+        const usuario_id = req.usuario.id;
+        const cliente=await ClienteServicio.obtenerClienteById(id, usuario_id);
         if (!cliente) {
           res.status(404).json({ mensaje: 'Cliente no encontrado' });
         } else {
@@ -106,8 +110,9 @@ export const obtenerClienteById= async (req, res)=>{
 export const editarCliente=async (req,res) => {
     try {
         const id = req.params.id;
+        const usuario_id = req.usuario.id;
         const {nombre,email,telefono,direccion, ciudad, region, pais}=req.body
-        const cliente=await ClienteServicio.editarCliente(id,nombre,email,telefono,direccion, ciudad, region, pais);
+        const cliente=await ClienteServicio.editarCliente(id,nombre,email,telefono,direccion, ciudad, region, pais, usuario_id);
           res.status(200).json(cliente);
       } catch (error) {
         console.error(error);
@@ -134,7 +139,8 @@ export const editarCliente=async (req,res) => {
 export const eliminarCliente=async(req,res)=>{
     try {
         const id = req.params.id;
-        const cliente=await ClienteServicio.eliminarCliente(id);
+        const usuario_id = req.usuario.id;
+        const cliente=await ClienteServicio.eliminarCliente(id, usuario_id);
           res.status(200).json({ mensaje: 'Cliente eliminado correctamente' });
       } catch (error) {
         console.error(error);

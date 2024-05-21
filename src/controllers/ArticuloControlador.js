@@ -17,6 +17,7 @@ import { uploadImage, deleteImage } from "../Utils/cloudinary.js";
 
 export const crearArticulo = async (req, res) => {
   try {
+    const usuario_id = req.usuario.id;
     const { nombre, tipo_venta, precio, representacion, color, id_categoria} = req.body;
     let imagen = req.body.imagen
 
@@ -26,7 +27,7 @@ export const crearArticulo = async (req, res) => {
       imagen = result.secure_url
     }
 
-    const newArticulo = await ArticuloServicio.crearArticulo(nombre, tipo_venta, precio, representacion, color, imagen, id_categoria);
+    const newArticulo = await ArticuloServicio.crearArticulo(nombre, tipo_venta, precio, representacion, color, imagen, id_categoria, usuario_id);
 
     res.status(201).json(newArticulo)
 
@@ -64,7 +65,8 @@ export const crearArticulo = async (req, res) => {
  */
 export const listarArticulos = async (req, res) => {
   try {
-    const articulos = await ArticuloServicio.listarArticulos();
+    const usuario_id = req.usuario.id;
+    const articulos = await ArticuloServicio.listarArticulos(usuario_id);
     res.status(200).json(articulos)
 
   } catch (error) {
@@ -84,7 +86,8 @@ export const listarArticulos = async (req, res) => {
 export const obtenerArticuloPorId = async (req, res) => {
   try {
     const id = req.params.id;
-    const articulo = await ArticuloServicio.listarArticuloPorId(id);
+    const usuario_id = req.usuario.id;
+    const articulo = await ArticuloServicio.listarArticuloPorId(id, usuario_id);
 
     if (articulo == null) {
       return res.status(400).json({ error: "No se encontró el artículo" });
@@ -114,7 +117,8 @@ export const obtenerArticuloPorId = async (req, res) => {
 export const actualizarArticulo = async (req, res) => {
   try {
     const id = req.params.id;
-    const { nombre, tipo_venta, precio, color, id_categoria} = req.body
+    const usuario_id = req.usuario.id;
+    const { nombre, tipo_venta, precio, representacion, color, id_categoria} = req.body
     let imagen = req.body.imagen
 
     //Quitar imagen
@@ -132,7 +136,7 @@ export const actualizarArticulo = async (req, res) => {
       console.log(imagen)
     }
 
-    const articulo = await ArticuloServicio.modificarArticulo(id, nombre, tipo_venta, precio, color, imagen, id_categoria);
+    const articulo = await ArticuloServicio.modificarArticulo(id, nombre, tipo_venta, precio, representacion, color, imagen, id_categoria, usuario_id);
     
 
     if (articulo == null) {
@@ -172,6 +176,7 @@ export const actualizarArticulo = async (req, res) => {
 export const eliminarArticulo = async (req, res) => {
   try {
     const id = req.params.id;
+    const usuario_id = req.usuario.id;
 
     //Eliminar imagen de la nube
     const Articulo = await ArticuloServicio.listarArticuloPorId(id)
@@ -181,7 +186,7 @@ export const eliminarArticulo = async (req, res) => {
       await deleteImage(secure_url);
     }
 
-    const articulo = await ArticuloServicio.eliminarArticulo(id);
+    const articulo = await ArticuloServicio.eliminarArticulo(id, usuario_id);
 
     if (articulo == null) {
       return res.status(400).json({ error: "No se encontró el artículo" });

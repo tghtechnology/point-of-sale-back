@@ -1,3 +1,6 @@
+
+
+
 /**
  * Convierte una fecha y hora a UTC.
  * 
@@ -9,13 +12,15 @@
  * @throws {Error} - Si la cadena de entrada no puede convertirse a un objeto `Date`.
  */
 export const getUTCTime = (dateTimeString) => {
-  const dt = new Date(dateTimeString);
-  const dtNumber = dt.getTime();
-  const dtOffset = dt.getTimezoneOffset() * 60000;
-  const dtUTC = new Date();
-  dtUTC.setTime(dtNumber - dtOffset);
-  return dtUTC;
-};
+    const dt = new Date(dateTimeString);
+    const dtNumber = dt.getTime();
+    const dtOffset = dt.getTimezoneOffset() * 60000;
+    const dtUTC = new Date();
+    dtUTC.setTime(dtNumber - dtOffset);
+
+    return dtUTC;
+}
+
 
 /**
  * Obtiene la fecha y hora actual ajustada a la zona horaria de Perú.
@@ -23,6 +28,7 @@ export const getUTCTime = (dateTimeString) => {
  * @returns {Date} - Devuelve un objeto `Date` que representa la fecha y hora actual 
  * ajustada a la zona horaria de Perú.
  */
+
 export const getPeruTime = () => {
     const ahoraUTC = new Date();
     const diffHorariaPeru = -5;

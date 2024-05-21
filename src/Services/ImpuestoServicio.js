@@ -1,8 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-
 const prisma = new PrismaClient();
-
-
 
 
 /**
@@ -16,13 +13,11 @@ const prisma = new PrismaClient();
  * @throws {Error} - Si algún campo requerido está vacío, si la tasa no es un número válido, o si el tipo de impuesto no es uno de los permitidos.
  */
 
-export const crearImpuesto = async (nombre, tasa, tipo_impuesto) => {
-    
+export const crearImpuesto = async (usuario_id, nombre, tasa, tipo_impuesto) => {
     //Validación tipo de dato de tasa
     if (!tasa) {throw new Error("Campo tasa vacío")}
     if (typeof tasa !== 'number' || isNaN(parseFloat(tasa)) || !isFinite(tasa)) {throw new Error("Tasa no es número válido")}
 
-    console.log(tipo_impuesto)
     //Validación tipo de impuesto
     let tipo = tipo_impuesto.replace(/\s+/g, '-').replace(/ñ/g, 'n');
     const TiposPermitidos = ['Incluido_en_el_precio', 'Anadido_al_precio'];
@@ -30,21 +25,40 @@ export const crearImpuesto = async (nombre, tasa, tipo_impuesto) => {
 
     //Validación nombre
     if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
+
+    //Obtener el nombre de usuario
+    const usuario = await prisma.usuario.findFirst({
+      where: {id: usuario_id},
+      select: {nombre: true}
+    })
+
+    const id_punto = await prisma.puntoDeVenta.findFirst({
+      where: {
+        estado: true,
+        propietario: usuario.nombre
+      },
+      select: {id: true}
+    })
+
+    //Asignar id del punto de venta
+    const id_puntoDeVenta = id_punto.id
     
     const newImpuesto = await prisma.impuesto.create({
         data: {
           nombre: nombre,
           tasa: tasa,
           tipo_impuesto: tipo_impuesto,
-          estado: true
-        },
+          estado: true,
+          id_puntoDeVenta: id_puntoDeVenta
+        }
       })
     
       const impuestoFormato = {
         id: newImpuesto.id,
         nombre: newImpuesto.nombre,
         tasa: newImpuesto.tasa,
-        tipo_impuesto: newImpuesto.tipo_impuesto
+        tipo_impuesto: newImpuesto.tipo_impuesto,
+        id_puntoDeVenta: newImpuesto.id_puntoDeVenta
       }
       return impuestoFormato; 
 }
@@ -59,23 +73,18 @@ export const crearImpuesto = async (nombre, tasa, tipo_impuesto) => {
  * @throws {Error} - Si ocurre un error al buscar los impuestos.
  */
 
-export const listarImpuestos = async () => {
+export const listarImpuestos = async (usuario_id) => {
+
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
 
     const allImpuestos = await prisma.impuesto.findMany({
         where: {
-          estado: true
+          estado: true,
+          id_puntoDeVenta: id_puntoDeVenta
         }
       })
-    
-      const impuestoFormato = allImpuestos.map((impuesto) => {
-        return {
-          id: impuesto.id,
-          nombre: impuesto.nombre,
-          tasa: impuesto.tasa,
-          tipo_impuesto: impuesto.tipo_impuesto
-        };
-      });
-      return impuestoFormato;
+
+      return allImpuestos;
 }
 
 
@@ -89,25 +98,22 @@ export const listarImpuestos = async () => {
  * @throws {Error} - Si el ID no es válido o si ocurre un error al buscar el impuesto.
  */
 
-export const listarImpuestoPorId = async (id) => {
+export const listarImpuestoPorId = async (id, usuario_id) => {
+
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
 
     const impuesto = await prisma.impuesto.findUnique({
         where: {
           id: parseInt(id),
-          estado: true
+          estado: true,
+          id_puntoDeVenta: id_puntoDeVenta
         }
       })
     
       //Si el id no existe
       if (!impuesto) {return null}
     
-      const impuestoFormato = {
-        id: impuesto.id,
-        nombre: impuesto.nombre,
-        tasa: impuesto.tasa,
-        tipo_impuesto: impuesto.tipo_impuesto
-    }
-      return impuestoFormato;
+      return impuesto;
 }
 
 
@@ -124,7 +130,7 @@ export const listarImpuestoPorId = async (id) => {
  * @throws {Error} - Si el ID no es válido, si el campo "nombre" está vacío, si la tasa no es un número válido, o si el tipo de impuesto no es uno de los permitidos.
  */
 
-export const modificarImpuesto = async (id, nombre, tasa, tipo_impuesto) => {
+export const modificarImpuesto = async (id, nombre, tasa, tipo_impuesto, usuario_id) => {
 
      //Validación tipo de dato de tasa
      if (!tasa) {throw new Error("Campo tasa vacío")}
@@ -135,10 +141,13 @@ export const modificarImpuesto = async (id, nombre, tasa, tipo_impuesto) => {
     const TiposPermitidos = ['Incluido_en_el_precio', 'Anadido_al_precio'];
     if (!TiposPermitidos.includes(tipo)) {throw new Error("tipo_impuesto no válido")}
 
+    const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+
     const impuesto = await prisma.impuesto.update({
         where: {
           id: parseInt(id),
-          estado: true
+          estado: true,
+          id_puntoDeVenta: id_puntoDeVenta
         },
         data: {
           nombre: nombre,
@@ -154,7 +163,8 @@ export const modificarImpuesto = async (id, nombre, tasa, tipo_impuesto) => {
         id: impuesto.id,
         nombre: impuesto.nombre,
         tasa: impuesto.tasa,
-        tipo_impuesto: impuesto.tipo_impuesto
+        tipo_impuesto: impuesto.tipo_impuesto,
+        id_puntoDeVenta: impuesto.id_puntoDeVenta
       }
       return impuestoFormato;
 }
@@ -171,13 +181,16 @@ export const modificarImpuesto = async (id, nombre, tasa, tipo_impuesto) => {
  * @throws {Error} - Si el ID no es válido o si ocurre un error al desactivar el impuesto.
  */
 
-export const eliminarImpuesto = async (id) => {
+export const eliminarImpuesto = async (id, usuario_id ) => {
+
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
 
     //Buscar si existe una categoría con el id
   const impuestoExistente = await prisma.impuesto.findUnique({
     where: {
       id: parseInt(id),
-      estado: true
+      estado: true,
+      id_puntoDeVenta: id_puntoDeVenta
     }
   })
 
@@ -187,11 +200,32 @@ export const eliminarImpuesto = async (id) => {
   const impuesto = await prisma.impuesto.update({
     where: {
       id: parseInt(id),
-      estado: true
+      estado: true,
+      id_puntoDeVenta: id_puntoDeVenta
     },
     data: {
       estado: false
     }
   })
   return impuesto
+}
+
+const obtenerIdPunto = async (usuario_id) => {
+  const usuario = await prisma.usuario.findFirst({
+    where: {id: usuario_id},
+    select: {nombre: true}
+  })
+
+  const id_punto = await prisma.puntoDeVenta.findFirst({
+    where: {
+      estado: true,
+      propietario: usuario.nombre
+    },
+    select: {id: true}
+  })
+
+  //Asignar id del punto de venta
+  const id_puntoDeVenta = parseInt(id_punto.id)
+
+  return id_puntoDeVenta;
 }

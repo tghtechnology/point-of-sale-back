@@ -7,8 +7,8 @@ POST {{api}}
 Content-Type: application/json
 
 {
-  "nombre": "Maria Llosa",
-  "email": "maria4@gmail.com",
+  "nombre": "Estefany Torres",
+  "email": "estefanyt3101@gmail.com",
   "telefono": "921448207",
   "direccion": "Calle Las Pasionarias",
   "ciudad": "Lima",

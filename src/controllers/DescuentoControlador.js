@@ -11,8 +11,9 @@ import * as DescuentoServicio from "../Services/DescuentoServicio";
  */
 export const crearDescuento = async (req, res) => {
   try {
+    const usuario_id = req.usuario.id;
     const { nombre, tipo_descuento, valor } = req.body;
-    const newDescuento = await DescuentoServicio.crearDescuento(nombre,tipo_descuento,valor); 
+    const newDescuento = await DescuentoServicio.crearDescuento(nombre,tipo_descuento,valor, usuario_id); 
     res.status(201).json(newDescuento);
   }
   catch (error) {
@@ -34,7 +35,8 @@ export const crearDescuento = async (req, res) => {
 export const eliminarDescuento = async (req, res) => {
   try {
     const id = req.params.id;
-    await DescuentoServicio.eliminarDescuento(id);
+    const usuario_id = req.usuario.id;
+    await DescuentoServicio.eliminarDescuento(id, usuario_id);
     res.status(200).json({ mensaje: "Descuento eliminado" });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -52,7 +54,8 @@ export const eliminarDescuento = async (req, res) => {
 export const obtenerDescuentoById = async (req, res) => {
   try {
     const id = req.params.id;
-    const descuento = await DescuentoServicio.obtenerDescuentoById(id);
+    const usuario_id = req.usuario.id;
+    const descuento = await DescuentoServicio.obtenerDescuentoById(id, usuario_id);
     if (descuento) {
       res.status(200).json(descuento);
     } else {
@@ -78,8 +81,9 @@ export const obtenerDescuentoById = async (req, res) => {
 export const modificarDescuento = async (req, res) => {
   try {
     const id = req.params.id;
+    const usuario_id = req.usuario.id;
     const { nombre, tipo_descuento, valor, estado } = req.body;
-    const resultado = await DescuentoServicio.modificarDescuento(id, nombre, tipo_descuento, valor, estado);
+    const resultado = await DescuentoServicio.modificarDescuento(id, nombre, tipo_descuento, valor, estado, usuario_id);
     if (resultado) {
       res.status(200).json(resultado);
     } else {
@@ -102,7 +106,8 @@ export const modificarDescuento = async (req, res) => {
  */
 export const obtenerDescuentos = async (req, res) => {
   try {
-    const descuentos = await DescuentoServicio.obtenerDescuentos();
+    const usuario_id = req.usuario.id;
+    const descuentos = await DescuentoServicio.obtenerDescuentos(usuario_id);
     res.status(200).json(descuentos);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -120,10 +125,11 @@ export const obtenerDescuentos = async (req, res) => {
  */
 export const cambiarEstadoDescuento = async (req, res) => {
   try {
+    const usuario_id = req.usuario.id;
     const { id } = req.params;
     const { estado } = req.body;
     console.log("Estado recibido:", estado);
-    await DescuentoServicio.cambiarEstadoDescuento(id, estado);
+    await DescuentoServicio.cambiarEstadoDescuento(id, estado, usuario_id);
     res.sendStatus(204);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -139,8 +145,9 @@ export const cambiarEstadoDescuento = async (req, res) => {
  */
 export const obtenerDescuentosEliminados = async (req, res) => {
   try {
+    const usuario_id = req.usuario.id;
     const descuentoseliminados =
-      await DescuentoServicio.obtenerDescuentosEliminados();
+      await DescuentoServicio.obtenerDescuentosEliminados(usuario_id);
     res.status(200).json(descuentoseliminados);
   } catch (error) {
     res.status(500).json({ error: error.message });

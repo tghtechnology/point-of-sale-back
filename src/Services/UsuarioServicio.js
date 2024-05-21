@@ -5,6 +5,7 @@ import { logout } from "../Services/AuthServicio";
 import { cuerpoCorreo } from "../helpers/helperEmail";
 import { envioCorreo } from "../Utils/SendEmail";
 import { getUTCTime } from "../Utils/Time";
+import { crearPOS } from "./PuntoDeVentaServicio";
 const prisma = new PrismaClient();
 
 
@@ -23,24 +24,61 @@ const prisma = new PrismaClient();
  * @returns {Object} - El objeto representando el usuario creado.
  * @throws {Error} - Si el país no es válido o si ocurre un error durante la creación del usuario.
  */
-export const crearUsuario = async (nombre, email, password, pais, telefono, nombreNegocio) => {
+export const crearUsuario = async (
+  nombre,
+  email,
+  password,
+  pais,
+  telefono,
+  nombreNegocio
+) => {
+
+  const nombrePOS = nombreNegocio
+  const nombrePropietario = nombre
+  const usuariosExistentes = await prisma.usuario.count();
+
+  let rolAsignado
+  if(usuariosExistentes === 0) {
+    rolAsignado = "Admin"
+  } else if (usuariosExistentes >= 1) {
+    rolAsignado = "Propietario"
+    await crearPOS(nombrePOS, nombrePropietario)
+  }
+
+  const POS = await prisma.puntoDeVenta.findFirst({
+    orderBy: {
+      id: 'desc', // Ordenar por ID de forma descendente
+    },
+    where: {
+      nombre: nombreNegocio
+    },
+    select: {
+      id:true
+    }
+  })
+
   if (!validarNombrePais(pais)) {
     throw new Error("País inválido");
   }
+
   const hashedPassword = await bcrypt.hash(password, 10);
-  const fechaCreacion = getUTCTime(new Date().toISOString());
+
+  const todayISO = new Date().toISOString()
+  const fecha_creacion = getUTCTime(todayISO)
+
   const newUsuario = await prisma.usuario.create({
     data: {
-      nombre,
-      email,
-      pais,
+      nombre: nombre,
+      email: email,
+      pais: pais,
       password: hashedPassword,
       nombreNegocio:nombreNegocio,
-      rol: "Propietario",
-      telefono,
+      rol: rolAsignado,
+      telefono: telefono,
       cargo: "Gerente",
       estado: true,
-      fecha_creacion: fechaCreacion,
+      fecha_creacion: fecha_creacion,
+      id_puntoDeVenta: POS? POS.id : null
     },
   });
   return newUsuario;
@@ -89,7 +127,7 @@ const validarUsuario = async (id, password, token) => {
  * @throws {Error} - Si ocurre un error durante la eliminación de las sesiones.
  */
 
-const eliminarSesionesActivas = async (usuario_id) => {
+export const eliminarSesionesActivas = async (usuario_id) => {
   const activeSessions = await prisma.sesion.findMany({
     where: { usuario_id: usuario_id, expiracion: { gt: new Date() } },
   });
@@ -240,4 +278,115 @@ export const restaurarCuenta = async (id) => {
   } else {
     return false;
   }
+};
+
+/**
+ * Busca un usuario por su ID en la base de datos.
+ *
+ * @param {string} id - El ID del usuario a buscar.
+ * @returns {Promise<Object>} - Los datos del usuario encontrado.
+ *
+ * @throws {Error} - Si no se encuentra ningún usuario con el ID proporcionado.
+ *
+ * @description Esta función busca un usuario en la base de datos utilizando su ID y devuelve sus datos.
+ **/
+const buscarUsuarioPorId = async (id) => {
+  const usuario = await prisma.usuario.findUnique({
+    where: { id: parseInt(id) },
+  });
+  if (!usuario) {
+    throw new Error(`No se encontró ningún usuario con el ID ${id}`);
+  }
+  return usuario;
+};
+
+/**
+ * Valida la contraseña de un usuario.
+ *
+ * @param {Object} usuario - Los datos del usuario.
+ * @param {string} contraseña - La contraseña a validar.
+ *
+ * @throws {Error} - Si la contraseña proporcionada no coincide con la contraseña del usuario.
+ *
+ * @description Esta función valida la contraseña proporcionada comparándola con la contraseña almacenada del usuario.
+ **/
+const validarContraseña = async (usuario, contraseña) => {
+  const match = await bcrypt.compare(contraseña, usuario.password);
+  if (!match) {
+    throw new Error("Contraseña incorrecta");
+  }
+};
+
+/**
+ * Edita los datos de un usuario en la base de datos.
+ *
+ * @param {string} id - El ID del usuario a editar.
+ * @param {string} nombre - El nuevo nombre del usuario.
+ * @param {string} email - El nuevo correo electrónico del usuario.
+ * @param {string} telefono - El nuevo número de teléfono del usuario.
+ * @param {string} pais - El nuevo país del usuario.
+ * @returns {Promise<Object>} - Los datos del usuario actualizado.
+ *
+ * @throws {Error} - Si el país proporcionado es inválido.
+ * @throws {Error} - Si no se encuentra ningún usuario con el ID proporcionado.
+ *
+ * @description Esta función edita los datos de un usuario en la base de datos utilizando su ID y los nuevos datos proporcionados.
+ **/
+export const editarUsuarioPorId = async (id, nombre, email, telefono, pais) => {
+  if (!validarNombrePais(pais)) {
+    throw new Error("País inválido");
+  }
+  const usuarioExistente = await buscarUsuarioPorId(id);
+  const updatedUsuario = await prisma.usuario.update({
+    where: { id: usuarioExistente.id },
+    data: {
+      nombre,
+      email,
+      telefono,
+      pais,
+      fecha_modificacion: getUTCTime(new Date().toISOString()),
+    },
+  });
+  return updatedUsuario;
+};
+
+/**
+ * Lista todos los usuarios activos en la base de datos.
+ *
+ * @returns {Promise<Array>} - Un arreglo que contiene los datos de todos los usuarios activos.
+ *
+ * @description Esta función busca y devuelve todos los usuarios activos en la base de datos.
+ **/
+export const listarUsuarios = async () => {
+  return await prisma.usuario.findMany({
+    where: { estado: true, rol: "Propietario" },
+  });
+};
+
+/**
+ * Cambia la contraseña de un usuario.
+ *
+ * @param {string} id - El ID del usuario cuya contraseña se va a cambiar.
+ * @param {string} contraseñaActual - La contraseña actual del usuario.
+ * @param {string} nuevaContraseña - La nueva contraseña del usuario.
+ * @param {string} verificarContraseña - La confirmación de la nueva contraseña.
+ * @returns {Promise<Object>} - Un objeto que indica que la contraseña ha sido actualizada correctamente.
+ *
+ * @throws {Error} - Si la contraseña actual no es válida.
+ * @throws {Error} - Si la nueva contraseña y la verificación no coinciden.
+ *
+ * @description Esta función cambia la contraseña de un usuario utilizando su ID y las nuevas contraseñas proporcionadas.
+ **/
+export const cambiarContraseña = async (id, contraseñaActual, nuevaContraseña, verificarContraseña) => {
+  const usuario = await buscarUsuarioPorId(id);
+  await validarContraseña(usuario, contraseñaActual);
+  if (nuevaContraseña !== verificarContraseña) {
+    throw new Error("La nueva contraseña y la verificación no coinciden");
+  }
+  const hashedNuevaContraseña = await bcrypt.hash(nuevaContraseña, 10);
+  await prisma.usuario.update({
+    where: { id: usuario.id },
+    data: { password: hashedNuevaContraseña },
+  });
+  return { message: "Contraseña actualizada correctamente" };
 };

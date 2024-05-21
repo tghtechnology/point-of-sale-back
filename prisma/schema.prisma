@@ -8,6 +8,28 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model PuntoDeVenta {
+  id        Int        @id @default(autoincrement())
+  nombre    String     @db.VarChar(255)
+  propietario String @db.VarChar(255)
+  fecha_creacion DateTime
+  estado Boolean
+
+  categoria Categoria[]
+  articulo Articulo[]
+  descuento Descuento[]
+  cliente Cliente[]
+  usuario Usuario[]
+  impuesto Impuesto[]
+  recibo Recibo[]
+  venta Venta[]
+  detalleVenta DetalleVenta[]
+  sesion Sesion[]
+
+  @@map("puntoDeVenta")
+}
+
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
@@ -16,9 +38,12 @@ datasource db {
 model Categoria {
   id        Int        @id @default(autoincrement())
   nombre    String     @db.VarChar(255)
-  color     String     @db.VarChar(255)
+  color     Color
   estado    Boolean
+  id_puntoDeVenta  Int
   articulos Articulo[]
+
+  puntoDeVenta    PuntoDeVenta @relation(fields: [id_puntoDeVenta], references: [id])
 
   @@map("categoria")
 }
@@ -30,7 +55,11 @@ model Descuento {
   valor           Decimal       @db.Decimal(10, 2)
   valor_calculado Decimal       @db.Decimal(10, 2)
   estado          Boolean
+  id_puntoDeVenta  Int
+
   ventas          Venta[]
+
+  puntoDeVenta    PuntoDeVenta @relation(fields: [id_puntoDeVenta], references: [id])
 
   @@map("descuento")
 }
@@ -46,7 +75,10 @@ model Impuesto {
   tasa          Decimal      @db.Decimal(10, 2)
   tipo_impuesto tipoImpuesto
   estado        Boolean
+  id_puntoDeVenta  Int
   ventas        Venta[]
+
+  puntoDeVenta    PuntoDeVenta @relation(fields: [id_puntoDeVenta], references: [id])
 }
 
 enum tipoImpuesto {
@@ -61,22 +93,26 @@ model Usuario {
   cargo                    String    @db.VarChar(255)
   telefono                 String    @db.VarChar(255)
   password                 String    @db.VarChar(255)
-  nombreNegocio            String    @db.VarChar(255)
+  nombreNegocio            String?    @db.VarChar(255)
   pais                     String?   @db.VarChar(255)
   rol                      Rol
   estado                   Boolean   @db.Bit(1)
   eliminado_temporal_fecha DateTime?
   fecha_creacion           DateTime
   fecha_modificacion       DateTime?
+  id_puntoDeVenta  Int?
 
   resetTokens ResetToken[]
   sesiones    Sesion[]
   ventas      Venta[]
 
+  puntoDeVenta    PuntoDeVenta? @relation(fields: [id_puntoDeVenta], references: [id])
+
   @@map("usuario")
 }
 
 enum Rol {
+  Admin
   Propietario
   Empleado
 }
@@ -92,9 +128,11 @@ model Articulo {
   imagen       String?        @db.VarChar(255)
   id_categoria Int?           @map("id_categoria") @db.Int
   estado       Boolean
+  id_puntoDeVenta  Int
   detalles     DetalleVenta[]
 
   categoria Categoria? @relation(fields: [id_categoria], references: [id])
+  puntoDeVenta    PuntoDeVenta @relation(fields: [id_puntoDeVenta], references: [id])
 
   @@map("articulo")
 }
@@ -103,6 +141,7 @@ enum TipoVenta {
   Peso
   Unidad
 }
+
 enum Color {
   Rojo
   Verde_limon
@@ -129,8 +168,11 @@ model Sesion {
   usuario_id Int      @map("usuario_id")
   token      String   @db.VarChar(255)
   expiracion DateTime
+  id_puntoDeVenta  Int?
 
   usuario Usuario @relation(fields: [usuario_id], references: [id])
+
+  puntoDeVenta    PuntoDeVenta? @relation(fields: [id_puntoDeVenta], references: [id])
 
   @@map("sesion")
 }
@@ -147,7 +189,10 @@ model Cliente {
   fecha_creacion DateTime
   fecha_modificacion DateTime?
   estado        Boolean
+  id_puntoDeVenta  Int
   ventas        Venta[]
+
+  puntoDeVenta    PuntoDeVenta @relation(fields: [id_puntoDeVenta], references: [id])
 
   @@map("cliente")
 }
@@ -157,12 +202,12 @@ model Recibo {
   fecha_creacion DateTime @default(now())
   ref String @db.VarChar(100)
   monto_reembolsado Decimal? @db.Decimal(10,2)
-  valorDescuentoTotal Decimal? @db.Decimal(10,2)
-  valorImpuestoTotal  Decimal? @db.Decimal(10,2)
-
   id_venta Int @db.Int @map("id_venta")
+  id_puntoDeVenta  Int
 
   venta Venta? @relation(fields: [id_venta], references: [id])
+
+  puntoDeVenta    PuntoDeVenta @relation(fields: [id_puntoDeVenta], references: [id])
 }
 model DetalleVenta {
   id         Int      @id @default(autoincrement())
@@ -173,6 +218,9 @@ model DetalleVenta {
   articuloId Int
   venta      Venta    @relation(fields: [ventaId], references: [id])
   ventaId    Int
+  id_puntoDeVenta  Int
+
+  puntoDeVenta    PuntoDeVenta @relation(fields: [id_puntoDeVenta], references: [id])
 
   @@map("detalleVenta")
 }
@@ -181,8 +229,6 @@ model Venta {
   id            Int      @id @default(autoincrement())
   subtotal      Decimal @db.Decimal(10,2)
   total         Decimal @db.Decimal(10,2)
-  vDescuento    Decimal? @db.Decimal(10,2)
-  VImpuesto     Decimal? @db.Decimal(10,2)
   tipoPago      TipoPago
   impuesto      Impuesto? @relation(fields: [impuestoId], references: [id])
   descuento     Descuento? @relation(fields: [descuentoId], references: [id])
@@ -195,6 +241,9 @@ model Venta {
   descuentoId   Int?
   clienteId     Int?
   usuarioId     Int
+  id_puntoDeVenta  Int
+
+  puntoDeVenta    PuntoDeVenta @relation(fields: [id_puntoDeVenta], references: [id])
 
   recibo Recibo[]
 }
