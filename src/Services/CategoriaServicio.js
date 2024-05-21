@@ -132,7 +132,7 @@ export const listarCategoriaPorId = async (id, usuario_id) => {
  * @throws {Error} - Si el campo ID está vacío, o si el nombre o color están vacíos, o si ya existe una categoría con el mismo nombre.
  */
 
-export const modificarCategoria = async (id, nombre, color) => {
+export const modificarCategoria = async (id, nombre, color, usuario_id) => {
 
   const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
 
@@ -147,6 +147,11 @@ export const modificarCategoria = async (id, nombre, color) => {
 
     //Si el id no existe
     if (!categoriaExistente) {return null}
+
+    if (!Object.keys(colorMapping).includes(color)) {
+      throw new Error("Color no valido");
+    }
+    color = colorMapping[color];
 
   const categoria = await prisma.categoria.update({
     where: {

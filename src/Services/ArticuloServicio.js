@@ -59,7 +59,7 @@ export const crearArticulo = async (nombre, tipo_venta, precio, representacion, 
     }
 
   //Generar ref
-  const ref = await generarRef(ref, usuario_id)
+  const ref = await generarRef(usuario_id)
 
   const newArticulo = await prisma.articulo.create({
     data: {
@@ -267,7 +267,7 @@ export const listarArticuloPorId = async (id, usuario_id) => {
  *   - `color`: El color de la categoría.
  */
 export const modificarArticulo = async (id, nombre, tipo_venta, precio, representacion, color, imagen, id_categoria, usuario_id) => {
-
+  //console.log(usuario_id)
   if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
   if (!tipo_venta || tipo_venta.length < 1) {throw new Error("Campo tipo_venta vacío")}
   if (!precio || precio.length < 1) {throw new Error("Campo precio vacío")}
@@ -422,7 +422,6 @@ const buscarCategoria = async (id_categoria, usuario_id) => {
 
 const generarRef = async (usuario_id) => {
   try {
-
     const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
 
     const ultimoArticulo = await prisma.articulo.findFirst({
@@ -456,10 +455,13 @@ const colorMapping = {
 };
 
 const obtenerIdPunto = async (usuario_id) => {
+  //console.log(usuario_id)
   const usuario = await prisma.usuario.findFirst({
     where: {id: usuario_id},
     select: {nombre: true}
   })
+
+  console.log(usuario)
 
   const id_punto = await prisma.puntoDeVenta.findFirst({
     where: {
@@ -468,6 +470,10 @@ const obtenerIdPunto = async (usuario_id) => {
     },
     select: {id: true}
   })
+
+  //console.log(id_punto)
+
+  //console.log(id_punto.id)
 
   //Asignar id del punto de venta
   const id_puntoDeVenta = parseInt(id_punto.id)
