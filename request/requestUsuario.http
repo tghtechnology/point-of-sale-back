@@ -9,7 +9,6 @@ Content-Type: application/json
   "email": "fiofio@gmail.com",
   "password": "12345",
   "pais": "Perú",
-  "nombreNegocio": "botica de fiorella",
   "telefono": "123456789",
   "cargo": "Manager"
 }
