@@ -6,8 +6,8 @@ Content-Type: application/json
 {
   "detalles": [
     {
-      "cantidad": 4,
-      "articuloId": 1
+      "cantidad": 1,
+      "articuloId": 2
     },
     {
         "cantidad": 1,
@@ -18,20 +18,26 @@ Content-Type: application/json
   "impuestoId": 1,
   "descuentoId": 2,
   "clienteId":1,
+  "descuentoId":1,
+  "impuestoId":1,
   "usuarioId":1,
   "dineroRecibido":500
 }
 ###
-GET {{api}}/recibo
+GET {{api}}/reembolso/recibo/56
 ###
 POST {{api}}/reembolsar
 Content-Type: application/json
 
 {
-  "id": 36, 
+  "id": 17, 
   "detalles": [
     {
-      "cantidad": 2,
+      "cantidad": 1,
+      "articuloId": 2
+    },
+    {
+      "cantidad": 1,
       "articuloId": 1
     }
   ]

@@ -14,6 +14,7 @@ const routerUsuario = Router();
 //REGISTRO DE USUARIO
 routerUsuario.post("/registro", crearUsuario);
 routerUsuario.get("/listaPaises", listaPaises);
+routerUsuario.get("/usuario", listarUsuarios);
 
 //RUTAS PARA ELIMINACIÓN DE CUENTA
 routerUsuario.post("/eliminar-temporal", verificarAuth, isPropietario, eliminarTemporalmente);

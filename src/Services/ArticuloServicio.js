@@ -286,6 +286,17 @@ export const modificarArticulo = async (id, nombre, tipo_venta, precio, represen
       id_puntoDeVenta: id_puntoDeVenta
     }
   })
+  console.log(articuloExistente.imagen)
+
+  if (representacion !== 'color' && representacion !== 'imagen') {throw new Error("Representacion no valida")}
+
+  //Validacion colores
+    if (representacion === 'color') {
+      if (!Object.keys(colorMapping).includes(color)) {
+        throw new Error("Color no valido");
+      }
+      color = colorMapping[color];
+    }
 
   if (representacion !== 'color' && representacion !== 'imagen') {throw new Error("Representacion no valida")}
 
@@ -312,6 +323,7 @@ const articulo = await prisma.articulo.update({
     nombre: nombre,
     tipo_venta: tipo_venta,
     precio: Number(precio),
+    representacion: representacion,
     color: color ? color : null,
     imagen: imagen ? imagen : null,
     id_categoria: parseInt(id_categoria),
@@ -324,6 +336,7 @@ const articuloFormato = {
   tipo_venta: articulo.tipo_venta,
   precio: Number(articulo.precio),
   ref: articulo.ref,
+  representacion:articulo.representacion,
   color: articulo.color,
   imagen: articulo.imagen,
   categoria: categoria,

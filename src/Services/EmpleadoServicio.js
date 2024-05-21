@@ -70,7 +70,13 @@ const buscarEmpleadoPorId = async (id, usuario_id) => {
  *
  * @description Esta función crea un nuevo empleado en la base de datos con los datos proporcionados.
  **/
-export const crearEmpleado = async (nombre, email, telefono, cargo, pais, password, usuario_id) => {
+export const crearEmpleado = async (  nombre,
+  email,
+  telefono,
+  cargo,
+  pais,
+  password,
+  propietarioId, usuario_id) => {
   if (!validarNombrePais(pais)) throw new Error("País inválido");
 
   const hashedPassword = await encryptPassword(password);
@@ -93,6 +99,17 @@ export const crearEmpleado = async (nombre, email, telefono, cargo, pais, passwo
   //Asignar id del punto de venta
   const id_puntoDeVenta = id_punto.id
 
+  if (!validarNombrePais(pais)) {
+    throw new Error("País inválido");
+  }
+  const propietarioInfo=await prisma.usuario.findUnique({
+    where:{
+      id:propietarioId,
+      estado:true,
+      rol:"Propietario"
+    }
+  })
+
   const empleado = await prisma.usuario.create({
     data: {
       nombre,
@@ -100,6 +117,7 @@ export const crearEmpleado = async (nombre, email, telefono, cargo, pais, passwo
       telefono,
       cargo,
       pais,
+      nombreNegocio:propietarioInfo.nombreNegocio,
       rol: "Empleado",
       estado: true,
       password: hashedPassword,
@@ -111,6 +129,7 @@ export const crearEmpleado = async (nombre, email, telefono, cargo, pais, passwo
   await transporter.sendMail(await EmailInvitacion.enviarCorreoBienvenida(email, nombre, email, password, process.env.URLEMPLOYE));
   return empleado;
 };
+
 
 /**
  * Edita los datos de un empleado en la base de datos.

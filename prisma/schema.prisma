@@ -130,6 +130,7 @@ model Articulo {
   estado       Boolean
   id_puntoDeVenta  Int
   detalles     DetalleVenta[]
+  detalleReembolso DetalleReembolso[]
 
   categoria Categoria? @relation(fields: [id_categoria], references: [id])
   puntoDeVenta    PuntoDeVenta @relation(fields: [id_puntoDeVenta], references: [id])
@@ -204,6 +205,9 @@ model Recibo {
   monto_reembolsado Decimal? @db.Decimal(10,2)
   id_venta Int @db.Int @map("id_venta")
   id_puntoDeVenta  Int
+  valorDescuentoTotal Decimal? @db.Decimal(10,2)
+  valorImpuestoTotal  Decimal? @db.Decimal(10,2)
+  detalles            DetalleReembolso[]
 
   venta Venta? @relation(fields: [id_venta], references: [id])
 
@@ -213,7 +217,7 @@ model DetalleVenta {
   id         Int      @id @default(autoincrement())
   cantidad   Int
   subtotal   Decimal  @db.Decimal(10, 2)
-  cantidadReembolsada Int @default(0)
+  cantidadReembolsadaTotal Int @default(0)
   articulo   Articulo @relation(fields: [articuloId], references: [id])
   articuloId Int
   venta      Venta    @relation(fields: [ventaId], references: [id])
@@ -251,4 +255,13 @@ model Venta {
 enum TipoPago {
   Efectivo
   Tarjeta
+}
+model DetalleReembolso {
+  id                Int      @id @default(autoincrement())
+  articuloId        Int
+  reciboId          Int
+  cantidadDevuelta  Int
+  subtotal          Decimal @db.Decimal(10,2)
+  articulo          Articulo @relation(fields: [articuloId], references: [id])
+  recibo            Recibo   @relation(fields: [reciboId], references: [id])
 }

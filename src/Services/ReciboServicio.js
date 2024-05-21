@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { getUTCTime } from "../Utils/Time";
 import { envioCorreo } from "../Utils/SendEmail";
 import {cuerpoReembolso} from "../helpers/helperReembolso";
-
+import { CrearDetalleReembolso } from "./DetalleReembolsoServicio";
 const prisma = new PrismaClient();
 
 
@@ -200,16 +200,18 @@ export const Reembolsar = async (id, detalles, usuario_id) => {
     include: {
       detalles: true,
       descuento: true,
-      impuesto:true,
-      cliente:true,
+      impuesto: true,
+      cliente: true,
     },
   });
+
   if (!ventaAsociada) {
     throw new Error('No se encontró la venta asociada al recibo original');
   }
+
   let montoReembolsado = 0;
   let valorImpuestoTotal = 0;
-  let valorDescuentoTotal = 0; 
+  let valorDescuentoTotal = 0;
 
   for (const detalle of detalles) {
     const detalleOriginal = ventaAsociada.detalles.find(
@@ -273,33 +275,106 @@ export const Reembolsar = async (id, detalles, usuario_id) => {
       id_puntoDeVenta: id_puntoDeVenta
     },
   });
-  if(ventaAsociada.cliente){
-  const detallesReembolso = await Promise.all(detalles.map(async (detalle) => {
-    const nombreArticulo = await obtenerNombreArticulo(detalle.articuloId);
-    const precioUnitario = await prisma.articulo.findUnique({
-      where: { id: detalle.articuloId },
-      select: { precio: true }
+
+  for (const detalle of detalles) {
+    const detalleOriginal = ventaAsociada.detalles.find(
+      (det) => det.articuloId === detalle.articuloId
+    );
+
+    if (!detalleOriginal) {
+      throw new Error(
+        `No se encontró el detalle de la venta original para el artículo ${detalle.articuloId}`
+      );
+    }
+
+    const cantidadRestanteReembolso = detalleOriginal.cantidad - detalleOriginal.cantidadReembolsadaTotal;
+    if (cantidadRestanteReembolso < detalle.cantidad) {
+      throw new Error(
+        `La cantidad a reembolsar para el artículo ${detalle.articuloId} excede la cantidad restante`
+      );
+    }
+
+    await prisma.detalleVenta.update({
+      where: { id: detalleOriginal.id },
+      data: { cantidadReembolsadaTotal: detalleOriginal.cantidadReembolsadaTotal + detalle.cantidad },
     });
-    const precio = precioUnitario ? precioUnitario.precio : null;
-    return {
-      nombreArticulo: nombreArticulo,
-      cantidad: detalle.cantidad,
-      precioUnitario: precioUnitario.precio
-    };
-  }));
-  
-  const clienteInfo = ventaAsociada.cliente;
-  const cuerpo = cuerpoReembolso(clienteInfo.nombre, detallesReembolso, montoReembolsado, valorDescuentoTotal, valorImpuestoTotal);
-  await envioCorreo(clienteInfo.email, "Reembolso realizado", cuerpo);
+
+    let montoArticulo = (detalle.cantidad / detalleOriginal.cantidad) * detalleOriginal.subtotal;
+    let valor = 0;
+    if (ventaAsociada.descuento) {
+      if (ventaAsociada.descuento.tipo_descuento === 'PORCENTAJE') {
+        valor = montoArticulo * ventaAsociada.descuento.valor_calculado;
+        montoArticulo -= valor;
+        valorDescuentoTotal += valor;
+      } else if (ventaAsociada.descuento.tipo_descuento === 'MONTO') {
+        valor = (ventaAsociada.descuento.valor / ventaAsociada.subtotal) * montoArticulo;
+        montoArticulo -= valor;
+        valorDescuentoTotal += valor;
+      }
+    }
+    let iValor = 0;
+    if (ventaAsociada.impuesto && ventaAsociada.impuesto.tipo_impuesto === 'Anadido_al_precio') {
+      iValor = montoArticulo * (ventaAsociada.impuesto.tasa / 100);
+      montoArticulo += iValor;
+      valorImpuestoTotal += iValor;
+    }
+    detalleOriginal.cantidadReembolsadaTotal += detalle.cantidad;
+    montoReembolsado += montoArticulo;
+
+    // Crear el detalle de reembolso usando el servicio DetalleReembolsoServicio
+    await CrearDetalleReembolso(
+      detalle.articuloId,
+      reciboReembolsado.id,
+      detalle.cantidad,
+      montoArticulo  
+    );
   }
-  return reciboReembolsado;
+
+  // Actualizar recibo con los totales
+  const reembolso=await prisma.recibo.update({
+    where: { id: reciboReembolsado.id },
+    data: {
+      monto_reembolsado: montoReembolsado,
+      valorDescuentoTotal: valorDescuentoTotal,
+      valorImpuestoTotal: valorImpuestoTotal,
+    },
+  });
+
+  if (ventaAsociada.cliente) {
+    const detallesReembolso = await Promise.all(detalles.map(async (detalle) => {
+      const nombreArticulo = await obtenerNombreArticulo(detalle.articuloId);
+      const precioUnitario = await prisma.articulo.findUnique({
+        where: { id: detalle.articuloId },
+        select: { precio: true }
+      });
+      const precio = precioUnitario ? precioUnitario.precio : null;
+      return {
+        nombreArticulo: nombreArticulo,
+        cantidad: detalle.cantidad,
+        precioUnitario: precioUnitario.precio
+      };
+    }));
+
+    const clienteInfo = ventaAsociada.cliente;
+    const cuerpo = cuerpoReembolso(clienteInfo.nombre, detallesReembolso, montoReembolsado, valorDescuentoTotal, valorImpuestoTotal);
+    await envioCorreo(clienteInfo.email, "Reembolso realizado", cuerpo);
+  }
+
+  return reembolso;
 };
 
 
+
+/**
+ * Obtiene un recibo específico por su ID.
+ * 
+ * @param {number|string} id - El ID del recibo a buscar.
+ * 
+ * @returns {Object|null} - El objeto representando el recibo, o null si no se encuentra.
+ * @throws {Error} - Si ocurre un error al buscar el recibo por su ID.
+ */
 export const ListarReciboById=async(id, usuario_id)=>{
-
   const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
-
   const recibo= await prisma.recibo.findMany({
     where: {
         id: Number(id),
@@ -311,10 +386,16 @@ return recibo
 }
 
 
+/**
+ * Obtiene los recibos relacionados a una venta específica por el ID de la venta.
+ * 
+ * @param {number|string} id_venta - El ID de la venta cuyos recibos se desean buscar.
+ * 
+ * @returns {Array<Object>} - Una lista de objetos representando los recibos relacionados a la venta.
+ * @throws {Error} - Si ocurre un error al buscar los recibos por el ID de la venta.
+ */
 export const ListarReciboByVenta=async(id_venta, usuario_id)=>{
-
   const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
-
   const recibos= await prisma.recibo.findMany({
     where: {
         id_venta: Number(id_venta),

@@ -126,9 +126,9 @@ export const actualizarArticulo = async (req, res) => {
       const ImgId = imagen;
       if (ImgId) {
         const result = await deleteImage(imagen)
+        console.log(result)
       }
     }
-    
     //Subir otra imagen
     if (req.files?.imagen) {
       const newImagen = await uploadImage(req.files.imagen.tempFilePath)

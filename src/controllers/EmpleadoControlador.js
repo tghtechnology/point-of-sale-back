@@ -2,17 +2,9 @@ import * as EmpleadoServicio from "../Services/EmpleadoServicio";
 
 export const crearEmpleado = async (req, res) => {
   const usuario_id = req.usuario.id;
-  const { nombre, email, telefono, cargo, pais, password } = req.body;
   try {
-    const nuevoEmpleado = await EmpleadoServicio.crearEmpleado(
-      nombre,
-      email,
-      telefono,
-      cargo,
-      pais,
-      password,
-      usuario_id
-    );
+    const { nombre, email, telefono, cargo, pais, password, propietarioId } = req.body;
+    const nuevoEmpleado = await EmpleadoServicio.crearEmpleado(nombre, email, telefono, cargo, pais, password, propietarioId, usuario_id);
     res.status(200).json(nuevoEmpleado);
   } catch (error) {
     console.error("Error al crear empleado:", error.message);

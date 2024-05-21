@@ -8,7 +8,7 @@ routerCliente.get('/listaPaises',listaPaises)
 
 //Sólo propietario
 routerCliente.post('/cliente', verificarAuth, isPropietario, crearCliente);
-routerCliente.put('/cliente/:id', verificarAuth, isPropietario, editarCliente);
+routerCliente.put('/cliente/:id', /*verificarAuth, isPropietario,*/ editarCliente);
 routerCliente.delete('/cliente/:id', verificarAuth, isPropietario, eliminarCliente);
 
 routerCliente.get('/cliente', verificarAuth, listarClientes);
