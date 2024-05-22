@@ -59,7 +59,7 @@ export const crearArticulo = async (nombre, tipo_venta, precio, representacion, 
     }
 
   //Generar ref
-  const ref = await generarRef(ref, usuario_id)
+  const ref = await generarRef(usuario_id)
 
   const newArticulo = await prisma.articulo.create({
     data: {

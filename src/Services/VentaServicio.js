@@ -181,7 +181,6 @@ const ListarVentas=async(usuario_id)=>{
 
     const ventas = await prisma.venta.findMany({
         where: {
-            estado: true,
             puntoDeVentaId: id_puntoDeVenta
         }
     });
@@ -205,7 +204,6 @@ const ObtenerVentaPorId=async(id, usuario_id)=>{
     const ventas = await prisma.venta.findUnique({
         where: {
             id: Number(id),
-            estado: true,
             puntoDeVentaId: id_puntoDeVenta
         }
     });
