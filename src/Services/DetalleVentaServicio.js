@@ -17,7 +17,7 @@ const prisma = new PrismaClient();
  */
 
 const CrearDetalle=async(cantidad, articuloId, ventaId, usuario_id)=>{
-
+  //console.log(usuario_id)
     //Obtener el nombre de usuario
     const usuario = await prisma.usuario.findFirst({
         where: {id: usuario_id},
@@ -39,7 +39,7 @@ const CrearDetalle=async(cantidad, articuloId, ventaId, usuario_id)=>{
         where:{
             id:articuloId,
             estado:true,
-            puntoDeVentaId:id_puntoDeVenta,
+            id_puntoDeVenta:id_puntoDeVenta,
         }
     })
     const subtotal= info.precio*cantidad
@@ -49,7 +49,7 @@ const CrearDetalle=async(cantidad, articuloId, ventaId, usuario_id)=>{
             subtotal:subtotal,
             articuloId:articuloId,
             ventaId:ventaId,
-            puntoDeVentaId:id_puntoDeVenta,
+            id_puntoDeVenta:id_puntoDeVenta,
         }
     })
 

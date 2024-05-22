@@ -146,9 +146,9 @@ export const crearEmpleado = async (  nombre,
  **/
 export const editarEmpleado = async (id, nombre, email, telefono, cargo, pais, usuario_id) => {
 
-  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+  const id_puntoDeVenta = await obtenerIdPunto(parseInt(usuario_id))
 
-  const empleadoExistente = await buscarEmpleadoPorId(id);
+  const empleadoExistente = await buscarEmpleadoPorId(id, usuario_id);
   const updatedEmpleado = await prisma.usuario.update({
     where: { id: empleadoExistente.id },
     data: {

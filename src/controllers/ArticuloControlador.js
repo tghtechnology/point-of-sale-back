@@ -126,14 +126,12 @@ export const actualizarArticulo = async (req, res) => {
       const ImgId = imagen;
       if (ImgId) {
         const result = await deleteImage(imagen)
-        console.log(result)
       }
     }
     //Subir otra imagen
     if (req.files?.imagen) {
       const newImagen = await uploadImage(req.files.imagen.tempFilePath)
       imagen = newImagen.secure_url
-      console.log(imagen)
     }
 
     const articulo = await ArticuloServicio.modificarArticulo(id, nombre, tipo_venta, precio, representacion, color, imagen, id_categoria, usuario_id);

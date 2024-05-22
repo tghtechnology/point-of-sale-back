@@ -49,7 +49,6 @@ export const editarEmpleado = async (req, res) => {
       telefono,
       cargo,
       pais,
-      password,
       usuario_id
     );
     res.status(200).json(empleado);

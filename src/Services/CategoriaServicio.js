@@ -148,6 +148,11 @@ export const modificarCategoria = async (id, nombre, color, usuario_id) => {
     //Si el id no existe
     if (!categoriaExistente) {return null}
 
+    if (!Object.keys(colorMapping).includes(color)) {
+      throw new Error("Color no valido");
+    }
+    color = colorMapping[color];
+
   const categoria = await prisma.categoria.update({
     where: {
       id: parseInt(id),

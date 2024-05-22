@@ -21,6 +21,7 @@ const prisma = new PrismaClient();
  * @throws {Error} - Si ocurre un error durante la creación de la venta, la generación de recibos, o el envío de correos electrónicos.
  */
 const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId, usuarioId, dineroRecibido, usuario_id) => {
+    
     // Obtener el nombre de usuario
     const usuario = await prisma.usuario.findFirst({
         where: { id: usuario_id },
@@ -44,7 +45,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
         const articulo = await prisma.articulo.findUnique({
             where: {
                 id: detalle.articuloId,
-                puntoDeVentaId: id_puntoDeVenta,
+                id_puntoDeVenta: id_puntoDeVenta,
                 estado: true
             }
         });
@@ -64,7 +65,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
         const descuento = await prisma.descuento.findUnique({
             where: {
                 id: descuentoId,
-                puntoDeVentaId: id_puntoDeVenta,
+                id_puntoDeVenta: id_puntoDeVenta,
                 estado: true
             }
         });
@@ -77,14 +78,16 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
             total -= vDescuento;
         }
     }
+
     if (impuestoId) {
         const impuesto = await prisma.impuesto.findUnique({
             where: {
                 id: impuestoId,
-                puntoDeVentaId: id_puntoDeVenta,
+                id_puntoDeVenta: id_puntoDeVenta,
                 estado: true
             }
         });
+
         if (impuesto.tipo_impuesto == "Anadido_al_precio") {
             const totalImpuesto = total * (impuesto.tasa / 100);
             VImpuesto = totalImpuesto;
@@ -109,14 +112,16 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
             clienteId: clienteId,
             usuarioId: usuarioId,
             dineroRecibido: dineroRecibido,
+            VImpuesto: VImpuesto,
+            vDescuento, vDescuento,
             cambio: cambio,
-            puntoDeVentaId: id_puntoDeVenta
+            id_puntoDeVenta: id_puntoDeVenta
         }
     });
-
+    //console.log(usuario_id)
     // Crear los detalles de venta en la base de datos
     await Promise.all(detalles.map(async detalle => {
-        await DetalleVentaServicio.CrearDetalle(detalle.cantidad, detalle.articuloId, nuevaVenta.id);
+        await DetalleVentaServicio.CrearDetalle(detalle.cantidad, detalle.articuloId, nuevaVenta.id, usuario_id);
     }));
 
     // Buscar nombre de empleado
@@ -124,7 +129,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
         where: {
             id: usuarioId,
             estado: true,
-            puntoDeVentaId: id_puntoDeVenta
+            id_puntoDeVenta: id_puntoDeVenta
         },
         select: {
             nombre: true
@@ -136,11 +141,13 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
         where: {
             id: detallesArticulos.articuloId,
             estado: true,
-            puntoDeVentaId: id_puntoDeVenta
+            id_puntoDeVenta: id_puntoDeVenta
         }
     });
 
     const id_venta = nuevaVenta.id;
+
+    const recibo = await ReciboServicio.CrearRecibo(usuario_id);
 
     // Obtener información del cliente para el correo electrónico
     if (clienteId) {
@@ -148,7 +155,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
             where: {
                 id: clienteId,
                 estado: true,
-                puntoDeVentaId: id_puntoDeVenta
+                id_puntoDeVenta: id_puntoDeVenta
             },
             select: {
                 email: true,
@@ -160,7 +167,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
         await envioCorreo(usuarioInfo.email, "Venta realizada", cuerpo);
     }
     // Crear un recibo
-    const recibo = await ReciboServicio.CrearRecibo();
+    
 
     return nuevaVenta;
 };
