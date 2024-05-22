@@ -267,84 +267,82 @@ export const listarArticuloPorId = async (id, usuario_id) => {
  *   - `color`: El color de la categoría.
  */
 export const modificarArticulo = async (id, nombre, tipo_venta, precio, representacion, color, imagen, id_categoria, usuario_id) => {
+  if (!nombre || nombre.length < 1) { throw new Error("Campo nombre vacío"); }
+  if (!tipo_venta || tipo_venta.length < 1) { throw new Error("Campo tipo_venta vacío"); }
+  if (!precio || precio.length < 1) { throw new Error("Campo precio vacío"); }
 
-  if (!nombre || nombre.length < 1) {throw new Error("Campo nombre vacío")}
-  if (!tipo_venta || tipo_venta.length < 1) {throw new Error("Campo tipo_venta vacío")}
-  if (!precio || precio.length < 1) {throw new Error("Campo precio vacío")}
-
-  //Validación tipo de venta
+  // Validación tipo de venta
   const TiposPermitidos = ['Peso', 'Unidad'];
-  if (!TiposPermitidos) {throw new Error("Tipo de venta no válido")}
+  if (!TiposPermitidos.includes(tipo_venta)) { throw new Error("Tipo de venta no válido"); }
 
-  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id);
 
-  //Buscar si existe un artículo con el id
-  const articuloExistente = await prisma.articulo.findUnique({
+  // Buscar si existe un artículo con el id
+  const articuloExistente = await prisma.articulo.findFirst({
     where: {
       id: parseInt(id),
       estado: true,
       id_puntoDeVenta: id_puntoDeVenta
     }
-  })
-  console.log(articuloExistente.imagen)
+  });
 
-  if (representacion !== 'color' && representacion !== 'imagen') {throw new Error("Representacion no valida")}
-
-  //Validacion colores
-    if (representacion === 'color') {
-      if (!Object.keys(colorMapping).includes(color)) {
-        throw new Error("Color no valido");
-      }
-      color = colorMapping[color];
-    }
-
-  if (representacion !== 'color' && representacion !== 'imagen') {throw new Error("Representacion no valida")}
-
-  //Validacion colores
-    if (representacion === 'color') {
-      if (!Object.keys(colorMapping).includes(color)) {
-        throw new Error("Color no valido");
-      }
-      color = colorMapping[color];
-    }
-
-  //Si el id no existe
-  if (!articuloExistente) {return null}
-
-  const categoria = await buscarCategoria(id_categoria);
-
-const articulo = await prisma.articulo.update({
-  where: {
-    id: parseInt(id),
-    estado: true,
-    id_puntoDeVenta: id_puntoDeVenta
-  },
-  data: {
-    nombre: nombre,
-    tipo_venta: tipo_venta,
-    precio: Number(precio),
-    representacion: representacion,
-    color: color ? color : null,
-    imagen: imagen ? imagen : null,
-    id_categoria: parseInt(id_categoria),
+  if (!articuloExistente) {
+    throw new Error("Artículo no encontrado");
   }
-})
 
-const articuloFormato = {
-  id: articulo.id,
-  nombre: articulo.nombre,
-  tipo_venta: articulo.tipo_venta,
-  precio: Number(articulo.precio),
-  ref: articulo.ref,
-  representacion:articulo.representacion,
-  color: articulo.color,
-  imagen: articulo.imagen,
-  categoria: categoria,
-  id_puntoDeVenta: articulo.id_puntoDeVenta
-}
+  if (representacion !== 'color' && representacion !== 'imagen') {
+    throw new Error("Representación no válida");
+  }
 
-return articuloFormato;
-}
+  // Validación colores
+  if (representacion === 'color') {
+    if (!Object.keys(colorMapping).includes(color)) {
+      throw new Error("Color no válido");
+    }
+    color = colorMapping[color];
+  }
+
+  // Si id_categoria está presente, verificar si la categoría existe
+  let categoria = null;
+  if (id_categoria && id_categoria !== "") {
+    categoria = await buscarCategoria(id_categoria, usuario_id);
+  }
+
+  // Actualizar artículo
+  const articulo = await prisma.articulo.update({
+    where: { id: parseInt(id) },
+    data: {
+      nombre: nombre,
+      tipo_venta: tipo_venta,
+      precio: Number(precio),
+      representacion: representacion,
+      color: representacion === 'color' ? color : null,
+      imagen: representacion === 'imagen' ? imagen : null,
+      id_categoria: id_categoria ? parseInt(id_categoria) : null
+    }
+  });
+
+  const articuloFormato = {
+    id: articulo.id,
+    nombre: articulo.nombre,
+    tipo_venta: articulo.tipo_venta,
+    precio: Number(articulo.precio),
+    ref: articulo.ref,
+    representacion: articulo.representacion,
+    color: articulo.color,
+    imagen: articulo.imagen,
+    categoria: categoria ? {
+      id: categoria.id,
+      nombre: categoria.nombre,
+      color: categoria.color,
+      id_puntoDeVenta: categoria.id_puntoDeVenta
+    } : "Sin categoría",
+    id_puntoDeVenta: articulo.id_puntoDeVenta
+  };
+
+  return articuloFormato;
+};
+
 
 
 
@@ -360,33 +358,31 @@ return articuloFormato;
  * Este método no elimina físicamente el artículo de la base de datos, sino que cambia su estado para indicar que ha sido eliminado.
  */
 export const eliminarArticulo = async (id, usuario_id) => {
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id);
 
-  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
-
-  //Buscar si existe un artículo con el id
-  const articuloExistente = await prisma.articulo.findUnique({
+  // Buscar si existe un artículo con el id
+  const articuloExistente = await prisma.articulo.findFirst({
     where: {
       id: parseInt(id),
       estado: true,
       id_puntoDeVenta: id_puntoDeVenta
     }
-  })
+  });
 
-  //Si el id no existe
-  if (!articuloExistente) {return null}
+  // Si el id no existe
+  if (!articuloExistente) {
+    return null;
+  }
 
   const articulo = await prisma.articulo.update({
     where: {
       id: parseInt(id),
-      estado: true,
-      id_puntoDeVenta: id_puntoDeVenta
     },
     data: {
       estado: false
     }
-  })
-  return articulo
-}
+  });
+};
 
 
 
@@ -470,20 +466,25 @@ const colorMapping = {
 
 const obtenerIdPunto = async (usuario_id) => {
   const usuario = await prisma.usuario.findFirst({
-    where: {id: usuario_id},
-    select: {nombre: true}
-  })
+    where: { id: usuario_id },
+    select: { nombre: true }
+  });
+
+  if (!usuario) {
+    throw new Error("Usuario no encontrado");
+  }
 
   const id_punto = await prisma.puntoDeVenta.findFirst({
     where: {
       estado: true,
       propietario: usuario.nombre
     },
-    select: {id: true}
-  })
+    select: { id: true }
+  });
 
-  //Asignar id del punto de venta
-  const id_puntoDeVenta = parseInt(id_punto.id)
+  if (!id_punto) {
+    throw new Error("Punto de venta no encontrado");
+  }
 
-  return id_puntoDeVenta;
-}
+  return parseInt(id_punto.id);
+};

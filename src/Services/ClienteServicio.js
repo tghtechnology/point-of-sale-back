@@ -148,58 +148,59 @@ const obtenerClienteById=async (id, usuario_id) => {
  */
 
 const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, region, pais, usuario_id) => {
-    if (!validarNombrePais(pais)) {
-      throw new Error("País inválido");
-    }
+  if (!validarNombrePais(pais)) {
+    throw new Error("País inválido");
+  }
 
-    const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id);
 
-    const clienteExistente = await prisma.cliente.findUnique({
-      where: {
-          email: email,
-          id_puntoDeVenta: id_puntoDeVenta,
-          id: Number(id)
-      }
-      });
-      if(!clienteExistente){
-        throw new Error("Cliente no encontrado");
-      }
-      
-    const todayISO = new Date().toISOString()
-    const fecha_modificacion = getUTCTime(todayISO)
-    const cliente=await prisma.cliente.update({
-      where: {
-        id: Number(id),
-        estado: true,
-        id_puntoDeVenta: id_puntoDeVenta
-      },
-      data:{
-            nombre: nombre,
-            email: email,
-            telefono: telefono,
-            direccion: direccion,
-            ciudad: ciudad,
-            region: region,
-            pais: pais,
-            fecha_modificacion: fecha_modificacion,
-            estado:true
-      }
-    })
-    const updatedCliente={
-        nombre:cliente.nombre,
-        email:cliente.email,
-        telefono:cliente.telefono,
-        direccion:cliente.direccion,
-        ciudad:cliente.ciudad,
-        region:cliente.region,
-        pais:cliente.pais,
-        fecha_creacion:cliente.fecha_creacion,
-        fecha_modificacion:cliente.fecha_modificacion,
-        estado:cliente.estado,
-        id_puntoDeVenta:cliente.id_puntoDeVenta,
+  const clienteExistente = await prisma.cliente.findUnique({
+    where: {
+      email: email,
+      id_puntoDeVenta: id_puntoDeVenta,
+      id: Number(id)
     }
-    return updatedCliente
+  });
+  if (!clienteExistente) {
+    throw new Error("Cliente no encontrado");
+  }
+
+  const todayISO = new Date().toISOString();
+  const fecha_modificacion = getUTCTime(todayISO);
+  const cliente = await prisma.cliente.update({
+    where: {
+      id: Number(id),
+      estado: true,
+      id_puntoDeVenta: id_puntoDeVenta
+    },
+    data: {
+      nombre: nombre,
+      email: email,
+      telefono: telefono,
+      direccion: direccion,
+      ciudad: ciudad,
+      region: region,
+      pais: pais,
+      fecha_modificacion: fecha_modificacion,
+      estado: true
+    }
+  });
+  const updatedCliente = {
+    nombre: cliente.nombre,
+    email: cliente.email,
+    telefono: cliente.telefono,
+    direccion: cliente.direccion,
+    ciudad: cliente.ciudad,
+    region: cliente.region,
+    pais: cliente.pais,
+    fecha_creacion: cliente.fecha_creacion,
+    fecha_modificacion: cliente.fecha_modificacion,
+    estado: cliente.estado,
+    id_puntoDeVenta: cliente.id_puntoDeVenta,
+  };
+  return updatedCliente;
 };
+
 
 
 
@@ -227,24 +228,37 @@ const eliminarCliente = async (id, usuario_id) => {
 };
 
 const obtenerIdPunto = async (usuario_id) => {
+  // Find the user by ID
   const usuario = await prisma.usuario.findFirst({
-    where: {id: usuario_id},
-    select: {nombre: true}
-  })
+    where: { id: usuario_id },
+    select: { nombre: true }
+  });
 
+  // If the user is not found, throw an error
+  if (!usuario) {
+    throw new Error("Usuario no encontrado");
+  }
+
+  // Find the puntoDeVenta by user name
   const id_punto = await prisma.puntoDeVenta.findFirst({
     where: {
       estado: true,
       propietario: usuario.nombre
     },
-    select: {id: true}
-  })
+    select: { id: true }
+  });
 
-  //Asignar id del punto de venta
-  const id_puntoDeVenta = parseInt(id_punto.id)
+  // If no puntoDeVenta is found, throw an error
+  if (!id_punto) {
+    throw new Error("Punto de venta no encontrado");
+  }
+
+  // Assign the id_puntoDeVenta
+  const id_puntoDeVenta = parseInt(id_punto.id);
 
   return id_puntoDeVenta;
-}
+};
+
 
 module.exports={
     crearCliente,

@@ -126,10 +126,8 @@ export const actualizarImpuesto = async (req, res) => {
 export const eliminarImpuesto = async (req, res) => {
     try {
       const id = req.params.id;
-      const impuesto = await ImpuestoServicio.eliminarImpuesto(id);
-      if (impuesto == null) {
-        return res.status(404).json({ error: 'Impuesto no encontrado' });
-      }
+      const usuario_id = req.usuario.id;
+      const impuesto = await ImpuestoServicio.eliminarImpuesto(id, usuario_id);
       res.status(200).json({ mensaje: 'Impuesto eliminado correctamente' });
     } catch (error) {
       console.error(error);

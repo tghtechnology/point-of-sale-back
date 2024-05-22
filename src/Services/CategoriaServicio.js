@@ -132,7 +132,7 @@ export const listarCategoriaPorId = async (id, usuario_id) => {
  * @throws {Error} - Si el campo ID está vacío, o si el nombre o color están vacíos, o si ya existe una categoría con el mismo nombre.
  */
 
-export const modificarCategoria = async (id, nombre, color) => {
+export const modificarCategoria = async (id, nombre, color, usuario_id) => {
 
   const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
 
