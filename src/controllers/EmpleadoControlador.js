@@ -12,7 +12,7 @@ export const crearEmpleado = async (req, res) => {
   }
 };
 
-export const listarEmpleados = async (_req, res) => {
+export const listarEmpleados = async (req, res) => {
   try {
     const usuario_id = req.usuario.id;
     const empleados = await EmpleadoServicio.listarEmpleados(usuario_id);

@@ -6,9 +6,6 @@ import { cuerpoVenta } from "../helpers/helperVenta";
 
 const prisma = new PrismaClient();
 
-
-
-
 /**
  * Crea una nueva venta, incluyendo detalles, impuestos, descuentos, y genera un recibo.
  * 
@@ -24,24 +21,23 @@ const prisma = new PrismaClient();
  * @throws {Error} - Si ocurre un error durante la creación de la venta, la generación de recibos, o el envío de correos electrónicos.
  */
 const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId, usuarioId, dineroRecibido, usuario_id) => {
-    
-    //Obtener el nombre de usuario
+    // Obtener el nombre de usuario
     const usuario = await prisma.usuario.findFirst({
-        where: {id: usuario_id},
-        select: {nombre: true}
-      })
-  
-      const id_punto = await prisma.puntoDeVenta.findFirst({
+        where: { id: usuario_id },
+        select: { nombre: true }
+    });
+
+    const id_punto = await prisma.puntoDeVenta.findFirst({
         where: {
-          estado: true,
-          propietario: usuario.nombre
+            estado: true,
+            propietario: usuario.nombre
         },
-        select: {id: true}
-      })
-  
-      //Asignar id del punto de venta
-      const id_puntoDeVenta = id_punto.id
-    
+        select: { id: true }
+    });
+
+    // Asignar id del punto de venta
+    const id_puntoDeVenta = id_punto.id;
+
     let subtotal = 0;
     const detallesArticulos = [];
     for (const detalle of detalles) {
@@ -62,8 +58,8 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     }
 
     let total = subtotal;
-    let VImpuesto=0;
-    let vDescuento=0;
+    let VImpuesto = 0;
+    let vDescuento = 0;
     if (descuentoId) {
         const descuento = await prisma.descuento.findUnique({
             where: {
@@ -72,13 +68,13 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
                 estado: true
             }
         });
-        if(descuento.tipo_descuento=="PORCENTAJE"){
-            vDescuento= subtotal * (descuento.valor_calculado);
-            total -= vDescuento
+        if (descuento.tipo_descuento == "PORCENTAJE") {
+            vDescuento = subtotal * (descuento.valor_calculado);
+            total -= vDescuento;
         }
-        if(descuento.tipo_descuento=="MONTO"){
-            vDescuento=descuento.valor_calculado
-            total -= vDescuento
+        if (descuento.tipo_descuento == "MONTO") {
+            vDescuento = descuento.valor_calculado;
+            total -= vDescuento;
         }
     }
     if (impuestoId) {
@@ -89,17 +85,19 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
                 estado: true
             }
         });
-        if(impuesto.tipo_impuesto=="Anadido_al_precio"){
-            const totalimpuesto=total*(impuesto.tasa/100);
-            VImpuesto=totalimpuesto
-            total=total+totalimpuesto;
+        if (impuesto.tipo_impuesto == "Anadido_al_precio") {
+            const totalImpuesto = total * (impuesto.tasa / 100);
+            VImpuesto = totalImpuesto;
+            total += totalImpuesto;
         }
-        if (impuesto.tipo_impuesto=="Incluido_en_el_precio"){
-            total=total
+        if (impuesto.tipo_impuesto == "Incluido_en_el_precio") {
+            total = total;
         }
     }
+
     // Calcular cambio
     const cambio = dineroRecibido - total;
+
     // Crear la venta en la base de datos
     const nuevaVenta = await prisma.venta.create({
         data: {
@@ -121,52 +119,51 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
         await DetalleVentaServicio.CrearDetalle(detalle.cantidad, detalle.articuloId, nuevaVenta.id);
     }));
 
-        //Buscar nombre de empleado
-        const empleado = await prisma.usuario.findUnique({
-            where: {
-                id: usuarioId,
-                estado: true,
-                puntoDeVentaId: id_puntoDeVenta
-            },
-            select: {
-                nombre: true
-            }
-        })
-        
-        //Buscar artículo
-        const articulo = await prisma.articulo.findMany({
-            where: {
-                id: detallesArticulos.articuloId,
-                estado: true,
-                puntoDeVentaId: id_puntoDeVenta
-            }
-        })
-    
-        const id_venta = nuevaVenta.id
-
-    // Obtener información del cliente para el correo electrónico
-    if(clienteId){
-    const usuarioInfo = await prisma.cliente.findUnique({
+    // Buscar nombre de empleado
+    const empleado = await prisma.usuario.findUnique({
         where: {
-            id: clienteId,
+            id: usuarioId,
             estado: true,
             puntoDeVentaId: id_puntoDeVenta
         },
         select: {
-            email: true,
             nombre: true
         }
     });
-    const cuerpo = cuerpoVenta(usuarioInfo.nombre, detallesArticulos, subtotal, total, VImpuesto, vDescuento );
-    // Enviar el correo electrónico
-    await envioCorreo(usuarioInfo.email, "Venta realizada", cuerpo);
-}
-    //Crear un recibo
-    const recibo= await ReciboServicio.CrearRecibo()
-    
+
+    // Buscar artículo
+    const articulo = await prisma.articulo.findMany({
+        where: {
+            id: detallesArticulos.articuloId,
+            estado: true,
+            puntoDeVentaId: id_puntoDeVenta
+        }
+    });
+
+    const id_venta = nuevaVenta.id;
+
+    // Obtener información del cliente para el correo electrónico
+    if (clienteId) {
+        const usuarioInfo = await prisma.cliente.findUnique({
+            where: {
+                id: clienteId,
+                estado: true,
+                puntoDeVentaId: id_puntoDeVenta
+            },
+            select: {
+                email: true,
+                nombre: true
+            }
+        });
+        const cuerpo = cuerpoVenta(usuarioInfo.nombre, detallesArticulos, subtotal, total, VImpuesto, vDescuento);
+        // Enviar el correo electrónico
+        await envioCorreo(usuarioInfo.email, "Venta realizada", cuerpo);
+    }
+    // Crear un recibo
+    const recibo = await ReciboServicio.CrearRecibo();
+
     return nuevaVenta;
 };
-
 
 /**
  * Obtiene todas las ventas registradas en la base de datos.
@@ -175,20 +172,18 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
  * @throws {Error} - Si ocurre un error al buscar las ventas.
  */
 
-const ListarVentas=async(usuario_id)=>{
-
-    const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+const ListarVentas = async (usuario_id) => {
+    const id_puntoDeVenta = await obtenerIdPunto(usuario_id);
 
     const ventas = await prisma.venta.findMany({
         where: {
-            puntoDeVentaId: id_puntoDeVenta
+            puntoDeVenta: {
+                id: id_puntoDeVenta
+            }
         }
     });
     return ventas;
-}
-
-
-
+};
 
 /**
  * Obtiene una venta por su ID.
@@ -199,36 +194,38 @@ const ListarVentas=async(usuario_id)=>{
  * @throws {Error} - Si el ID no es válido o si ocurre un error durante la búsqueda de la venta.
  */
 
-const ObtenerVentaPorId=async(id, usuario_id)=>{
-    const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
-    const ventas = await prisma.venta.findUnique({
+const ObtenerVentaPorId = async (id, usuario_id) => {
+    const id_puntoDeVenta = await obtenerIdPunto(usuario_id);
+    const venta = await prisma.venta.findUnique({
         where: {
             id: Number(id),
-            puntoDeVentaId: id_puntoDeVenta
+            puntoDeVenta: {
+                id: id_puntoDeVenta
+            }
         }
     });
-    return ventas;
-}
+    return venta;
+};
 
 const obtenerIdPunto = async (usuario_id) => {
     const usuario = await prisma.usuario.findFirst({
-      where: {id: usuario_id},
-      select: {nombre: true}
-    })
-  
+        where: { id: usuario_id },
+        select: { nombre: true }
+    });
+
     const id_punto = await prisma.puntoDeVenta.findFirst({
-      where: {
-        estado: true,
-        propietario: usuario.nombre
-      },
-      select: {id: true}
-    })
-  
-    //Asignar id del punto de venta
-    const id_puntoDeVenta = parseInt(id_punto.id)
-  
+        where: {
+            estado: true,
+            propietario: usuario.nombre
+        },
+        select: { id: true }
+    });
+
+    // Asignar id del punto de venta
+    const id_puntoDeVenta = parseInt(id_punto.id);
+
     return id_puntoDeVenta;
-  }
+};
 
 module.exports = {
     CrearVenta,
