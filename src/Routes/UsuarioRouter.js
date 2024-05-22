@@ -1,6 +1,7 @@
 import {
   crearUsuario,
   listaPaises,
+  listarUsuarios,
   verificarContrasena,
   eliminarTemporalmente,
   restaurarCuenta,

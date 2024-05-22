@@ -8,7 +8,15 @@ import { getUTCTime, getPeruTime } from "../Utils/Time";
 
 const prisma = new PrismaClient();
 
+const transporter = nodemailer.createTransport({
+  service: process.env.EMAIL_SERVICE,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
 
+const asyncErrorHandler = (promise) => promise.catch((error) => { throw error; });
 
 /**
  * Autentica a un usuario y crea una nueva sesión.

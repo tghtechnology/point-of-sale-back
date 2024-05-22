@@ -13,7 +13,7 @@ CREATE TABLE `puntoDeVenta` (
 CREATE TABLE `categoria` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `nombre` VARCHAR(255) NOT NULL,
-    `color` VARCHAR(255) NOT NULL,
+    `color` ENUM('Rojo', 'Verde_limon', 'Azul', 'Amarillo', 'Turquesa', 'Fucsia', 'Gris_claro', 'Gris_oscuro') NOT NULL,
     `estado` BOOLEAN NOT NULL,
     `id_puntoDeVenta` INTEGER NOT NULL,
 
@@ -131,6 +131,8 @@ CREATE TABLE `Recibo` (
     `monto_reembolsado` DECIMAL(10, 2) NULL,
     `id_venta` INTEGER NOT NULL,
     `id_puntoDeVenta` INTEGER NOT NULL,
+    `valorDescuentoTotal` DECIMAL(10, 2) NULL,
+    `valorImpuestoTotal` DECIMAL(10, 2) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -140,7 +142,7 @@ CREATE TABLE `detalleVenta` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `cantidad` INTEGER NOT NULL,
     `subtotal` DECIMAL(10, 2) NOT NULL,
-    `cantidadReembolsada` INTEGER NOT NULL DEFAULT 0,
+    `cantidadReembolsadaTotal` INTEGER NOT NULL DEFAULT 0,
     `articuloId` INTEGER NOT NULL,
     `ventaId` INTEGER NOT NULL,
     `id_puntoDeVenta` INTEGER NOT NULL,
@@ -161,6 +163,17 @@ CREATE TABLE `Venta` (
     `clienteId` INTEGER NULL,
     `usuarioId` INTEGER NOT NULL,
     `id_puntoDeVenta` INTEGER NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `DetalleReembolso` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `articuloId` INTEGER NOT NULL,
+    `reciboId` INTEGER NOT NULL,
+    `cantidadDevuelta` INTEGER NOT NULL,
+    `subtotal` DECIMAL(10, 2) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -224,3 +237,9 @@ ALTER TABLE `Venta` ADD CONSTRAINT `Venta_usuarioId_fkey` FOREIGN KEY (`usuarioI
 
 -- AddForeignKey
 ALTER TABLE `Venta` ADD CONSTRAINT `Venta_id_puntoDeVenta_fkey` FOREIGN KEY (`id_puntoDeVenta`) REFERENCES `puntoDeVenta`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `DetalleReembolso` ADD CONSTRAINT `DetalleReembolso_articuloId_fkey` FOREIGN KEY (`articuloId`) REFERENCES `articulo`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `DetalleReembolso` ADD CONSTRAINT `DetalleReembolso_reciboId_fkey` FOREIGN KEY (`reciboId`) REFERENCES `Recibo`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
