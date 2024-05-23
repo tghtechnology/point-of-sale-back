@@ -207,7 +207,6 @@ export const eliminarImpuesto = async (id, usuario_id ) => {
       estado: false
     }
   })
-  return impuesto
 }
 
 const obtenerIdPunto = async (usuario_id) => {

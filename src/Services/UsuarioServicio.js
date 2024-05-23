@@ -6,10 +6,9 @@ import { cuerpoCorreo } from "../helpers/helperEmail";
 import { envioCorreo } from "../Utils/SendEmail";
 import { getUTCTime } from "../Utils/Time";
 import { crearPOS } from "./PuntoDeVentaServicio";
+import { cuerpoPermanente } from "../helpers/helperPermanente";
+import { cuerpoRestaurado } from "../helpers/helperRestaurado";
 const prisma = new PrismaClient();
-
-
-
 
 /**
  * Crea un nuevo usuario (propietario) y lo guarda en la base de datos.
@@ -60,7 +59,6 @@ export const crearUsuario = async (
   if (!validarNombrePais(pais)) {
     throw new Error("País inválido");
   }
-
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const todayISO = new Date().toISOString()
@@ -115,9 +113,6 @@ const validarUsuario = async (id, password, token) => {
   return usuario;
 };
 
-
-
-
 /**
  * Elimina todas las sesiones activas para un usuario específico.
  * 
@@ -134,9 +129,6 @@ export const eliminarSesionesActivas = async (usuario_id) => {
 
   if (activeSessions.length > 0) await logout(activeSessions[0].token);
 };
-
-
-
 
 /**
  * Elimina temporalmente un usuario por ID, desactivando su cuenta.
@@ -194,9 +186,6 @@ export const eliminarTemporalmente = async (usuario_id, password, token) => {
   return results;
 };
 
-
-
-
 /**
  * Elimina permanentemente un usuario por su ID, removiéndolo de la base de datos.
  * 
@@ -209,18 +198,30 @@ export const eliminarTemporalmente = async (usuario_id, password, token) => {
  */
 
 export const eliminarPermanentemente = async (usuario_id, password, token) => {
-  const usuario = await validarUsuario(usuario_id, password, token);
+  const usuario=await validarUsuario(usuario_id, password, token);
   await eliminarSesionesActivas(usuario_id);
-  const results = await prisma.usuario.delete({
+
+  const usuarioInfo = await prisma.usuario.findUnique({
     where: {
-      id: parseInt(usuario_id),
+      id: parseInt(usuario_id)
     },
+    select: {
+      email: true,
+      nombre:true 
+    }
   });
+  const cuerpo = cuerpoPermanente(usuarioInfo.nombre);
+  await envioCorreo(usuarioInfo.email,  "Cuenta eliminada permanente",cuerpo);
+  
+  const results = await prisma.usuario.update({ 
+    where: { 
+      id: parseInt(usuario_id) 
+    }, 
+  data:{
+    estado:false,
+  }});
   return results;
 };
-
-
-
 
 /**
  * Elimina las cuentas que fueron desactivadas hace más de una semana.
@@ -246,39 +247,52 @@ export const eliminarCuentasVencidas = async (id) => {
   return results.count > 0;
 };
 
-
-
-
 /**
- * Restaura una cuenta eliminada temporalmente si se encuentra dentro del período de gracia de una semana.
+ * Restaura una cuenta eliminada temporalmente si se encuentra dentro del período de gracia de una semana y si la fecha de eliminación temporal no es nula.
  * 
  * @param {number|string} id - El ID del usuario a restaurar.
  * 
- * @returns {boolean} - Verdadero si la cuenta fue restaurada, falso si el período de gracia ya pasó o la cuenta no puede ser restaurada.
+ * @returns {boolean} - Verdadero si la cuenta fue restaurada, falso si el período de gracia ya pasó, la cuenta no tiene fecha de eliminación temporal o la cuenta no puede ser restaurada.
  * @throws {Error} - Si ocurre un error durante la restauración de la cuenta.
  */
 
 export const restaurarCuenta = async (id) => {
   const usuario = await prisma.usuario.findUnique({
-    where: { id: parseInt(id) },
-    select: { eliminado_temporal_fecha: true },
+    where: { 
+      id: parseInt(id) 
+    },
+    select: { 
+      eliminado_temporal_fecha: true 
+    }
   });
-  if (!usuario || !usuario.eliminado_temporal_fecha) {
-    return false;
-  }
+  if (usuario.eliminado_temporal_fecha !== null) {
+  
   const unaSemanaEnMiliseg = 7 * 24 * 60 * 60 * 1000;
   const fechaEliminacion = new Date(usuario.eliminado_temporal_fecha);
 
   if (Date.now() - fechaEliminacion <= unaSemanaEnMiliseg) {
     await prisma.usuario.update({
       where: { id: parseInt(id) },
-      data: { estado: true, eliminado_temporal_fecha: null },
+      data: { estado: true, eliminado_temporal_fecha: null }
     });
+    const usuarioInfo = await prisma.usuario.findUnique({
+      where: {
+        id: parseInt(id)
+      },
+      select: {
+        email: true,
+        nombre:true 
+      }
+    });
+    const cuerpo = cuerpoRestaurado(usuarioInfo.nombre);
+    await envioCorreo(usuarioInfo.email,  "Cuenta restaurada",cuerpo);
     return true;
   } else {
     return false;
   }
+}
 };
+
 
 /**
  * Busca un usuario por su ID en la base de datos.

@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { getUTCTime } from "../Utils/Time";
 import { envioCorreo } from "../Utils/SendEmail";
 import {cuerpoReembolso} from "../helpers/helperReembolso";
-
+import { CrearDetalleReembolso } from "./DetalleReembolsoServicio";
 const prisma = new PrismaClient();
 
 
@@ -45,8 +45,15 @@ const generarRef = async (usuario_id) => {
  * @throws {Error} - Si ocurre un error al buscar los recibos.
  */
 
-export const listarRecibo = async () => {
-  const recibos = await prisma.recibo.findMany();
+export const listarRecibo = async (usuario_id) => {
+
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+
+  const recibos = await prisma.recibo.findMany({
+    where: {
+      id_puntoDeVenta: id_puntoDeVenta,
+    }
+  });
   return recibos
 }
 
@@ -61,10 +68,14 @@ export const listarRecibo = async () => {
  * @throws {Error} - Si ocurre un error al buscar el artículo por su ID.
  */
 
-async function obtenerNombreArticulo(articuloId) {
+async function obtenerNombreArticulo(articuloId, usuario_id) {
+
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+
   const articulo = await prisma.articulo.findUnique({
       where: {
-          id: articuloId
+        id: articuloId,
+        id_puntoDeVenta: id_puntoDeVenta 
       },
       select: {
           nombre: true
@@ -84,7 +95,6 @@ async function obtenerNombreArticulo(articuloId) {
  */
 export const CrearRecibo = async (usuario_id) => {
 
-
   //Obtener el nombre de usuario
   const usuario = await prisma.usuario.findFirst({
     where: {id: usuario_id},
@@ -103,9 +113,6 @@ export const CrearRecibo = async (usuario_id) => {
   const id_puntoDeVenta = id_punto.id
 
   const lastVenta = await prisma.venta.findFirst({
-    select: {
-      id_puntoDeVenta: id_puntoDeVenta
-    },
     orderBy: { id: "desc" },
   })
 
@@ -117,7 +124,6 @@ export const CrearRecibo = async (usuario_id) => {
   const Rec = await prisma.venta.findFirst({
     where: {
       id: id_venta,
-      estado: true,
       id_puntoDeVenta: id_puntoDeVenta
     },
     include: {
@@ -133,7 +139,6 @@ export const CrearRecibo = async (usuario_id) => {
   const detalles = await prisma.detalleVenta.findMany({
     where: {
       ventaId: id_venta,
-      estado: true,
       id_puntoDeVenta: id_puntoDeVenta,
     },
     select: {
@@ -147,7 +152,7 @@ export const CrearRecibo = async (usuario_id) => {
   //Según el id de artículo se obtiene el nombre
   const nombresArticulos = await Promise.all(detalles.map(async (detalle) => {
   const articuloId = detalle.articuloId;
-  const nombreArticulo = await obtenerNombreArticulo(articuloId);
+  const nombreArticulo = await obtenerNombreArticulo(articuloId, usuario_id);
     return nombreArticulo;
   }));
 
@@ -168,7 +173,8 @@ export const CrearRecibo = async (usuario_id) => {
     data:{
       ref: ref,
       fecha_creacion:fecha_creacion,
-      id_venta: id_venta
+      id_venta: id_venta,
+      id_puntoDeVenta: id_puntoDeVenta
     }
   })
   return newRecibo
@@ -194,22 +200,23 @@ export const Reembolsar = async (id, detalles, usuario_id) => {
   const ventaAsociada = await prisma.venta.findUnique({
     where: {
       id: id,
-      estado: true,
       id_puntoDeVenta: id_puntoDeVenta,
     },
     include: {
       detalles: true,
       descuento: true,
-      impuesto:true,
-      cliente:true,
+      impuesto: true,
+      cliente: true,
     },
   });
+
   if (!ventaAsociada) {
     throw new Error('No se encontró la venta asociada al recibo original');
   }
+
   let montoReembolsado = 0;
   let valorImpuestoTotal = 0;
-  let valorDescuentoTotal = 0; 
+  let valorDescuentoTotal = 0;
 
   for (const detalle of detalles) {
     const detalleOriginal = ventaAsociada.detalles.find(
@@ -232,10 +239,9 @@ export const Reembolsar = async (id, detalles, usuario_id) => {
     await prisma.detalleVenta.update({
       where: { 
         id: detalleOriginal.id,
-        estado: true,
         id_puntoDeVenta: id_puntoDeVenta,
       },
-      data: { cantidadReembolsada: detalleOriginal.cantidadReembolsada + detalle.cantidad },
+      data: { cantidadReembolsadaTotal: detalleOriginal.cantidadReembolsadaTotal + detalle.cantidad },
     });
 
     let montoArticulo = (detalle.cantidad / detalleOriginal.cantidad) * detalleOriginal.subtotal;
@@ -273,37 +279,109 @@ export const Reembolsar = async (id, detalles, usuario_id) => {
       id_puntoDeVenta: id_puntoDeVenta
     },
   });
-  if(ventaAsociada.cliente){
-  const detallesReembolso = await Promise.all(detalles.map(async (detalle) => {
-    const nombreArticulo = await obtenerNombreArticulo(detalle.articuloId);
-    const precioUnitario = await prisma.articulo.findUnique({
-      where: { id: detalle.articuloId },
-      select: { precio: true }
+
+  for (const detalle of detalles) {
+    const detalleOriginal = ventaAsociada.detalles.find(
+      (det) => det.articuloId === detalle.articuloId
+    );
+
+    if (!detalleOriginal) {
+      throw new Error(
+        `No se encontró el detalle de la venta original para el artículo ${detalle.articuloId}`
+      );
+    }
+
+    const cantidadRestanteReembolso = detalleOriginal.cantidad - detalleOriginal.cantidadReembolsadaTotal;
+    if (cantidadRestanteReembolso < detalle.cantidad) {
+      throw new Error(
+        `La cantidad a reembolsar para el artículo ${detalle.articuloId} excede la cantidad restante`
+      );
+    }
+
+    await prisma.detalleVenta.update({
+      where: { id: detalleOriginal.id },
+      data: { cantidadReembolsadaTotal: detalleOriginal.cantidadReembolsadaTotal + detalle.cantidad },
     });
-    const precio = precioUnitario ? precioUnitario.precio : null;
-    return {
-      nombreArticulo: nombreArticulo,
-      cantidad: detalle.cantidad,
-      precioUnitario: precioUnitario.precio
-    };
-  }));
-  
-  const clienteInfo = ventaAsociada.cliente;
-  const cuerpo = cuerpoReembolso(clienteInfo.nombre, detallesReembolso, montoReembolsado, valorDescuentoTotal, valorImpuestoTotal);
-  await envioCorreo(clienteInfo.email, "Reembolso realizado", cuerpo);
+
+    let montoArticulo = (detalle.cantidad / detalleOriginal.cantidad) * detalleOriginal.subtotal;
+    let valor = 0;
+    if (ventaAsociada.descuento) {
+      if (ventaAsociada.descuento.tipo_descuento === 'PORCENTAJE') {
+        valor = montoArticulo * ventaAsociada.descuento.valor_calculado;
+        montoArticulo -= valor;
+        valorDescuentoTotal += valor;
+      } else if (ventaAsociada.descuento.tipo_descuento === 'MONTO') {
+        valor = (ventaAsociada.descuento.valor / ventaAsociada.subtotal) * montoArticulo;
+        montoArticulo -= valor;
+        valorDescuentoTotal += valor;
+      }
+    }
+    let iValor = 0;
+    if (ventaAsociada.impuesto && ventaAsociada.impuesto.tipo_impuesto === 'Anadido_al_precio') {
+      iValor = montoArticulo * (ventaAsociada.impuesto.tasa / 100);
+      montoArticulo += iValor;
+      valorImpuestoTotal += iValor;
+    }
+    detalleOriginal.cantidadReembolsadaTotal += detalle.cantidad;
+    montoReembolsado += montoArticulo;
+
+    // Crear el detalle de reembolso usando el servicio DetalleReembolsoServicio
+    await CrearDetalleReembolso(
+      detalle.articuloId,
+      reciboReembolsado.id,
+      detalle.cantidad,
+      montoArticulo  
+    );
   }
-  return reciboReembolsado;
+
+  // Actualizar recibo con los totales
+  const reembolso=await prisma.recibo.update({
+    where: { id: reciboReembolsado.id },
+    data: {
+      monto_reembolsado: montoReembolsado,
+      valorDescuentoTotal: valorDescuentoTotal,
+      valorImpuestoTotal: valorImpuestoTotal,
+    },
+  });
+
+  if (ventaAsociada.cliente) {
+    const detallesReembolso = await Promise.all(detalles.map(async (detalle) => {
+      const nombreArticulo = await obtenerNombreArticulo(detalle.articuloId);
+      const precioUnitario = await prisma.articulo.findUnique({
+        where: { id: detalle.articuloId },
+        select: { precio: true }
+      });
+      const precio = precioUnitario ? precioUnitario.precio : null;
+      return {
+        nombreArticulo: nombreArticulo,
+        cantidad: detalle.cantidad,
+        precioUnitario: precioUnitario.precio
+      };
+    }));
+
+    const clienteInfo = ventaAsociada.cliente;
+    const cuerpo = cuerpoReembolso(clienteInfo.nombre, detallesReembolso, montoReembolsado, valorDescuentoTotal, valorImpuestoTotal);
+    await envioCorreo(clienteInfo.email, "Reembolso realizado", cuerpo);
+  }
+
+  return reembolso;
 };
 
 
+
+/**
+ * Obtiene un recibo específico por su ID.
+ * 
+ * @param {number|string} id - El ID del recibo a buscar.
+ * 
+ * @returns {Object|null} - El objeto representando el recibo, o null si no se encuentra.
+ * @throws {Error} - Si ocurre un error al buscar el recibo por su ID.
+ */
 export const ListarReciboById=async(id, usuario_id)=>{
-
   const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
-
   const recibo= await prisma.recibo.findMany({
     where: {
         id: Number(id),
-        estado: true,
         id_puntoDeVenta: id_puntoDeVenta
     }
 })
@@ -311,14 +389,19 @@ return recibo
 }
 
 
+/**
+ * Obtiene los recibos relacionados a una venta específica por el ID de la venta.
+ * 
+ * @param {number|string} id_venta - El ID de la venta cuyos recibos se desean buscar.
+ * 
+ * @returns {Array<Object>} - Una lista de objetos representando los recibos relacionados a la venta.
+ * @throws {Error} - Si ocurre un error al buscar los recibos por el ID de la venta.
+ */
 export const ListarReciboByVenta=async(id_venta, usuario_id)=>{
-
   const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
-
   const recibos= await prisma.recibo.findMany({
     where: {
         id_venta: Number(id_venta),
-        estado: true,
         id_puntoDeVenta: id_puntoDeVenta
     }
   })

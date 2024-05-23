@@ -128,7 +128,6 @@ export const actualizarArticulo = async (req, res) => {
         const result = await deleteImage(imagen)
       }
     }
-    
     //Subir otra imagen
     if (req.files?.imagen) {
       const newImagen = await uploadImage(req.files.imagen.tempFilePath)
@@ -177,18 +176,14 @@ export const eliminarArticulo = async (req, res) => {
     const usuario_id = req.usuario.id;
 
     //Eliminar imagen de la nube
-    const Articulo = await ArticuloServicio.listarArticuloPorId(id)
+    /*const Articulo = await ArticuloServicio.listarArticuloPorId(id)
     const secure_url = Articulo.imagen; // Asegúrate de que este campo tenga el `secure_url` de la imagen
 
     if (secure_url) {
       await deleteImage(secure_url);
-    }
+    }*/
 
     const articulo = await ArticuloServicio.eliminarArticulo(id, usuario_id);
-
-    if (articulo == null) {
-      return res.status(400).json({ error: "No se encontró el artículo" });
-    }
     res.status (200).json({message: 'Artículo eliminado correctamente'})
 
   } catch (error) {

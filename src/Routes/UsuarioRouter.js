@@ -1,7 +1,7 @@
 import {
   crearUsuario,
   listaPaises,
-  verificarContrasena,
+  listarUsuarios,
   eliminarTemporalmente,
   restaurarCuenta,
   eliminarCuentasVencidas,
@@ -14,10 +14,12 @@ const routerUsuario = Router();
 //REGISTRO DE USUARIO
 routerUsuario.post("/registro", crearUsuario);
 routerUsuario.get("/listaPaises", listaPaises);
+routerUsuario.get("/usuario", listarUsuarios);
 
 //RUTAS PARA ELIMINACIÓN DE CUENTA
 routerUsuario.post("/eliminar-temporal", verificarAuth, isPropietario, eliminarTemporalmente);
 routerUsuario.post("/eliminar-cuenta-vencida/:id", verificarAuth, eliminarCuentasVencidas);
+routerUsuario.post("/restaurar-cuenta/:id", verificarAuth, isPropietario, restaurarCuenta);
 routerUsuario.post("/eliminar-permanente", verificarAuth, isPropietario, eliminarPermanentemente);
 
 export default routerUsuario;

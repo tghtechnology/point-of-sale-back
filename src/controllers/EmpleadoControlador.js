@@ -2,17 +2,9 @@ import * as EmpleadoServicio from "../Services/EmpleadoServicio";
 
 export const crearEmpleado = async (req, res) => {
   const usuario_id = req.usuario.id;
-  const { nombre, email, telefono, cargo, pais, password } = req.body;
   try {
-    const nuevoEmpleado = await EmpleadoServicio.crearEmpleado(
-      nombre,
-      email,
-      telefono,
-      cargo,
-      pais,
-      password,
-      usuario_id
-    );
+    const { nombre, email, telefono, cargo, pais, password, propietarioId } = req.body;
+    const nuevoEmpleado = await EmpleadoServicio.crearEmpleado(nombre, email, telefono, cargo, pais, password, propietarioId, usuario_id);
     res.status(200).json(nuevoEmpleado);
   } catch (error) {
     console.error("Error al crear empleado:", error.message);
@@ -20,7 +12,7 @@ export const crearEmpleado = async (req, res) => {
   }
 };
 
-export const listarEmpleados = async (_req, res) => {
+export const listarEmpleados = async (req, res) => {
   try {
     const usuario_id = req.usuario.id;
     const empleados = await EmpleadoServicio.listarEmpleados(usuario_id);
@@ -57,7 +49,6 @@ export const editarEmpleado = async (req, res) => {
       telefono,
       cargo,
       pais,
-      password,
       usuario_id
     );
     res.status(200).json(empleado);
