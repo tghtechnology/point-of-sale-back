@@ -1,3 +1,4 @@
+import { desasociarArticulo } from "../Middleware/DesvCategoria";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
@@ -188,7 +189,7 @@ export const eliminarCategoria = async (id, usuario_id) => {
 
   const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
   //Buscar si existe una categoría con el id
-  const categoriaExistente = await prisma.categoria.findUnique({
+  const categoriaExistente = await prisma.categoria.findFirst({
     where: {
       id: parseInt(id),
       estado: true,
@@ -199,6 +200,8 @@ export const eliminarCategoria = async (id, usuario_id) => {
   //Si el id no existe
   if (!categoriaExistente) {return null}
 
+  await desasociarArticulo(parseInt(id))
+
   const categoria = await prisma.categoria.update({
     where: {
       id: parseInt(id),
@@ -206,7 +209,7 @@ export const eliminarCategoria = async (id, usuario_id) => {
       id_puntoDeVenta: id_puntoDeVenta
     },
     data: {
-      estado: false
+      estado: false,
     }
   })
   return categoria

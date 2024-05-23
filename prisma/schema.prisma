@@ -23,8 +23,8 @@ model PuntoDeVenta {
   impuesto Impuesto[]
   recibo Recibo[]
   venta Venta[]
-  detalleVenta DetalleVenta[]
   sesion Sesion[]
+  detalleVenta DetalleVenta[]
 
   @@map("puntoDeVenta")
 }
@@ -40,10 +40,10 @@ model Categoria {
   nombre    String     @db.VarChar(255)
   color     Color
   estado    Boolean
-  id_puntoDeVenta  Int
+  id_puntoDeVenta  Int?
   articulos Articulo[]
 
-  puntoDeVenta    PuntoDeVenta @relation(fields: [id_puntoDeVenta], references: [id])
+  puntoDeVenta    PuntoDeVenta? @relation(fields: [id_puntoDeVenta], references: [id])
 
   @@map("categoria")
 }
@@ -55,11 +55,11 @@ model Descuento {
   valor           Decimal       @db.Decimal(10, 2)
   valor_calculado Decimal       @db.Decimal(10, 2)
   estado          Boolean
-  id_puntoDeVenta  Int
+  id_puntoDeVenta  Int?
 
   ventas          Venta[]
 
-  puntoDeVenta    PuntoDeVenta @relation(fields: [id_puntoDeVenta], references: [id])
+  puntoDeVenta    PuntoDeVenta? @relation(fields: [id_puntoDeVenta], references: [id])
 
   @@map("descuento")
 }
@@ -75,10 +75,10 @@ model Impuesto {
   tasa          Decimal      @db.Decimal(10, 2)
   tipo_impuesto tipoImpuesto
   estado        Boolean
-  id_puntoDeVenta  Int
+  id_puntoDeVenta  Int?
   ventas        Venta[]
 
-  puntoDeVenta    PuntoDeVenta @relation(fields: [id_puntoDeVenta], references: [id])
+  puntoDeVenta    PuntoDeVenta? @relation(fields: [id_puntoDeVenta], references: [id])
 }
 
 enum tipoImpuesto {
@@ -128,12 +128,12 @@ model Articulo {
   imagen       String?        @db.VarChar(255)
   id_categoria Int?           @map("id_categoria") @db.Int
   estado       Boolean
-  id_puntoDeVenta  Int
+  id_puntoDeVenta  Int?
   detalles     DetalleVenta[]
   detalleReembolso DetalleReembolso[]
 
   categoria Categoria? @relation(fields: [id_categoria], references: [id])
-  puntoDeVenta    PuntoDeVenta @relation(fields: [id_puntoDeVenta], references: [id])
+  puntoDeVenta    PuntoDeVenta? @relation(fields: [id_puntoDeVenta], references: [id])
 
   @@map("articulo")
 }
@@ -169,10 +169,9 @@ model Sesion {
   usuario_id Int      @map("usuario_id")
   token      String   @db.VarChar(255)
   expiracion DateTime
-  id_puntoDeVenta  Int?
+  id_puntoDeVenta Int?
 
   usuario Usuario @relation(fields: [usuario_id], references: [id])
-
   puntoDeVenta    PuntoDeVenta? @relation(fields: [id_puntoDeVenta], references: [id])
 
   @@map("sesion")
@@ -190,10 +189,10 @@ model Cliente {
   fecha_creacion DateTime
   fecha_modificacion DateTime?
   estado        Boolean
-  id_puntoDeVenta  Int
+  id_puntoDeVenta  Int?
   ventas        Venta[]
 
-  puntoDeVenta    PuntoDeVenta @relation(fields: [id_puntoDeVenta], references: [id])
+  puntoDeVenta    PuntoDeVenta? @relation(fields: [id_puntoDeVenta], references: [id])
 
   @@map("cliente")
 }
@@ -204,14 +203,14 @@ model Recibo {
   ref String @db.VarChar(100)
   monto_reembolsado Decimal? @db.Decimal(10,2)
   id_venta Int @db.Int @map("id_venta")
-  id_puntoDeVenta  Int
+  id_puntoDeVenta  Int?
   valorDescuentoTotal Decimal? @db.Decimal(10,2)
   valorImpuestoTotal  Decimal? @db.Decimal(10,2)
   detalles            DetalleReembolso[]
 
   venta Venta? @relation(fields: [id_venta], references: [id])
 
-  puntoDeVenta    PuntoDeVenta @relation(fields: [id_puntoDeVenta], references: [id])
+  puntoDeVenta    PuntoDeVenta? @relation(fields: [id_puntoDeVenta], references: [id])
 }
 model DetalleVenta {
   id         Int      @id @default(autoincrement())
@@ -222,9 +221,9 @@ model DetalleVenta {
   articuloId Int
   venta      Venta    @relation(fields: [ventaId], references: [id])
   ventaId    Int
-  id_puntoDeVenta  Int
+  id_puntoDeVenta  Int?
 
-  puntoDeVenta    PuntoDeVenta @relation(fields: [id_puntoDeVenta], references: [id])
+  puntoDeVenta    PuntoDeVenta? @relation(fields: [id_puntoDeVenta], references: [id])
 
   @@map("detalleVenta")
 }
@@ -247,9 +246,9 @@ model Venta {
   descuentoId   Int?
   clienteId     Int?
   usuarioId     Int
-  id_puntoDeVenta  Int
+  id_puntoDeVenta  Int?
 
-  puntoDeVenta    PuntoDeVenta @relation(fields: [id_puntoDeVenta], references: [id])
+  puntoDeVenta    PuntoDeVenta? @relation(fields: [id_puntoDeVenta], references: [id])
 
   recibo Recibo[]
 }
