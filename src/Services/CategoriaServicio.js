@@ -2,7 +2,15 @@ import { desasociarArticulo } from "../Middleware/DesvCategoria";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-
+// Función para obtener el nombre de color correspondiente al valor hexadecimal
+const getColorName = (hex) => {
+  for (const key in colorMapping) {
+    if (colorMapping[key] === hex) {
+      return key;
+    }
+  }
+  throw new Error('Color no válido');
+};
 
 
 /**
@@ -86,8 +94,16 @@ export const listarCategorias = async (usuario_id)=>{
     }
   })
 
-  return allCategorias;
-}
+  const categoriasFormato = allCategorias.map((categoria) => {
+    return {
+      id: categoria.id,
+      nombre: categoria.nombre,
+      color: nameToHexMapping[categoria.color] // Convertir a hexadecimal
+    };
+  });
+
+  return categoriasFormato;
+};
 
 
 
@@ -134,7 +150,12 @@ export const listarCategoriaPorId = async (id, usuario_id) => {
  */
 
 export const modificarCategoria = async (id, nombre, color, usuario_id) => {
-
+  console.log(color)
+  if (!Object.keys(colorMapping).includes(color)) {
+    console.log(color)
+    throw new Error("Color no valido");
+  }
+  color = colorMapping[color];
   const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
 
     //Buscar si existe una categoría con el id
@@ -148,13 +169,7 @@ export const modificarCategoria = async (id, nombre, color, usuario_id) => {
 
     //Si el id no existe
     if (!categoriaExistente) {return null}
-    console.log(color)
-
-    if (!Object.keys(colorMapping).includes(color)) {
-      console.log(color)
-      throw new Error("Color no valido");
-    }
-    color = colorMapping[color];
+    const colorHex = colorMapping[color];
 
   const categoria = await prisma.categoria.update({
     where: {
@@ -164,7 +179,7 @@ export const modificarCategoria = async (id, nombre, color, usuario_id) => {
     },
     data: {
       nombre: nombre,
-      color: color
+      color: colorHex
     }
   })
   const categoriaFormato = {
@@ -223,7 +238,6 @@ export const eliminarCategoria = async (id, usuario_id) => {
   return categoria
 }
 
-
 //Mapeo de colores de hexadecimal a string
 const colorMapping = {
   '#FF0000': 'Rojo',
@@ -235,7 +249,17 @@ const colorMapping = {
   '#C0C0C0': 'Gris_claro',
   '#808080': 'Gris_oscuro',
 };
-
+// Mapeo de colores de nombres a hexadecimal
+const nameToHexMapping = {
+  'Rojo': '#FF0000',
+  'Verde_limon': '#00FF00',
+  'Azul': '#0000FF',
+  'Amarillo': '#FFFF00',
+  'Turquesa': '#00FFFF',
+  'Fucsia': '#FF00FF',
+  'Gris_claro': '#C0C0C0',
+  'Gris_oscuro': '#808080',
+};
 const obtenerIdPunto = async (usuario_id) => {
   const usuario = await prisma.usuario.findFirst({
     where: {id: usuario_id},
