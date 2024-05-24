@@ -3,7 +3,6 @@ import {
   listaPaises,
   listarUsuarios,
   eliminarTemporalmente,
-  restaurarCuenta,
   eliminarCuentasVencidas,
   eliminarPermanentemente,
 } from "../controllers/UsuarioControlador";

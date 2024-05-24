@@ -51,7 +51,7 @@ export const login = async (email, password) => {
 
   await restaurarCuenta(usuario.id);
 
-  const token = jwt.sign({ id: usuario.id, email: usuario.email }, "secreto_del_token", { expiresIn: "24h" });
+  const token = jwt.sign({ id: usuario.id, email: usuario.email, nombreNegocio: usuario.nombreNegocio }, "secreto_del_token", { expiresIn: "24h" });
 
   const todayISO = new Date().toISOString();
   const expiracion = getUTCTime(todayISO);
@@ -65,7 +65,7 @@ export const login = async (email, password) => {
     },
   }));
 
-  return { usuario_id: result.usuario_id, token: result.token };
+  return { usuario_id: result.usuario_id, token: result.token, nombreNegocio: usuario.nombreNegocio }; // Include nombreNegocio in the response
 };
 
 /**
