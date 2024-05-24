@@ -166,7 +166,13 @@ export const modificarCategoria = async (id, nombre, color, usuario_id) => {
     }
   })
 
-  return categoria;
+  const categoriaFormato = {
+    id: categoria.id,
+    nombre: categoria.nombre,
+    color: categoria.color,
+    id_puntoDeVenta: categoria.id_puntoDeVenta
+  }
+  return categoriaFormato; 
 }
 
 
