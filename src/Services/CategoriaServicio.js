@@ -152,11 +152,13 @@ export const modificarCategoria = async (id, nombre, color) => {
     }
   });
 
-  return {
+  const categoriaFormato = {
     id: categoria.id,
     nombre: categoria.nombre,
-    color: color // Devolver el nombre del color proporcionado
-  };
+    color: categoria.color,
+    id_puntoDeVenta: categoria.id_puntoDeVenta
+  }
+  return categoriaFormato;
 };
 
 
