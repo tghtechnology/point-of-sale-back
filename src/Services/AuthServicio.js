@@ -95,9 +95,15 @@ export const logout = async (token) => {
  * utilizando su ID y los devuelve si se encuentran. Si no se encuentra ningún usuario 
  * con el ID proporcionado, devuelve null.
  **/
-export const obtenerDatosUsuarioPorId = async (usuarioId) => {
+export const obtenerDatosUsuarioPorId = async (usuarioId, usuario_id) => {
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+  console.log(id_puntoDeVenta)
+
   return await asyncErrorHandler(prisma.usuario.findUnique({
-    where: { id: usuarioId },
+    where: { 
+      id: usuarioId,
+      id_puntoDeVenta: id_puntoDeVenta
+    },
   }));
 };
 
@@ -219,3 +225,23 @@ export const eliminarTokensExpirados = async () => {
     console.log("Tokens expirados eliminados correctamente.");
   }
 };
+
+const obtenerIdPunto = async (usuario_id) => {
+  const usuario = await prisma.usuario.findFirst({
+    where: {id: usuario_id},
+    select: {nombre: true}
+  })
+
+  const id_punto = await prisma.puntoDeVenta.findFirst({
+    where: {
+      estado: true,
+      propietario: usuario.nombre
+    },
+    select: {id: true}
+  })
+
+  //Asignar id del punto de venta
+  const id_puntoDeVenta = parseInt(id_punto.id)
+
+  return id_puntoDeVenta;
+}

@@ -63,13 +63,14 @@ export const logout = async (req, res) => {
  */
 export const obtenerDatosUsuarioPorId = async (req, res) => {
   const { id } = req.params;
+  const usuario_id = req.usuario.id;
 
   try {
     const usuarioId = parseInt(id);
     if (isNaN(usuarioId)) {
       return res.status(400).json({ error: "ID de usuario inválido" });
     }
-    const usuario = await AuthServicio.obtenerDatosUsuarioPorId(usuarioId);
+    const usuario = await AuthServicio.obtenerDatosUsuarioPorId(usuarioId, usuario_id);
     if (!usuario) {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
