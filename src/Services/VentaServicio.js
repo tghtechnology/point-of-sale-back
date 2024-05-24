@@ -46,7 +46,6 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
             where: {
                 id: detalle.articuloId,
                 id_puntoDeVenta: id_puntoDeVenta,
-                estado: true
             }
         });
         subtotal += articulo.precio * detalle.cantidad;
@@ -64,9 +63,8 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     if (descuentoId) {
         const descuento = await prisma.descuento.findUnique({
             where: {
-                id: descuentoId,
+                id: parseInt(descuentoId),
                 id_puntoDeVenta: id_puntoDeVenta,
-                estado: true
             }
         });
         if (descuento.tipo_descuento == "PORCENTAJE") {
@@ -82,9 +80,8 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     if (impuestoId) {
         const impuesto = await prisma.impuesto.findUnique({
             where: {
-                id: impuestoId,
+                id: parseInt(impuestoId),
                 id_puntoDeVenta: id_puntoDeVenta,
-                estado: true
             }
         });
 
@@ -107,10 +104,10 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
             subtotal: subtotal,
             total: total,
             tipoPago: tipoPago,
-            impuestoId: impuestoId,
-            descuentoId: descuentoId,
-            clienteId: clienteId,
-            usuarioId: usuarioId,
+            impuestoId: parseInt(impuestoId),
+            descuentoId: parseInt(descuentoId),
+            clienteId: parseInt(clienteId),
+            usuarioId: parseInt(usuarioId),
             dineroRecibido: dineroRecibido,
             VImpuesto: VImpuesto,
             vDescuento, vDescuento,
@@ -127,8 +124,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     // Buscar nombre de empleado
     const empleado = await prisma.usuario.findUnique({
         where: {
-            id: usuarioId,
-            estado: true,
+            id: parseInt(usuarioId),
             id_puntoDeVenta: id_puntoDeVenta
         },
         select: {
@@ -140,7 +136,6 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     const articulo = await prisma.articulo.findMany({
         where: {
             id: detallesArticulos.articuloId,
-            estado: true,
             id_puntoDeVenta: id_puntoDeVenta
         }
     });
@@ -153,8 +148,7 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     if (clienteId) {
         const usuarioInfo = await prisma.cliente.findUnique({
             where: {
-                id: clienteId,
-                estado: true,
+                id: parseInt(clienteId),
                 id_puntoDeVenta: id_puntoDeVenta
             },
             select: {

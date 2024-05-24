@@ -1,26 +1,16 @@
 @api=http://localhost:3000
 ###
-POST {{api}}/venta
+GET {{api}}/venta
 Content-Type: application/json
 
 {
   "detalles": [
     {
       "cantidad": 1,
-      "articuloId": 2
-    },
-    {
-        "cantidad": 1,
-        "articuloId": 2
+      "articuloId": 3
     }
   ],
   "tipoPago": "Efectivo",
-  "impuestoId": 1,
-  "descuentoId": 2,
-  "clienteId":1,
-  "descuentoId":1,
-  "impuestoId":1,
-  "usuarioId":1,
   "dineroRecibido":500
 }
 ###
@@ -34,11 +24,7 @@ Content-Type: application/json
   "detalles": [
     {
       "cantidad": 1,
-      "articuloId": 2
-    },
-    {
-      "cantidad": 1,
-      "articuloId": 1
+      "articuloId": 3
     }
   ]
 }
