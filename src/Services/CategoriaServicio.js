@@ -150,12 +150,7 @@ export const listarCategoriaPorId = async (id, usuario_id) => {
  */
 
 export const modificarCategoria = async (id, nombre, color, usuario_id) => {
-  console.log(color)
-  if (!Object.keys(colorMapping).includes(color)) {
-    console.log(color)
-    throw new Error("Color no valido");
-  }
-  color = colorMapping[color];
+
   const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
 
     //Buscar si existe una categoría con el id
@@ -169,7 +164,12 @@ export const modificarCategoria = async (id, nombre, color, usuario_id) => {
 
     //Si el id no existe
     if (!categoriaExistente) {return null}
-    const colorHex = colorMapping[color];
+    console.log(color)
+    if (!Object.keys(colorMapping).includes(color)) {
+      console.log(color)
+      throw new Error("Color no valido");
+    }
+    color = colorMapping[color];
 
   const categoria = await prisma.categoria.update({
     where: {
@@ -179,7 +179,7 @@ export const modificarCategoria = async (id, nombre, color, usuario_id) => {
     },
     data: {
       nombre: nombre,
-      color: colorHex
+      color: color
     }
   })
   const categoriaFormato = {
