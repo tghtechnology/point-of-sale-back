@@ -65,23 +65,23 @@ export const crearCategoria = async (nombre, color) => {
  * 
  * @throws {Error} - Si hay algún error al obtener las categorías de la base de datos.
  */
-export const listarCategorias = async ()=>{
-
+export const listarCategorias = async () => {
   const allCategorias = await prisma.categoria.findMany({
     where: {
       estado: true
     }
-  })
+  });
 
   const categoriasFormato = allCategorias.map((categoria) => {
     return {
       id: categoria.id,
       nombre: categoria.nombre,
-      color: categoria.color
+      color: nameToHexMapping[categoria.color] // Convertir a hexadecimal
     };
   });
+
   return categoriasFormato;
-}
+};
 
 
 
@@ -216,7 +216,17 @@ const colorMapping = {
   '#C0C0C0': 'Gris_claro',
   '#808080': 'Gris_oscuro',
 };
-
+// Mapeo de colores de nombres a hexadecimal
+const nameToHexMapping = {
+  'Rojo': '#FF0000',
+  'Verde_limon': '#00FF00',
+  'Azul': '#0000FF',
+  'Amarillo': '#FFFF00',
+  'Turquesa': '#00FFFF',
+  'Fucsia': '#FF00FF',
+  'Gris_claro': '#C0C0C0',
+  'Gris_oscuro': '#808080',
+};
 /*export const buscarCategoria = async (search) => {
     //const page = parseInt(req.query.page) - 1 || 0;
 
