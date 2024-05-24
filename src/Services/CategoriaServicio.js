@@ -3,18 +3,6 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 
-//Mapeo de colores de hexadecimal a string
-const colorMapping = {
-  '#FF0000': 'Rojo',
-  '#00FF00': 'Verde_limon',
-  '#0000FF': 'Azul',
-  '#FFFF00': 'Amarillo',
-  '#00FFFF': 'Turquesa',
-  '#FF00FF': 'Fucsia',
-  '#C0C0C0': 'Gris_claro',
-  '#808080': 'Gris_oscuro',
-};
-
 
 
 /**
@@ -36,7 +24,7 @@ export const crearCategoria = async (nombre, color, usuario_id) => {
   })
 
   if (categoriaExistente) {throw new Error("Categoría existente")}
-
+    console.log(color)
     if (!Object.keys(colorMapping).includes(color)) {
       throw new Error("Color no valido");
     }
@@ -160,12 +148,13 @@ export const modificarCategoria = async (id, nombre, color, usuario_id) => {
 
     //Si el id no existe
     if (!categoriaExistente) {return null}
-    console.log(color);
+    console.log(color)
+
     if (!Object.keys(colorMapping).includes(color)) {
+      console.log(color)
       throw new Error("Color no valido");
     }
     color = colorMapping[color];
-    
 
   const categoria = await prisma.categoria.update({
     where: {
@@ -235,7 +224,17 @@ export const eliminarCategoria = async (id, usuario_id) => {
 }
 
 
-
+//Mapeo de colores de hexadecimal a string
+const colorMapping = {
+  '#FF0000': 'Rojo',
+  '#00FF00': 'Verde_limon',
+  '#0000FF': 'Azul',
+  '#FFFF00': 'Amarillo',
+  '#00FFFF': 'Turquesa',
+  '#FF00FF': 'Fucsia',
+  '#C0C0C0': 'Gris_claro',
+  '#808080': 'Gris_oscuro',
+};
 
 const obtenerIdPunto = async (usuario_id) => {
   const usuario = await prisma.usuario.findFirst({
