@@ -2,7 +2,15 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 
-
+// Función para obtener el nombre de color correspondiente al valor hexadecimal
+const getColorName = (hex) => {
+  for (const key in colorMapping) {
+    if (colorMapping[key] === hex) {
+      return key;
+    }
+  }
+  throw new Error('Color no válido');
+};
 
 /**
  * Crea una nueva categoría y la guarda en la base de datos.
@@ -24,8 +32,9 @@ export const crearCategoria = async (nombre, color) => {
   })
 
   if (categoriaExistente) {throw new Error("Categoría existente")}
+  console.log(color)
 
-    if (!Object.keys(colorMapping).includes(color)) {
+   if (!Object.keys(colorMapping).includes(color)) {
       throw new Error("Color no valido");
     }
     color = colorMapping[color];
@@ -120,20 +129,18 @@ export const listarCategoriaPorId = async (id) => {
  * 
  * @throws {Error} - Si el campo ID está vacío, o si el nombre o color están vacíos, o si ya existe una categoría con el mismo nombre.
  */
-
 export const modificarCategoria = async (id, nombre, color) => {
+  console.log(color)
+  // Verificar si el color proporcionado es válido
+  if (!Object.keys(colorMapping).includes(color)) {
+    console.log(color)
+    throw new Error("Color no válido");
+  }
 
-    //Buscar si existe una categoría con el id
-    const categoriaExistente = await prisma.categoria.findUnique({
-      where: {
-        id: parseInt(id),
-        estado: true
-      }
-    })
+  // Obtener el valor hexadecimal correspondiente al nombre del color
+  const colorHex = colorMapping[color];
 
-    //Si el id no existe
-    if (!categoriaExistente) {return null}
-
+  // Actualizar la categoría en la base de datos
   const categoria = await prisma.categoria.update({
     where: {
       id: parseInt(id),
@@ -141,17 +148,18 @@ export const modificarCategoria = async (id, nombre, color) => {
     },
     data: {
       nombre: nombre,
-      color: color
+      color: colorHex // Usar el valor hexadecimal del color
     }
-  })
+  });
 
-  const categoriaFormato = {
+  return {
     id: categoria.id,
     nombre: categoria.nombre,
-    color: categoria.color
-  }
-  return categoriaFormato;
-}
+    color: color // Devolver el nombre del color proporcionado
+  };
+};
+
+
 
 
 
