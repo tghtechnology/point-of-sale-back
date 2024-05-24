@@ -2,6 +2,7 @@ import {
   crearUsuario,
   listaPaises,
   listarUsuarios,
+  restaurarCuenta,
   eliminarTemporalmente,
   eliminarCuentasVencidas,
   eliminarPermanentemente,
