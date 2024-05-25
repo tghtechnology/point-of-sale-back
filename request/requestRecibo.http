@@ -20,11 +20,15 @@ POST {{api}}/reembolsar
 Content-Type: application/json
 
 {
-  "id": 17, 
+  "id": 4, 
   "detalles": [
     {
       "cantidad": 1,
-      "articuloId": 3
+      "articuloId": 4
+    },
+    {
+      "cantidad": 1,
+      "articuloId": 5
     }
   ]
 }
