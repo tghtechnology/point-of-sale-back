@@ -463,7 +463,16 @@ const colorMapping = {
   '#C0C0C0': 'Gris_claro',
   '#808080': 'Gris_oscuro',
 };
-
+const nameToHexMapping = {
+  'Rojo': '#FF0000',
+  'Verde_limon': '#00FF00',
+  'Azul': '#0000FF',
+  'Amarillo': '#FFFF00',
+  'Turquesa': '#00FFFF',
+  'Fucsia': '#FF00FF',
+  'Gris_claro': '#C0C0C0',
+  'Gris_oscuro': '#808080',
+};
 const obtenerIdPunto = async (usuario_id) => {
   const usuario = await prisma.usuario.findFirst({
     where: { id: usuario_id },

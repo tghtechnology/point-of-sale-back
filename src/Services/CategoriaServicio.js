@@ -24,7 +24,6 @@ const getColorName = (hex) => {
  * @throws {Error} - Si el nombre o el color están vacíos, o si la categoría ya existe.
  */
 export const crearCategoria = async (nombre, color, usuario_id) => {
-  // Verificar si la categoría ya existe
   const categoriaExistente = await prisma.categoria.findFirst({
     where:{
       nombre: nombre,
@@ -32,23 +31,18 @@ export const crearCategoria = async (nombre, color, usuario_id) => {
     }
   });
 
-  // Si la categoría ya existe, lanzar un error
   if (categoriaExistente) {
     throw new Error("Categoría existente");
   }
 
-  // Verificar si el color proporcionado es válido
   if (!Object.keys(colorMapping).includes(color)) {
     throw new Error("Color no válido");
   }
 
-  // Obtener el código hexadecimal del color
   const colorHex = colorMapping[color];
 
-  // Obtener el ID del punto de venta del usuario
   const id_puntoDeVenta = await obtenerIdPunto(usuario_id);
 
-  // Crear la nueva categoría en la base de datos
   const newCategoria = await prisma.categoria.create({
     data: {
       nombre: nombre,
@@ -58,15 +52,13 @@ export const crearCategoria = async (nombre, color, usuario_id) => {
     },
   });
 
-  // Formatear el objeto de la categoría para incluir el nombre del color
   const categoriaFormato = {
     id: newCategoria.id,
     nombre: newCategoria.nombre,
-    color: color, // Usar el nombre del color en lugar del código hexadecimal
+    color: color, 
     id_puntoDeVenta: newCategoria.id_puntoDeVenta
   };
 
-  // Devolver la categoría formateada
   return categoriaFormato; 
 };
 
@@ -95,7 +87,7 @@ export const listarCategorias = async (usuario_id)=>{
     return {
       id: categoria.id,
       nombre: categoria.nombre,
-      color: nameToHexMapping[categoria.color] // Convertir a hexadecimal
+      color: nameToHexMapping[categoria.color] 
     };
   });
   console.log(categoriasFormato)
