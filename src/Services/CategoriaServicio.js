@@ -24,54 +24,51 @@ const getColorName = (hex) => {
  * @throws {Error} - Si el nombre o el color están vacíos, o si la categoría ya existe.
  */
 export const crearCategoria = async (nombre, color, usuario_id) => {
+  // Verificar si la categoría ya existe
   const categoriaExistente = await prisma.categoria.findFirst({
     where:{
       nombre: nombre,
       estado: true
     }
-  })
+  });
 
-  if (categoriaExistente) {throw new Error("Categoría existente")}
-    console.log(color)
-    if (!Object.keys(colorMapping).includes(color)) {
-      throw new Error("Color no valido");
-    }
-    color = colorMapping[color];
+  // Si la categoría ya existe, lanzar un error
+  if (categoriaExistente) {
+    throw new Error("Categoría existente");
+  }
 
-    //Obtener el nombre de usuario
-    const usuario = await prisma.usuario.findFirst({
-      where: {id: usuario_id},
-      select: {nombre: true}
-    })
+  // Verificar si el color proporcionado es válido
+  if (!Object.keys(colorMapping).includes(color)) {
+    throw new Error("Color no válido");
+  }
 
-    const id_punto = await prisma.puntoDeVenta.findFirst({
-      where: {
-        estado: true,
-        propietario: usuario.nombre
-      },
-      select: {id: true}
-    })
+  // Obtener el código hexadecimal del color
+  const colorHex = colorMapping[color];
 
-    //Asignar id del punto de venta
-    const id_puntoDeVenta = id_punto.id
+  // Obtener el ID del punto de venta del usuario
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id);
 
+  // Crear la nueva categoría en la base de datos
   const newCategoria = await prisma.categoria.create({
     data: {
       nombre: nombre,
-      color: color,
+      color: colorHex,
       estado: true,
       id_puntoDeVenta: id_puntoDeVenta
     },
-  })
+  });
 
+  // Formatear el objeto de la categoría para incluir el nombre del color
   const categoriaFormato = {
     id: newCategoria.id,
     nombre: newCategoria.nombre,
-    color: newCategoria.color,
+    color: color, // Usar el nombre del color en lugar del código hexadecimal
     id_puntoDeVenta: newCategoria.id_puntoDeVenta
-  }
+  };
+
+  // Devolver la categoría formateada
   return categoriaFormato; 
-}; 
+};
 
 
 
@@ -101,6 +98,7 @@ export const listarCategorias = async (usuario_id)=>{
       color: nameToHexMapping[categoria.color] // Convertir a hexadecimal
     };
   });
+  console.log(categoriasFormato)
 
   return categoriasFormato;
 };
