@@ -211,20 +211,13 @@ export const eliminarImpuesto = async (id, usuario_id ) => {
 
 const obtenerIdPunto = async (usuario_id) => {
   const usuario = await prisma.usuario.findFirst({
-    where: {id: usuario_id},
-    select: {nombre: true}
-  })
+    where: { id: usuario_id },
+    select: { id_puntoDeVenta: true }
+  });
 
-  const id_punto = await prisma.puntoDeVenta.findFirst({
-    where: {
-      estado: true,
-      propietario: usuario.nombre
-    },
-    select: {id: true}
-  })
+  if (!usuario) {
+    throw new Error("Usuario no encontrado");
+  }
 
-  //Asignar id del punto de venta
-  const id_puntoDeVenta = parseInt(id_punto.id)
-
-  return id_puntoDeVenta;
-}
+  return usuario.id_puntoDeVenta;
+};

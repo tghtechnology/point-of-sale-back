@@ -62,7 +62,6 @@ export const enviarCorreoBienvenida = async (
               <p>Contraseña: ${contrasena}</p>
               <p>Por favor, asegúrate de mantener seguras tus credenciales de inicio de sesión.</p>
               <p>¡Gracias!</p>
-              <button id="resetButton">Acceder a tu cuenta</button>
           </div>
       </body>
       </html>

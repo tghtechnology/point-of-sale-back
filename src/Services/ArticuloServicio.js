@@ -431,6 +431,7 @@ const buscarCategoria = async (id_categoria, usuario_id) => {
 
 const generarRef = async (usuario_id) => {
   try {
+
     const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
 
     const ultimoArticulo = await prisma.articulo.findFirst({
@@ -462,31 +463,26 @@ const colorMapping = {
   '#C0C0C0': 'Gris_claro',
   '#808080': 'Gris_oscuro',
 };
-
+const nameToHexMapping = {
+  'Rojo': '#FF0000',
+  'Verde_limon': '#00FF00',
+  'Azul': '#0000FF',
+  'Amarillo': '#FFFF00',
+  'Turquesa': '#00FFFF',
+  'Fucsia': '#FF00FF',
+  'Gris_claro': '#C0C0C0',
+  'Gris_oscuro': '#808080',
+};
 const obtenerIdPunto = async (usuario_id) => {
-  //console.log(usuario_id)
   const usuario = await prisma.usuario.findFirst({
     where: { id: usuario_id },
-    select: { nombre: true }
+    select: { id_puntoDeVenta: true }
   });
 
   if (!usuario) {
     throw new Error("Usuario no encontrado");
   }
 
-  console.log(usuario)
-
-  const id_punto = await prisma.puntoDeVenta.findFirst({
-    where: {
-      estado: true,
-      propietario: usuario.nombre
-    },
-    select: { id: true }
-  });
-
-  if (!id_punto) {
-    throw new Error("Punto de venta no encontrado");
-  }
-
-  return parseInt(id_punto.id);
+  return usuario.id_puntoDeVenta;
 };
+

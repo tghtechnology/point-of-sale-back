@@ -62,6 +62,7 @@ export const login = async (email, password) => {
       usuario_id: usuario.id,
       token,
       expiracion,
+      //id_puntoDeVenta
     },
   }));
 
@@ -95,9 +96,15 @@ export const logout = async (token) => {
  * utilizando su ID y los devuelve si se encuentran. Si no se encuentra ningún usuario 
  * con el ID proporcionado, devuelve null.
  **/
-export const obtenerDatosUsuarioPorId = async (usuarioId) => {
+export const obtenerDatosUsuarioPorId = async (usuarioId, usuario_id) => {
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+  console.log(id_puntoDeVenta)
+
   return await asyncErrorHandler(prisma.usuario.findUnique({
-    where: { id: usuarioId },
+    where: { 
+      id: usuarioId,
+      id_puntoDeVenta: id_puntoDeVenta
+    },
   }));
 };
 
@@ -218,4 +225,17 @@ export const eliminarTokensExpirados = async () => {
   if (eliminarTokenSesion.affectedRows > 0 || eliminarTokenPassword.affectedRows > 0) {
     console.log("Tokens expirados eliminados correctamente.");
   }
+};
+
+const obtenerIdPunto = async (usuario_id) => {
+  const usuario = await prisma.usuario.findFirst({
+    where: { id: usuario_id },
+    select: { id_puntoDeVenta: true }
+  });
+
+  if (!usuario) {
+    throw new Error("Usuario no encontrado");
+  }
+
+  return usuario.id_puntoDeVenta;
 };

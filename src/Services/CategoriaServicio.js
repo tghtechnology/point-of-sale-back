@@ -2,6 +2,17 @@ import { desasociarArticulo } from "../Middleware/DesvCategoria";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
+// Función para obtener el nombre de color correspondiente al valor hexadecimal
+const getColorName = (hex) => {
+  for (const key in colorMapping) {
+    if (colorMapping[key] === hex) {
+      return key;
+    }
+  }
+  throw new Error('Color no válido');
+};
+
+
 /**
  * Crea una nueva categoría y la guarda en la base de datos.
  * 
@@ -18,49 +29,38 @@ export const crearCategoria = async (nombre, color, usuario_id) => {
       nombre: nombre,
       estado: true
     }
-  })
+  });
 
-  if (categoriaExistente) {throw new Error("Categoría existente")}
+  if (categoriaExistente) {
+    throw new Error("Categoría existente");
+  }
 
-    if (!Object.keys(colorMapping).includes(color)) {
-      throw new Error("Color no valido");
-    }
-    color = colorMapping[color];
+  if (!Object.keys(colorMapping).includes(color)) {
+    throw new Error("Color no válido");
+  }
 
-    //Obtener el nombre de usuario
-    const usuario = await prisma.usuario.findFirst({
-      where: {id: usuario_id},
-      select: {nombre: true}
-    })
+  const colorHex = colorMapping[color];
 
-    const id_punto = await prisma.puntoDeVenta.findFirst({
-      where: {
-        estado: true,
-        propietario: usuario.nombre
-      },
-      select: {id: true}
-    })
-
-    //Asignar id del punto de venta
-    const id_puntoDeVenta = id_punto.id
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id);
 
   const newCategoria = await prisma.categoria.create({
     data: {
       nombre: nombre,
-      color: color,
+      color: colorHex,
       estado: true,
       id_puntoDeVenta: id_puntoDeVenta
     },
-  })
+  });
 
   const categoriaFormato = {
     id: newCategoria.id,
     nombre: newCategoria.nombre,
-    color: newCategoria.color,
+    color: color, 
     id_puntoDeVenta: newCategoria.id_puntoDeVenta
-  }
+  };
+
   return categoriaFormato; 
-}; 
+};
 
 
 
@@ -83,8 +83,17 @@ export const listarCategorias = async (usuario_id)=>{
     }
   })
 
-  return allCategorias;
-}
+  const categoriasFormato = allCategorias.map((categoria) => {
+    return {
+      id: categoria.id,
+      nombre: categoria.nombre,
+      color: nameToHexMapping[categoria.color] 
+    };
+  });
+  console.log(categoriasFormato)
+
+  return categoriasFormato;
+};
 
 
 
@@ -145,8 +154,9 @@ export const modificarCategoria = async (id, nombre, color, usuario_id) => {
 
     //Si el id no existe
     if (!categoriaExistente) {return null}
-
+    console.log(color)
     if (!Object.keys(colorMapping).includes(color)) {
+      console.log(color)
       throw new Error("Color no valido");
     }
     color = colorMapping[color];
@@ -162,14 +172,14 @@ export const modificarCategoria = async (id, nombre, color, usuario_id) => {
       color: color
     }
   })
-
   const categoriaFormato = {
     id: categoria.id,
     nombre: categoria.nombre,
     color: categoria.color,
     id_puntoDeVenta: categoria.id_puntoDeVenta
   }
-  return categoriaFormato; 
+  return categoriaFormato;
+
 }
 
 
@@ -218,7 +228,6 @@ export const eliminarCategoria = async (id, usuario_id) => {
   return categoria
 }
 
-
 //Mapeo de colores de hexadecimal a string
 const colorMapping = {
   '#FF0000': 'Rojo',
@@ -230,26 +239,30 @@ const colorMapping = {
   '#C0C0C0': 'Gris_claro',
   '#808080': 'Gris_oscuro',
 };
-
+// Mapeo de colores de nombres a hexadecimal
+const nameToHexMapping = {
+  'Rojo': '#FF0000',
+  'Verde_limon': '#00FF00',
+  'Azul': '#0000FF',
+  'Amarillo': '#FFFF00',
+  'Turquesa': '#00FFFF',
+  'Fucsia': '#FF00FF',
+  'Gris_claro': '#C0C0C0',
+  'Gris_oscuro': '#808080',
+};
 const obtenerIdPunto = async (usuario_id) => {
   const usuario = await prisma.usuario.findFirst({
-    where: {id: usuario_id},
-    select: {nombre: true}
-  })
+    where: { id: usuario_id },
+    select: { id_puntoDeVenta: true }
+  });
 
-  const id_punto = await prisma.puntoDeVenta.findFirst({
-    where: {
-      estado: true,
-      propietario: usuario.nombre
-    },
-    select: {id: true}
-  })
+  if (!usuario) {
+    throw new Error("Usuario no encontrado");
+  }
 
-  //Asignar id del punto de venta
-  const id_puntoDeVenta = parseInt(id_punto.id)
+  return usuario.id_puntoDeVenta;
+};
 
-  return id_puntoDeVenta;
-}
 
 /*export const buscarCategoria = async (search) => {
     //const page = parseInt(req.query.page) - 1 || 0;

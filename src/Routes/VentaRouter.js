@@ -4,9 +4,9 @@ import { verificarAuth, isPropietario } from "../Middleware/verificarAuth";
 
 const routerVenta =Router()
 
-routerVenta.post("/venta", verificarAuth, isPropietario, CrearVenta)
-routerVenta.get("/venta", verificarAuth, isPropietario, ListarVentas)
-routerVenta.get("/venta/:id", verificarAuth, isPropietario, ObtenerVentaPorId)
+routerVenta.post("/venta", verificarAuth, CrearVenta)
+routerVenta.get("/venta", verificarAuth, ListarVentas)
+routerVenta.get("/venta/:id", verificarAuth, ObtenerVentaPorId)
 
 
 export default routerVenta
