@@ -6,6 +6,7 @@ import {
   restaurarCuenta,
   eliminarCuentasVencidas,
   eliminarPermanentemente,
+  cambiarContraseña
 } from "../controllers/UsuarioControlador";
 import { verificarAuth, isPropietario } from "../Middleware/verificarAuth";
 import { Router } from "express";
@@ -15,6 +16,8 @@ const routerUsuario = Router();
 routerUsuario.post("/registro", crearUsuario);
 routerUsuario.get("/listaPaises", listaPaises);
 routerUsuario.get("/usuario", listarUsuarios);
+routerUsuario.put("/usuario/:id/cambiarPass", cambiarContraseña);
+
 
 //RUTAS PARA ELIMINACIÓN DE CUENTA
 routerUsuario.post("/eliminar-temporal", verificarAuth, isPropietario, eliminarTemporalmente);
