@@ -476,24 +476,13 @@ const nameToHexMapping = {
 const obtenerIdPunto = async (usuario_id) => {
   const usuario = await prisma.usuario.findFirst({
     where: { id: usuario_id },
-    select: { nombre: true }
+    select: { id_puntoDeVenta: true }
   });
 
   if (!usuario) {
     throw new Error("Usuario no encontrado");
   }
 
-  const id_punto = await prisma.puntoDeVenta.findFirst({
-    where: {
-      estado: true,
-      propietario: usuario.nombre
-    },
-    select: { id: true }
-  });
-
-  if (!id_punto) {
-    throw new Error("Punto de venta no encontrado");
-  }
-
-  return parseInt(id_punto.id);
+  return usuario.id_puntoDeVenta;
 };
+

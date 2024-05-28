@@ -17,8 +17,8 @@ POST {{api}}/login
 Content-Type: application/json
 
 {
-  "email": "estefytorres8@gmail.com",
-  "password": "12345"
+  "email": "estefanytt0502@gmail.com",
+  "password": "122345"
 }
 ###P
 POST {{api}}/restaurar-cuenta/13

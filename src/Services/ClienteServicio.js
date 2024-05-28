@@ -228,36 +228,18 @@ const eliminarCliente = async (id, usuario_id) => {
 };
 
 const obtenerIdPunto = async (usuario_id) => {
-  // Find the user by ID
   const usuario = await prisma.usuario.findFirst({
     where: { id: usuario_id },
-    select: { nombre: true }
+    select: { id_puntoDeVenta: true }
   });
 
-  // If the user is not found, throw an error
   if (!usuario) {
     throw new Error("Usuario no encontrado");
   }
 
-  // Find the puntoDeVenta by user name
-  const id_punto = await prisma.puntoDeVenta.findFirst({
-    where: {
-      estado: true,
-      propietario: usuario.nombre
-    },
-    select: { id: true }
-  });
-
-  // If no puntoDeVenta is found, throw an error
-  if (!id_punto) {
-    throw new Error("Punto de venta no encontrado");
-  }
-
-  // Assign the id_puntoDeVenta
-  const id_puntoDeVenta = parseInt(id_punto.id);
-
-  return id_puntoDeVenta;
+  return usuario.id_puntoDeVenta;
 };
+
 
 
 module.exports={

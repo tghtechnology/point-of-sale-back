@@ -5,8 +5,8 @@ import { verificarAuth, isPropietario } from "../Middleware/verificarAuth";
 const routerRecibo =Router()
 
 //routerRecibo.post("/recibo/:id", crearRecibo)
-routerRecibo.get("/recibo", verificarAuth, isPropietario, ListarRecibo)
-routerRecibo.post("/reembolsar", verificarAuth, isPropietario, Reembolsar)
-routerRecibo.get("/recibo/:id",verificarAuth, isPropietario, ListarReciboById)
-routerRecibo.get("/recibo/venta/:id_venta", verificarAuth, isPropietario, ListarRecibosByVenta)
+routerRecibo.get("/recibo", verificarAuth, ListarRecibo)
+routerRecibo.post("/reembolsar", verificarAuth, Reembolsar)
+routerRecibo.get("/recibo/:id",verificarAuth, ListarReciboById)
+routerRecibo.get("/recibo/venta/:id_venta", verificarAuth, ListarRecibosByVenta)
 export default routerRecibo
