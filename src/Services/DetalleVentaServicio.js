@@ -20,17 +20,17 @@ const CrearDetalle=async(cantidad, articuloId, ventaId, usuario_id)=>{
   //console.log(usuario_id)
     //Obtener el nombre de usuario
     const usuario = await prisma.usuario.findFirst({
-        where: {id: usuario_id},
-        select: {nombre: true}
-      })
-  
+      where: { id: usuario_id },
+      select: { nombre: true, id_puntoDeVenta:true }
+      });
+      const punto= usuario.id_puntoDeVenta
+
       const id_punto = await prisma.puntoDeVenta.findFirst({
-        where: {
-          estado: true,
-          propietario: usuario.nombre
-        },
-        select: {id: true}
-      })
+          where: {
+              id:punto
+          },
+        // select: { id: true }
+      });
   
       //Asignar id del punto de venta
       const id_puntoDeVenta = id_punto.id

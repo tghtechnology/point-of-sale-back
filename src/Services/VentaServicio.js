@@ -25,15 +25,15 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     // Obtener el nombre de usuario
     const usuario = await prisma.usuario.findFirst({
         where: { id: usuario_id },
-        select: { nombre: true }
+        select: { nombre: true, id_puntoDeVenta:true }
     });
+    const punto= usuario.id_puntoDeVenta
 
     const id_punto = await prisma.puntoDeVenta.findFirst({
         where: {
-            estado: true,
-            propietario: usuario.nombre
+            id:punto
         },
-        select: { id: true }
+       // select: { id: true }
     });
 
     // Asignar id del punto de venta
