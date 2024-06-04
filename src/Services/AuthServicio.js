@@ -18,6 +18,28 @@ const transporter = nodemailer.createTransport({
 
 const asyncErrorHandler = (promise) => promise.catch((error) => { throw error; });
 
+
+const crearAdmin = async (password) => {
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const todayISO = new Date().toISOString();
+  const fecha_creacion = getUTCTime(todayISO);
+
+  return prisma.usuario.create({
+    data: {
+      nombre: 'Administrador',
+      email: 'admin@gmail.com',
+      cargo: 'Admin',
+      telefono: '',
+      password: hashedPassword,
+      pais: '',
+      rol: "Admin",
+      estado: true,
+      fecha_creacion: fecha_creacion,
+    },
+  });
+};
+
+
 /**
  * Autentica a un usuario y crea una nueva sesión.
  *
@@ -35,6 +57,17 @@ const asyncErrorHandler = (promise) => promise.catch((error) => { throw error; }
  * al usuario en futuras solicitudes.
  **/
 export const login = async (email, password) => {
+
+  const usuariosExistentes = await prisma.usuario.count();
+
+  let user
+
+  if(usuariosExistentes === 0) {
+    user = await crearAdmin(password);
+    email = user.email
+    password =  user.password
+  }
+
   const usuario = await asyncErrorHandler(prisma.usuario.findUnique({
     where: { email },
   }));
@@ -42,8 +75,11 @@ export const login = async (email, password) => {
     if ( usuario.eliminado_temporal_fecha === null && usuario.estado===false) {
       throw new Error("La cuenta está eliminada permanentemente");
     }
-  const match = await bcrypt.compare(password, usuario.password);
+
+    if (user.rol !== "Admin") {
+  const match = await bcrypt.compare(password, user.password);
   if (!match) throw new Error("Nombre de usuario o contraseña incorrectos");
+    }
 
   await asyncErrorHandler(prisma.sesion.deleteMany({
     where: { usuario_id: usuario.id },
