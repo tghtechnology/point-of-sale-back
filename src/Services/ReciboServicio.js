@@ -16,7 +16,7 @@ const prisma = new PrismaClient();
 
 const generarRef = async (usuario_id) => {
   try {
-    const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+    const id_puntoDeVenta = await obtenerIdPunto(usuario_id);
 
     const ultimoRecibo = await prisma.recibo.findFirst({
       where: {
@@ -25,8 +25,8 @@ const generarRef = async (usuario_id) => {
       orderBy: { id: "desc" },
     });
 
-    const ultimoIdRecibo = ultimoRecibo ? ultimoRecibo.id : 0;
-    const nuevoRef = `#1-${ultimoIdRecibo + 1000}`;
+    const ultimoIdRecibo = ultimoRecibo ? parseInt(ultimoRecibo.ref.split('-')[1]) : 999;
+    const nuevoRef = `#${id_puntoDeVenta}-${ultimoIdRecibo + 1}`;
 
     return nuevoRef;
   } catch (error) {

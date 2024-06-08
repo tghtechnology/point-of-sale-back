@@ -441,9 +441,9 @@ const generarRef = async (usuario_id) => {
       orderBy: { id: "desc" },
     });
 
-    const ultimoArticuloID = ultimoArticulo ? ultimoArticulo.id : 0;
+    const ultimoArticuloID = ultimoArticulo ? parseInt(ultimoArticulo.ref.split('-')[1]) : 999;
 
-    const nuevoRef = `#1-${ultimoArticuloID + 1000}`;
+    const nuevoRef = `#${id_puntoDeVenta}-${ultimoArticuloID + 1}`;
 
     return nuevoRef;
   } catch (error) {
