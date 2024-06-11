@@ -120,7 +120,6 @@ const obtenerClienteById=async (id, usuario_id) => {
     const cliente= await prisma.cliente.findFirst({
         where: {
           id: Number(id),
-          estado: true,
           id_puntoDeVenta: id_puntoDeVenta
         }
       })
