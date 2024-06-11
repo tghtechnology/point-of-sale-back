@@ -24,16 +24,7 @@ const getColorName = (hex) => {
  * @throws {Error} - Si el nombre o el color están vacíos, o si la categoría ya existe.
  */
 export const crearCategoria = async (nombre, color, usuario_id) => {
-  const categoriaExistente = await prisma.categoria.findFirst({
-    where:{
-      nombre: nombre,
-      estado: true
-    }
-  });
-
-  if (categoriaExistente) {
-    throw new Error("Categoría existente");
-  }
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id);
 
   if (!Object.keys(colorMapping).includes(color)) {
     throw new Error("Color no válido");
@@ -41,7 +32,7 @@ export const crearCategoria = async (nombre, color, usuario_id) => {
 
   const colorHex = colorMapping[color];
 
-  const id_puntoDeVenta = await obtenerIdPunto(usuario_id);
+  
 
   const newCategoria = await prisma.categoria.create({
     data: {
@@ -252,15 +243,23 @@ const nameToHexMapping = {
 };
 const obtenerIdPunto = async (usuario_id) => {
   const usuario = await prisma.usuario.findFirst({
-    where: { id: usuario_id },
+    where: { id: usuario_id
+     },
+    select: { id_puntoDeVenta: true }
+  });
+  const punto=usuario.id_puntoDeVenta
+  const usuarioExistente = await prisma.usuario.findFirst({
+    where: { id: usuario_id,
+      id_puntoDeVenta:punto
+     },
     select: { id_puntoDeVenta: true }
   });
 
-  if (!usuario) {
+  if (!usuarioExistente) {
     throw new Error("Usuario no encontrado");
   }
 
-  return usuario.id_puntoDeVenta;
+  return usuarioExistente.id_puntoDeVenta;
 };
 
 

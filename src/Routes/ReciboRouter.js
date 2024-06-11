@@ -1,10 +1,10 @@
-import { crearRecibo, ListarRecibo,Reembolsar, ListarReciboById, ListarRecibosByVenta } from "../controllers/ReciboControlador";
+import { CrearRecibo, ListarRecibo,Reembolsar, ListarReciboById, ListarRecibosByVenta } from "../controllers/ReciboControlador";
 import { Router } from "express";
 import { verificarAuth, isPropietario } from "../Middleware/verificarAuth";
 
 const routerRecibo =Router()
 
-//routerRecibo.post("/recibo/:id", crearRecibo)
+routerRecibo.post("/recibo",verificarAuth, CrearRecibo)
 routerRecibo.get("/recibo", verificarAuth, ListarRecibo)
 routerRecibo.post("/reembolsar", verificarAuth, Reembolsar)
 routerRecibo.get("/recibo/:id",verificarAuth, ListarReciboById)

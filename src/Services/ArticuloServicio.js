@@ -441,9 +441,9 @@ const generarRef = async (usuario_id) => {
       orderBy: { id: "desc" },
     });
 
-    const ultimoArticuloID = ultimoArticulo ? ultimoArticulo.id : 0;
+    const ultimoArticuloID = ultimoArticulo ? parseInt(ultimoArticulo.ref.split('-')[1]) : 999;
 
-    const nuevoRef = `#1-${ultimoArticuloID + 1000}`;
+    const nuevoRef = `#${id_puntoDeVenta}-${ultimoArticuloID + 1}`;
 
     return nuevoRef;
   } catch (error) {
@@ -475,14 +475,22 @@ const nameToHexMapping = {
 };
 const obtenerIdPunto = async (usuario_id) => {
   const usuario = await prisma.usuario.findFirst({
-    where: { id: usuario_id },
+    where: { id: usuario_id
+     },
+    select: { id_puntoDeVenta: true }
+  });
+  const punto=usuario.id_puntoDeVenta
+  const usuarioExistente = await prisma.usuario.findFirst({
+    where: { id: usuario_id,
+      id_puntoDeVenta:punto
+     },
     select: { id_puntoDeVenta: true }
   });
 
-  if (!usuario) {
+  if (!usuarioExistente) {
     throw new Error("Usuario no encontrado");
   }
 
-  return usuario.id_puntoDeVenta;
+  return usuarioExistente.id_puntoDeVenta;
 };
 

@@ -6,7 +6,7 @@ Content-Type: application/json
 
 {
   "nombre": "martin prop",
-  "email": "fiofio@gmail.com",
+  "email": "estf@gmail.com",
   "password": "12345",
   "pais": "Perú",
   "telefono": "123456789",
@@ -17,8 +17,8 @@ POST {{api}}/login
 Content-Type: application/json
 
 {
-  "email": "estefanytt0502@gmail.com",
-  "password": "122345"
+  "email": "admin@gmail.com",
+  "password": "12345"
 }
 ###P
 POST {{api}}/restaurar-cuenta/13

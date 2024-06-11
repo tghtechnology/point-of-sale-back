@@ -16,7 +16,7 @@ const prisma = new PrismaClient();
 
 const generarRef = async (usuario_id) => {
   try {
-    const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+    const id_puntoDeVenta = await obtenerIdPunto(usuario_id);
 
     const ultimoRecibo = await prisma.recibo.findFirst({
       where: {
@@ -25,8 +25,8 @@ const generarRef = async (usuario_id) => {
       orderBy: { id: "desc" },
     });
 
-    const ultimoIdRecibo = ultimoRecibo ? ultimoRecibo.id : 0;
-    const nuevoRef = `#1-${ultimoIdRecibo + 1000}`;
+    const ultimoIdRecibo = ultimoRecibo ? parseInt(ultimoRecibo.ref.split('-')[1]) : 999;
+    const nuevoRef = `#${id_puntoDeVenta}-${ultimoIdRecibo + 1}`;
 
     return nuevoRef;
   } catch (error) {
@@ -97,17 +97,17 @@ export const CrearRecibo = async (usuario_id) => {
 
   //Obtener el nombre de usuario
   const usuario = await prisma.usuario.findFirst({
-    where: {id: usuario_id},
-    select: {nombre: true}
-  })
+    where: { id: usuario_id },
+    select: { nombre: true, id_puntoDeVenta:true }
+});
+const punto= usuario.id_puntoDeVenta
 
-  const id_punto = await prisma.puntoDeVenta.findFirst({
+const id_punto = await prisma.puntoDeVenta.findFirst({
     where: {
-      estado: true,
-      propietario: usuario.nombre
+        id:punto
     },
-    select: {id: true}
-  })
+   // select: { id: true }
+});
 
   //Asignar id del punto de venta
   const id_puntoDeVenta = id_punto.id
@@ -370,13 +370,21 @@ export const ListarReciboByVenta=async(id_venta, usuario_id)=>{
 
 const obtenerIdPunto = async (usuario_id) => {
   const usuario = await prisma.usuario.findFirst({
-    where: { id: usuario_id },
+    where: { id: usuario_id
+     },
+    select: { id_puntoDeVenta: true }
+  });
+  const punto=usuario.id_puntoDeVenta
+  const usuarioExistente = await prisma.usuario.findFirst({
+    where: { id: usuario_id,
+      id_puntoDeVenta:punto
+     },
     select: { id_puntoDeVenta: true }
   });
 
-  if (!usuario) {
+  if (!usuarioExistente) {
     throw new Error("Usuario no encontrado");
   }
 
-  return usuario.id_puntoDeVenta;
+  return usuarioExistente.id_puntoDeVenta;
 };

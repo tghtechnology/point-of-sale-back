@@ -25,15 +25,15 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
     // Obtener el nombre de usuario
     const usuario = await prisma.usuario.findFirst({
         where: { id: usuario_id },
-        select: { nombre: true }
+        select: { nombre: true, id_puntoDeVenta:true }
     });
+    const punto= usuario.id_puntoDeVenta
 
     const id_punto = await prisma.puntoDeVenta.findFirst({
         where: {
-            estado: true,
-            propietario: usuario.nombre
+            id:punto
         },
-        select: { id: true }
+       // select: { id: true }
     });
 
     // Asignar id del punto de venta
@@ -210,17 +210,24 @@ const ObtenerVentaPorId = async (id, usuario_id) => {
 
 const obtenerIdPunto = async (usuario_id) => {
     const usuario = await prisma.usuario.findFirst({
-      where: { id: usuario_id },
+      where: { id: usuario_id
+       },
+      select: { id_puntoDeVenta: true }
+    });
+    const punto=usuario.id_puntoDeVenta
+    const usuarioExistente = await prisma.usuario.findFirst({
+      where: { id: usuario_id,
+        id_puntoDeVenta:punto
+       },
       select: { id_puntoDeVenta: true }
     });
   
-    if (!usuario) {
+    if (!usuarioExistente) {
       throw new Error("Usuario no encontrado");
     }
   
-    return usuario.id_puntoDeVenta;
+    return usuarioExistente.id_puntoDeVenta;
   };
-  
 
 module.exports = {
     CrearVenta,

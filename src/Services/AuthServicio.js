@@ -18,72 +18,53 @@ const transporter = nodemailer.createTransport({
 
 const asyncErrorHandler = (promise) => promise.catch((error) => { throw error; });
 
-
 const crearAdmin = async (password) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   const todayISO = new Date().toISOString();
   const fecha_creacion = getUTCTime(todayISO);
 
-  const usuario = prisma.usuario.create({
+  return prisma.usuario.create({
     data: {
       nombre: 'Administrador',
       email: 'admin@gmail.com',
       cargo: 'Admin',
-      telefono: '',
+      telefono: '999999999',
       password: hashedPassword,
-      pais: '',
+      pais: 'Perú',
       rol: "Admin",
       estado: true,
       fecha_creacion: fecha_creacion,
     },
   });
-
-  return usuario
 };
 
-
-/**
- * Autentica a un usuario y crea una nueva sesión.
- *
- * @param {string} email - El correo electrónico del usuario que intenta iniciar sesión.
- * @param {string} password - La contraseña asociada a la cuenta del usuario.
- *
- * @returns {Object} - Un objeto que contiene el ID del usuario autenticado y un token JWT válido por 24 horas.
- *
- * @throws {Error} - Si el correo electrónico no corresponde a ningún usuario en la base de datos.
- * @throws {Error} - Si la contraseña no coincide con la del usuario encontrado.
- * @throws {Error} - Si hay algún problema al restaurar la cuenta o al crear una nueva sesión.
- *
- * @description Esta función verifica las credenciales proporcionadas por el usuario para iniciar sesión. 
- * Si las credenciales son válidas, crea un token de sesión JWT que se utilizará para autenticar 
- * al usuario en futuras solicitudes.
- **/
 export const login = async (email, password) => {
-
   const usuariosExistentes = await prisma.usuario.count();
 
-  let userAdmin
+  let user;
 
-  if(usuariosExistentes === 0) {
-    userAdmin = await crearAdmin(password);
-    email = userAdmin.email
-    password =  userAdmin.password
+  if (usuariosExistentes === 0) {
+    user = await crearAdmin(password);
+    email = user.email;
   }
 
   const usuario = await asyncErrorHandler(prisma.usuario.findUnique({
     where: { email },
   }));
-    // Verificar si el estado es falso y la fecha de eliminación temporal no es null
-    if ( usuario.eliminado_temporal_fecha === null && usuario.estado===false) {
-      throw new Error("La cuenta está eliminada permanentemente");
-    }
 
-    if (!userAdmin) {
-      console.log(password)
-      console.log(usuario.password)
+  if (!usuario) {
+    throw new Error("Nombre de usuario o contraseña incorrectos");
+  }
+
+  // Verificar si el estado es falso y la fecha de eliminación temporal no es null
+  if (usuario.eliminado_temporal_fecha === null && usuario.estado === false) {
+    throw new Error("La cuenta está eliminada permanentemente");
+  }
+
   const match = await bcrypt.compare(password, usuario.password);
-  if (!match) throw new Error("Nombre de usuario o contraseña incorrectos");
-    }
+  if (!match) {
+    throw new Error("Nombre de usuario o contraseña incorrectos");
+  }
 
   await asyncErrorHandler(prisma.sesion.deleteMany({
     where: { usuario_id: usuario.id },
@@ -91,7 +72,11 @@ export const login = async (email, password) => {
 
   await restaurarCuenta(usuario.id);
 
-  const token = jwt.sign({ id: usuario.id, email: usuario.email, nombreNegocio: usuario.nombreNegocio }, "secreto_del_token", { expiresIn: "24h" });
+  const token = jwt.sign(
+    { id: usuario.id, email: usuario.email, nombreNegocio: usuario.nombreNegocio },
+    "secreto_del_token",
+    { expiresIn: "24h" }
+  );
 
   const todayISO = new Date().toISOString();
   const expiracion = getUTCTime(todayISO);
@@ -102,12 +87,12 @@ export const login = async (email, password) => {
       usuario_id: usuario.id,
       token,
       expiracion,
-      //id_puntoDeVenta
     },
   }));
 
-  return { usuario_id: result.usuario_id, token: result.token, nombreNegocio: usuario.nombreNegocio }; // Include nombreNegocio in the response
+  return { usuario_id: result.usuario_id, token: result.token, nombreNegocio: usuario.nombreNegocio };
 };
+
 
 /**
  * Cierra la sesión de un usuario eliminando su token de autenticación.
@@ -269,13 +254,21 @@ export const eliminarTokensExpirados = async () => {
 
 const obtenerIdPunto = async (usuario_id) => {
   const usuario = await prisma.usuario.findFirst({
-    where: { id: usuario_id },
+    where: { id: usuario_id
+     },
+    select: { id_puntoDeVenta: true }
+  });
+  const punto=usuario.id_puntoDeVenta
+  const usuarioExistente = await prisma.usuario.findFirst({
+    where: { id: usuario_id,
+      id_puntoDeVenta:punto
+     },
     select: { id_puntoDeVenta: true }
   });
 
-  if (!usuario) {
+  if (!usuarioExistente) {
     throw new Error("Usuario no encontrado");
   }
 
-  return usuario.id_puntoDeVenta;
+  return usuarioExistente.id_puntoDeVenta;
 };
