@@ -24,7 +24,7 @@ const crearAdmin = async (password) => {
   const todayISO = new Date().toISOString();
   const fecha_creacion = getUTCTime(todayISO);
 
-  return prisma.usuario.create({
+  const usuario = prisma.usuario.create({
     data: {
       nombre: 'Administrador',
       email: 'admin@gmail.com',
@@ -37,6 +37,8 @@ const crearAdmin = async (password) => {
       fecha_creacion: fecha_creacion,
     },
   });
+
+  return usuario
 };
 
 
@@ -60,12 +62,12 @@ export const login = async (email, password) => {
 
   const usuariosExistentes = await prisma.usuario.count();
 
-  let user
+  let userAdmin
 
   if(usuariosExistentes === 0) {
-    user = await crearAdmin(password);
-    email = user.email
-    password =  user.password
+    userAdmin = await crearAdmin(password);
+    email = userAdmin.email
+    password =  userAdmin.password
   }
 
   const usuario = await asyncErrorHandler(prisma.usuario.findUnique({
@@ -76,8 +78,10 @@ export const login = async (email, password) => {
       throw new Error("La cuenta está eliminada permanentemente");
     }
 
-    if (user.rol !== "Admin") {
-  const match = await bcrypt.compare(password, user.password);
+    if (!userAdmin) {
+      console.log(password)
+      console.log(usuario.password)
+  const match = await bcrypt.compare(password, usuario.password);
   if (!match) throw new Error("Nombre de usuario o contraseña incorrectos");
     }
 
