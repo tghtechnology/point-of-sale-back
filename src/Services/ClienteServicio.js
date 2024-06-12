@@ -29,22 +29,21 @@ const crearCliente = async (nombre, email, telefono, direccion, ciudad, region, 
       throw new Error("País inválido");
     }
 
-    //Obtener el nombre de usuario
     const usuario = await prisma.usuario.findFirst({
-      where: {id: usuario_id},
-      select: {nombre: true}
-    })
+      where: { id: usuario_id },
+      select: { nombre: true, id_puntoDeVenta:true }
+  });
+  const punto= usuario.id_puntoDeVenta
 
-    const id_punto = await prisma.puntoDeVenta.findFirst({
+  const id_punto = await prisma.puntoDeVenta.findFirst({
       where: {
-        estado: true,
-        propietario: usuario.nombre
+          id:punto
       },
-      select: {id: true}
-    })
+     // select: { id: true }
+  });
 
-    //Asignar id del punto de venta
-    const id_puntoDeVenta = id_punto.id
+  // Asignar id del punto de venta
+  const id_puntoDeVenta = id_punto.id;
 
     const clienteExistente = await prisma.cliente.findUnique({
       where: {
@@ -120,7 +119,6 @@ const obtenerClienteById=async (id, usuario_id) => {
     const cliente= await prisma.cliente.findFirst({
         where: {
           id: Number(id),
-          estado: true,
           id_puntoDeVenta: id_puntoDeVenta
         }
       })

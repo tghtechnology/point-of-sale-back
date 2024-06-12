@@ -47,7 +47,6 @@ const buscarEmpleadoPorId = async (id, usuario_id) => {
   const empleado = await prisma.usuario.findUnique({
     where: { 
       id: parseInt(id, 10),
-      estado: true,
       id_puntoDeVenta: id_puntoDeVenta
     },
   });

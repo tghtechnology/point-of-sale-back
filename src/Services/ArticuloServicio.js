@@ -201,7 +201,6 @@ export const listarArticuloPorId = async (id, usuario_id) => {
   const articulo = await prisma.articulo.findUnique({
     where: {
       id: parseInt(id),
-      estado: true,
       id_puntoDeVenta: id_puntoDeVenta
     },
     include: {

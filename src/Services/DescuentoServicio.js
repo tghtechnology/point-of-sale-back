@@ -102,7 +102,6 @@ const obtenerDescuentoById = async (id, usuario_id) => {
     where: {
       id: Number(id),
       id_puntoDeVenta: id_puntoDeVenta,
-      estado: true,
     },
   });
   return descuento;

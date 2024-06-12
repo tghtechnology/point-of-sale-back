@@ -105,7 +105,6 @@ export const listarImpuestoPorId = async (id, usuario_id) => {
     const impuesto = await prisma.impuesto.findUnique({
         where: {
           id: parseInt(id),
-          estado: true,
           id_puntoDeVenta: id_puntoDeVenta
         }
       })
