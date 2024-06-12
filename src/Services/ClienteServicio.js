@@ -1,4 +1,3 @@
-import {connect} from "../database"
 import { validarNombrePais } from "../helpers/helperPais";
 import { PrismaClient } from "@prisma/client";
 import { getUTCTime } from "../Utils/Time";
@@ -18,6 +17,7 @@ const prisma = new PrismaClient();
  * @param {string} ciudad - La ciudad del cliente. Puede ser nulo.
  * @param {string} region - La región del cliente. Puede ser nulo.
  * @param {string} pais - El país del cliente. Debe ser válido según el método `validarNombrePais`.
+ * @param {number} usuario_id - El ID del usuario para el que se está creando el cliente.
  * 
  * @returns {Object} - Objeto representando el cliente creado, incluyendo su ID y otros detalles.
  * 
@@ -83,6 +83,8 @@ const crearCliente = async (nombre, email, telefono, direccion, ciudad, region, 
 /**
  * Obtiene la lista de clientes activos de la base de datos.
  * 
+ * @param {number} usuario_id - El ID del usuario para el que se está listando los clientes.
+ * 
  * @returns {Array<Object>} - Una lista de objetos que representan a los clientes. Cada objeto contiene detalles del cliente, como su ID, nombre, correo electrónico, teléfono, dirección, ciudad, región, código postal y país.
  * 
  * @throws {Error} - Si ocurre un error durante la recuperación de datos de la base de datos.
@@ -107,6 +109,7 @@ const listarClientes= async(usuario_id)=>{
  * Obtiene un cliente por su ID.
  * 
  * @param {number|string} id - El ID del cliente que se va a buscar. Debe ser convertible a número.
+ * @param {number} usuario_id - El ID del usuario para el que se está listando el cliente por ID.
  * 
  * @returns {Object|null} - El objeto que representa al cliente, o `null` si no se encuentra un cliente con el ID especificado. El objeto contiene detalles del cliente, como su ID, nombre, correo electrónico, teléfono, dirección, ciudad, región, código postal y país.
  * 
@@ -139,6 +142,7 @@ const obtenerClienteById=async (id, usuario_id) => {
  * @param {string} ciudad - La ciudad del cliente. Puede ser un valor opcional.
  * @param {string} region - La región del cliente. Puede ser un valor opcional.
  * @param {string} pais - El país del cliente. Debe ser un nombre válido de país.
+ * @param {number} usuario_id - El ID del usuario para el que se está modificando el cliente.
  * 
  * @returns {Object} - Objeto representando al cliente con los detalles actualizados. Contiene el nombre, correo electrónico, teléfono, dirección, ciudad, región, código postal, país, fecha de creación, fecha de modificación y estado del cliente.
  * 
@@ -207,6 +211,7 @@ const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, reg
  * Elimina (desactiva) un cliente por su ID estableciendo su estado como falso.
  * 
  * @param {number|string} id - El ID del cliente a eliminar. Debe ser convertible a número.
+ * @param {number} usuario_id - El ID del usuario para el que se está eliminando el cliente.
  * 
  * @throws {Error} - Si no se puede encontrar un cliente con el ID proporcionado.
  */

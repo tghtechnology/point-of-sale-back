@@ -8,6 +8,7 @@ const prisma = new PrismaClient();
  * @param {string} nombre - El nombre del descuento. No debe estar vacío.
  * @param {string} tipo_descuento - El tipo de descuento (PORCENTAJE o MONTO). Debe ser uno de estos valores.
  * @param {number|string} valor - El valor del descuento. Debe ser un número. Si el tipo es PORCENTAJE, se espera un valor entre 0 y 100.
+ * @param {number} usuario_id - El ID del usuario para el que se está creando el descuento.
  * 
  * @returns {Object} - Objeto representando el descuento creado y sus propiedades.
  * @throws {Error} - Si el tipo de descuento no es válido o si los campos requeridos están vacíos.
@@ -65,6 +66,7 @@ const crearDescuento = async (nombre, tipo_descuento, valor, usuario_id) => {
  * Desactiva un descuento en la base de datos cambiando su estado a falso.
  * 
  * @param {number|string} id - El ID del descuento a desactivar.
+ * @param {number} usuario_id - El ID del usuario para el que se está eliminando el descuento.
  * 
  * @returns {Object} - El objeto representando el descuento actualizado, incluyendo el estado modificado.
  * @throws {Error} - Si el ID no es válido o no se puede encontrar el descuento.
@@ -91,6 +93,7 @@ const eliminarDescuento = async (id, usuario_id) => {
  * Obtiene un descuento por su ID.
  * 
  * @param {number|string} id - El ID del descuento que se quiere obtener.
+ * @param {number} usuario_id - El ID del usuario para el que se está listando el descuento por ID.
  * 
  * @returns {Object|null} - El objeto representando el descuento encontrado o null si no se encuentra.
  * @throws {Error} - Si el ID no es válido o si ocurre un error al buscar el descuento.
@@ -115,6 +118,7 @@ const obtenerDescuentoById = async (id, usuario_id) => {
  * @param {string} tipo_descuento - El nuevo tipo de descuento.
  * @param {number|string} valor - El nuevo valor del descuento.
  * @param {boolean} estado - El nuevo estado del descuento (opcional).
+ * @param {number} usuario_id - El ID del usuario para el que se está modificando el descuento.
  * 
  * @returns {Object} - El objeto representando el descuento actualizado.
  * @throws {Error} - Si el ID no es válido o si ocurre un error al actualizar el descuento.
@@ -158,6 +162,8 @@ const modificarDescuento = async (id, nombre, tipo_descuento, valor, estado, usu
 /**
  * Obtiene todos los descuentos activos de la base de datos.
  * 
+ * @param {number} usuario_id - El ID del usuario para el que se está listando los descuentos activos.
+ * 
  * @returns {Array<Object>} - Una lista de objetos representando los descuentos activos.
  * @throws {Error} - Si ocurre un error al buscar los descuentos.
  */
@@ -174,7 +180,9 @@ const obtenerDescuentos = async (usuario_id) => {
 };
 
 /**
- * Obtiene todos los descuentos desactivados (eliminados) de la base de datos.
+ * Obtiene todos los descuentos desactivados (eliminados).
+ * 
+ * @param {number} usuario_id - El ID del usuario para el que se está listando los descuentos desactivos.
  * 
  * @returns {Array<Object>} - Una lista de objetos representando los descuentos desactivados.
  * @throws {Error} - Si ocurre un error al buscar los descuentos.
@@ -196,6 +204,7 @@ const obtenerDescuentosEliminados = async (usuario_id) => {
  * 
  * @param {number|string} id - El ID del descuento a modificar.
  * @param {boolean} nuevoEstado - El nuevo estado para el descuento (verdadero para activo, falso para desactivado).
+ * @param {number} usuario_id - El ID del usuario para el que se está cambiando d estado a un descuento.
  * 
  * @returns {Object} - El objeto representando el descuento actualizado con el nuevo estado.
  * @throws {Error} - Si el ID no es válido o si ocurre un error al actualizar el descuento.

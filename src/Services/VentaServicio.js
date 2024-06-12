@@ -16,6 +16,7 @@ const prisma = new PrismaClient();
  * @param {number|string|null} [clienteId] - El ID del cliente asociado a la venta (opcional).
  * @param {number|string} usuarioId - El ID del usuario que realizó la venta.
  * @param {number} dineroRecibido - El monto de dinero recibido por la venta.
+ * @param {number} usuario_id - El ID del usuario para el que se está creando la venta.
  * 
  * @returns {Object} - El objeto representando la venta creada.
  * @throws {Error} - Si ocurre un error durante la creación de la venta, la generación de recibos, o el envío de correos electrónicos.
@@ -169,6 +170,8 @@ const CrearVenta = async (detalles, tipoPago, impuestoId, descuentoId, clienteId
 /**
  * Obtiene todas las ventas registradas en la base de datos.
  * 
+ * @param {number} usuario_id - El ID del usuario para el que se está listando las ventas.
+ * 
  * @returns {Array<Object>} - Una lista de objetos representando todas las ventas.
  * @throws {Error} - Si ocurre un error al buscar las ventas.
  */
@@ -190,6 +193,7 @@ const ListarVentas = async (usuario_id) => {
  * Obtiene una venta por su ID.
  * 
  * @param {number|string} id - El ID de la venta a buscar.
+ * @param {number} usuario_id - El ID del usuario para el que se está listando la venta por ID.
  * 
  * @returns {Object|null} - El objeto representando la venta encontrada, o null si no se encuentra.
  * @throws {Error} - Si el ID no es válido o si ocurre un error durante la búsqueda de la venta.

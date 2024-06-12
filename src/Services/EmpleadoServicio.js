@@ -34,6 +34,8 @@ const encryptPassword = async (password) => {
  * Busca un empleado por su ID en la base de datos.
  *
  * @param {string} id - El ID del empleado a buscar.
+ * @param {number} usuario_id - El ID del usuario para el que se está buscando el empleado por ID.
+ * 
  * @returns {Promise<Object>} - Los datos del empleado encontrado.
  *
  * @throws {Error} - Si no se encuentra ningún empleado con el ID proporcionado.
@@ -64,6 +66,8 @@ const buscarEmpleadoPorId = async (id, usuario_id) => {
  * @param {string} pais - El país del nuevo empleado.
  * @param {string} password - La contraseña del nuevo empleado.
  * @param {string} token - El token de sesión del usuario que está creando el empleado.
+ * @param {number} propietarioId - El ID del propietario para el que se está creando el cliente.
+ * @param {number} usuario_id - El ID del usuario para el que se está creando el empleado.
  * @returns {Promise<Object>} - Los datos del nuevo empleado creado.
  *
  * @throws {Error} - Si el país proporcionado es inválido.
@@ -141,6 +145,7 @@ export const crearEmpleado = async (  nombre,
  * @param {string} telefono - El nuevo número de teléfono del empleado.
  * @param {string} cargo - El nuevo cargo del empleado.
  * @param {string} pais - El nuevo país del empleado.
+ * @param {number} usuario_id - El ID del usuario para el que se está modificando el empleado.
  * @returns {Promise<Object>} - Los datos del empleado actualizado.
  *
  * @description Esta función edita los datos de un empleado en la base de datos utilizando su ID y los nuevos datos proporcionados.
@@ -170,6 +175,7 @@ export const editarEmpleado = async (id, nombre, email, telefono, cargo, pais, u
  * Lista los datos de un empleado por su ID.
  *
  * @param {string} id - El ID del empleado del que se desean obtener los datos.
+ * @param {number} usuario_id - El ID del usuario para el que se está listando el empleado por ID.
  * @returns {Promise<Object>} - Los datos del empleado encontrado.
  *
  * @description Esta función busca un empleado en la base de datos utilizando su ID y devuelve sus datos.
@@ -182,6 +188,8 @@ export const listarEmpleadoPorId = async (id, usuario_id) => {
  * Elimina un empleado de la base de datos por su ID.
  *
  * @param {string} id - El ID del empleado a eliminar.
+ * @param {number} usuario_id - El ID del usuario para el que se está eliminando el empleado.
+ * 
  * @returns {Promise<Object>} - Los datos del empleado eliminado.
  *
  * @description Esta función elimina un empleado de la base de datos utilizando su ID.
@@ -202,6 +210,8 @@ export const eliminarEmpleadoPorId = async (id, usuario_id) => {
 /**
  * Lista todos los empleados activos en la base de datos.
  *
+ * @param {number} usuario_id - El ID del usuario para el que se está listando los empleados.
+ * 
  * @returns {Promise<Array>} - Un arreglo que contiene los datos de todos los empleados activos.
  *
  * @description Esta función busca y devuelve todos los empleados activos en la base de datos.
@@ -226,6 +236,7 @@ export const listarEmpleados = async (usuario_id) => {
  * @param {string} contraseñaActual - La contraseña actual del empleado.
  * @param {string} nuevaContraseña - La nueva contraseña del empleado.
  * @param {string} confirmarNuevaContraseña - La confirmación de la nueva contraseña.
+ * @param {number} usuario_id - El ID del usuario para el que se está cambiando la contraseña.
  * @returns {Promise<Object>} - Los datos del empleado con la contraseña actualizada.
  *
  * @throws {Error} - Si la contraseña actual no es válida.
