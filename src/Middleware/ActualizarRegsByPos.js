@@ -10,34 +10,30 @@ const prisma = new PrismaClient();
  * @returns {void} - No devuelve ningún valor. Actualiza el estado de los registros a falso.
  */
 export async function desactivarRegistros(id_puntoDeVenta) {
-    // Array de modelos que tienen el campo id_puntoDeVenta
-    const modelosConPuntoDeVenta = [
-      'Categoria',
-      'Descuento',
-      'Impuesto',
-      'Articulo',
-      'Cliente',
-      'Venta',
-      'DetalleVenta',
-      'Recibo',
-      'Usuario',
-      'Sesion'
-    ];
-  
-    // Actualizar registros asociados en otros modelos
-    for (const modelo of modelosConPuntoDeVenta) {
-      const registros = await prisma[modelo].findMany({
-        where: { id_puntoDeVenta: id_puntoDeVenta },
-      });
+  // Array de modelos que tienen el campo id_puntoDeVenta
+  const modelosConPuntoDeVenta = [
+    'Categoria',
+    'Descuento',
+    'Impuesto',
+    'Articulo',
+    'Cliente',
+    'Usuario'
+  ];
 
-      for (const registro of registros) {
-        await prisma[modelo].update({
-          where: { id: registro.id },
-          data: { estado: false },
-        });
-      }
+  // Actualizar registros asociados en otros modelos
+  for (const modelo of modelosConPuntoDeVenta) {
+    const registros = await prisma[modelo].findMany({
+      where: { id_puntoDeVenta: id_puntoDeVenta },
+    });
+
+    for (const registro of registros) {
+      await prisma[modelo].update({
+        where: { id: registro.id },
+        data: { estado: false },
+      });
     }
   }
+}
 
 
   /**
@@ -54,11 +50,7 @@ export async function desactivarRegistros(id_puntoDeVenta) {
       'Impuesto',
       'Articulo',
       'Cliente',
-      'Venta',
-      'DetalleVenta',
-      'Recibo',
-      'Usuario',
-      'Sesion'
+      'Usuario'
     ];
   
     // Actualizar registros asociados en otros modelos
@@ -75,4 +67,3 @@ export async function desactivarRegistros(id_puntoDeVenta) {
       }
     }
   }
-  
