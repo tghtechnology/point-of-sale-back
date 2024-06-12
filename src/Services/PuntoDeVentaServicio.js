@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { getUTCTime } from "../Utils/Time";
 import { eliminarSesionesActivas } from "./UsuarioServicio";
-import { desasociarPos } from "../Middleware/DesvPOS";
+import { desactivarRegistros, reactivarRegistros } from "../Middleware/ActualizarRegsByPos";
 
 const prisma = new PrismaClient();
 
@@ -35,7 +35,7 @@ export const listarPOS = async () => {
 export const listarPOSPorId = async (id) => {
     const pos = await prisma.puntoDeVenta.findUnique({
         where: {
-            id: id,
+            id: parseInt(id),
             estado: true
         }
     })
@@ -91,9 +91,78 @@ export const eliminarPOS = async (id) => {
         }
     })
 
-    await desasociarPos(parseInt(id))
+    await desactivarRegistros(parseInt(id))
 
 
+    return pos
+}
+
+export const reestablecerPos = async (id) => {
+
+    const pos = await prisma.puntoDeVenta.update({
+        where: {
+            id: parseInt(id),
+            estado: false
+        },
+        data: {
+            estado: true
+        },
+        select: {
+            propietario: true
+        }
+    })
+
+    const usuarioId = await prisma.usuario.findFirst({
+        where: {
+            nombre: pos.propietario,
+            estado: false
+        },
+        select: {
+            id:true
+        }
+    })
+
+    const reactivarPropietario = await prisma.usuario.update({
+        where: {
+            id: usuarioId.id,
+            estado: false
+        },
+        data: {
+            estado: true
+        }
+    })
+
+    const reactivarEmpleados = await prisma.usuario.updateMany({
+        where: {
+            id_puntoDeVenta: parseInt(id),
+            estado: false
+        },
+        data: {
+            estado: true,
+        }
+    })
+
+    await reactivarRegistros(parseInt(id))
+
+    return pos
+}
+
+export const listarPosEliminados = async () => {
+    const pos = await prisma.puntoDeVenta.findMany({
+        where: {
+            estado: false
+        }
+    })
+    return pos
+}
+
+export const listarPosEliminadosPorId = async (id) => {
+    const pos = await prisma.puntoDeVenta.findUnique({
+        where: {
+            id: parseInt(id),
+            estado: false
+        }
+    })
     return pos
 }
 
