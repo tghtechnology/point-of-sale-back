@@ -17,11 +17,7 @@ export async function desactivarRegistros(id_puntoDeVenta) {
       'Impuesto',
       'Articulo',
       'Cliente',
-      'Venta',
-      'DetalleVenta',
-      'Recibo',
-      'Usuario',
-      'Sesion'
+      'Usuario'
     ];
   
     // Actualizar registros asociados en otros modelos
@@ -54,11 +50,7 @@ export async function desactivarRegistros(id_puntoDeVenta) {
       'Impuesto',
       'Articulo',
       'Cliente',
-      'Venta',
-      'DetalleVenta',
-      'Recibo',
-      'Usuario',
-      'Sesion'
+      'Usuario'
     ];
   
     // Actualizar registros asociados en otros modelos
