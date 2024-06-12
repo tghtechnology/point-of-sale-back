@@ -10,7 +10,10 @@ const prisma = new PrismaClient();
 /**
  * Genera una referencia única para un recibo.
  * 
+ * @param {number} usuario_id - El ID del usuario para el que se está generando la referencia.
+ * 
  * @returns {string} - Una referencia única basada en el ID del último recibo encontrado más un valor adicional para hacerla única.
+ * 
  * @throws {Error} - Si ocurre un error al obtener el último recibo o al generar la referencia.
  */
 
@@ -39,9 +42,12 @@ const generarRef = async (usuario_id) => {
 
 
 /**
- * Obtiene todos los recibos de la base de datos.
+ * Obtiene todos los recibos de la base de datos asociados a un usuario.
+ * 
+ * @param {number} usuario_id - El ID del usuario para el que se desean obtener los recibos.
  * 
  * @returns {Array<Object>} - Una lista de objetos representando todos los recibos.
+ * 
  * @throws {Error} - Si ocurre un error al buscar los recibos.
  */
 
@@ -62,9 +68,11 @@ export const listarRecibo = async (usuario_id) => {
 /**
  * Obtiene el nombre de un artículo por su ID.
  * 
- * @param {number|string} articuloId - El ID del artículo para buscar su nombre.
+ * @param {number} articuloId - El ID del artículo para buscar su nombre.
+ * @param {number} usuario_id - El ID del usuario asociado para verificar el acceso al punto de venta.
  * 
  * @returns {string|null} - El nombre del artículo, o null si no se encuentra el artículo.
+ * 
  * @throws {Error} - Si ocurre un error al buscar el artículo por su ID.
  */
 
@@ -90,7 +98,10 @@ async function obtenerNombreArticulo(articuloId, usuario_id) {
 /**
  * Crea un nuevo recibo para la última venta en la base de datos.
  * 
+ * @param {number} usuario_id - El ID del usuario para el que se está creando el recibo.
+ * 
  * @returns {Object} - El objeto representando el recibo recién creado, incluyendo la referencia generada y detalles relacionados con la venta.
+ * 
  * @throws {Error} - Si ocurre un error durante la creación del recibo o al obtener datos relacionados con la venta.
  */
 export const CrearRecibo = async (usuario_id) => {
@@ -187,7 +198,12 @@ const id_punto = await prisma.puntoDeVenta.findFirst({
 /**
  * Realiza un reembolso para la última venta registrada y lo guarda en la base de datos.
  * 
+ * @param {number} id - El ID de la venta asociada al recibo original.
+ * @param {Array<Object>} detalles - Los detalles del reembolso.
+ * @param {number} usuario_id - El ID del usuario que realiza el reembolso.
+ * 
  * @returns {Object} - El objeto representando el nuevo recibo, incluyendo la referencia generada y los detalles asociados.
+ * 
  * @throws {Error} - Si ocurre un error durante la creación del recibo o al obtener la información de la venta o sus detalles.
  */
 
@@ -332,9 +348,11 @@ export const Reembolsar = async (id, detalles, usuario_id) => {
 /**
  * Obtiene un recibo específico por su ID.
  * 
- * @param {number|string} id - El ID del recibo a buscar.
+ * @param {number} id - El ID del recibo a buscar.
+ * @param {number} usuario_id - El ID del usuario para verificar el acceso al recibo.
  * 
  * @returns {Object|null} - El objeto representando el recibo, o null si no se encuentra.
+ * 
  * @throws {Error} - Si ocurre un error al buscar el recibo por su ID.
  */
 export const ListarReciboById=async(id, usuario_id)=>{
@@ -353,8 +371,10 @@ return recibo
  * Obtiene los recibos relacionados a una venta específica por el ID de la venta.
  * 
  * @param {number|string} id_venta - El ID de la venta cuyos recibos se desean buscar.
+ * @param {number|string} usuario_id - El ID del usuario para verificar el acceso a los recibos.
  * 
  * @returns {Array<Object>} - Una lista de objetos representando los recibos relacionados a la venta.
+ * 
  * @throws {Error} - Si ocurre un error al buscar los recibos por el ID de la venta.
  */
 export const ListarReciboByVenta=async(id_venta, usuario_id)=>{

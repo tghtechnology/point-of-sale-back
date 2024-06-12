@@ -1,5 +1,13 @@
 import * as PuntoDeVentaServicio from "../Services/PuntoDeVentaServicio";
 
+/**
+ * Obtiene la lista de todos los puntos de venta activos.
+ * 
+ * @param {Object} _ - Objeto de solicitud (no utilizado).
+ * @param {Object} res - Objeto de respuesta.
+ * @returns {Array<Object>}  - La lista de todos los POS.
+ * @throws {Error} - Devuelve un error si hay un problema al obtener la lista de POS.
+ */
 export const listarPOS = async (_, res) => {
     try{
       const pos = await PuntoDeVentaServicio.listarPOS()
@@ -10,6 +18,15 @@ export const listarPOS = async (_, res) => {
     }
 }
 
+/**
+ * Obtiene un POS por su ID.
+ * 
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {number} req.params.id - ID del POS a buscar.
+ * @returns {Object} - El POS encontrado.
+ * @throws {Error} - Devuelve un error si hay un problema al obtener el POS.
+ */
 export const listarPOSPorId = async (req, res) => {
     try{
         const id = req.params.id;
@@ -24,6 +41,16 @@ export const listarPOSPorId = async (req, res) => {
     }
 }
 
+
+/**
+ * Elimina un punto de venta por su ID.
+ * 
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {Number} req.params.id - ID del punto de venta a eliminar.
+ * @returns {Object} - Un mensaje de confirmación de que el POS se ha eliminado correctamente.
+ * @throws {Error} - Devuelve un error si hay un problema al eliminar el POS.
+ */
 export const eliminarPOS = async (req, res) => {
     try {
       const id = req.params.id;
@@ -38,6 +65,16 @@ export const eliminarPOS = async (req, res) => {
     }
   }
 
+
+  /**
+ * Restablece un punto de venta eliminado por su ID.
+ * 
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {Number} req.params.id - ID del punto de venta a restablecer.
+ * @returns {Object} - Un mensaje de confirmación de que el POS se ha reestablecido correctamente.
+ * @throws {Error} - Devuelve un error si hay un problema al reestablecer el POS.
+ */
   export const reestablecerPOS = async (req, res) => {
     try {
       const id = req.params.id;
@@ -52,6 +89,15 @@ export const eliminarPOS = async (req, res) => {
     }
   }
 
+
+  /**
+ * Obtiene la lista de todos los puntos de venta eliminados.
+ * 
+ * @param {Object} _ - Objeto de solicitud (no utilizado).
+ * @param {Object} res - Objeto de respuesta.
+ * @returns {Array<Object>}  - La lista de todos los POS eliminados.
+ * @throws {Error} - Devuelve un error si hay un problema al obtener la lista de POS eliminados.
+ */
   export const listarPosEliminados = async (_, res) => {
     try{
       const pos = await PuntoDeVentaServicio.listarPosEliminados()
@@ -62,6 +108,15 @@ export const eliminarPOS = async (req, res) => {
     }
 }
 
+/**
+ * Obtiene un punto de venta eliminado por su ID.
+ * 
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {Number} req.params.id - ID del punto de venta eliminado a buscar.
+ * @returns {Object} - El POS encontrado.
+ * @throws {Error} - Devuelve un error si hay un problema al obtener el POS.
+ */
 export const listarPosEliminadosPorId = async (req, res) => {
   try{
       const id = req.params.id;

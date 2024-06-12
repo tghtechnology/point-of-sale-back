@@ -143,6 +143,7 @@ export const logout = async (token) => {
  * Obtiene los datos de un usuario por su ID.
  *
  * @param {string} usuarioId - El ID del usuario del que se desean obtener los datos.
+ * @param {number} usuario_id - El ID del usuario para el que se está obteniendo los datos.
  * @returns {Object|null} - Los datos del usuario si se encuentran, de lo contrario, null.
  *
  * @description Esta función busca en la base de datos los datos de un usuario específico 

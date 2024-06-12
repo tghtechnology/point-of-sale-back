@@ -18,6 +18,7 @@ const getColorName = (hex) => {
  * 
  * @param {string} nombre - El nombre de la categoría. No debe estar vacío.
  * @param {string} color - El color asociado a la categoría. No debe estar vacío.
+ * @param {number} usuario_id - El ID del usuario para el que se está creando la categoría.
  * 
  * @returns {Object} - Objeto que representa la categoría recién creada. Contiene el ID, el nombre y el color de la categoría.
  * 
@@ -59,6 +60,8 @@ export const crearCategoria = async (nombre, color, usuario_id) => {
 /**
  * Lista todas las categorías activas en la base de datos.
  * 
+ * @param {number} usuario_id - El ID del usuario para el que se está listando las categorías.
+ * 
  * @returns {Array<Object>} - Una lista de objetos, cada uno representando una categoría. Cada objeto contiene el ID, el nombre y el color de la categoría.
  * 
  * @throws {Error} - Si hay algún error al obtener las categorías de la base de datos.
@@ -93,6 +96,7 @@ export const listarCategorias = async (usuario_id)=>{
  * Obtiene la información de una categoría por su ID.
  *
  * @param {number|string} id - El ID de la categoría. No debe estar vacío.
+ * @param {number} usuario_id - El ID del usuario para el que se está listando la categoría por ID.
  * 
  * @returns {Object|null} - Un objeto representando la categoría con sus campos: ID, nombre y color. Devuelve `null` si no se encuentra la categoría.
  * 
@@ -124,6 +128,7 @@ export const listarCategoriaPorId = async (id, usuario_id) => {
  * @param {number|string} id - El ID de la categoría a modificar. No debe estar vacío.
  * @param {string} nombre - El nuevo nombre para la categoría. No debe estar vacío.
  * @param {string} color - El nuevo color para la categoría. No debe estar vacío.
+ * @param {number} usuario_id - El ID del usuario para el que se está modificando la categoría.
  * 
  * @returns {Object|null} - Objeto representando la categoría modificada con sus campos: ID, nombre y color. Devuelve `null` si la categoría no se encuentra.
  * 
@@ -180,6 +185,7 @@ export const modificarCategoria = async (id, nombre, color, usuario_id) => {
  * Elimina (desactiva) una categoría existente en la base de datos cambiando su estado a falso.
  * 
  * @param {number|string} id - El ID de la categoría a eliminar. No debe estar vacío.
+ * @param {number} usuario_id - El ID del usuario para el que se está eliminando la categoría.
  * 
  * @returns {Object|null} - Objeto representando la categoría eliminada. Devuelve `null` si la categoría no se encuentra.
  * 

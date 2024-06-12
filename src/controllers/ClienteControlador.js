@@ -6,7 +6,7 @@ import { obtenerListaPaises } from "../helpers/helperPais";
  * Obtiene una lista de todos los países.
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
- * @returns {Object} - La lista de todos los países.
+ * @returns {Array<Object>}  - La lista de todos los países.
  * @throws {Error} - Devuelve un error si hay un problema al obtener la lista de países.
  */
 export const listaPaises = async (req, res) => {
@@ -29,6 +29,7 @@ export const listaPaises = async (req, res) => {
  * @param {string} req.body.ciudad - La ciudad del cliente.
  * @param {string} req.body.region - La región del cliente.
  * @param {string} req.body.pais - El país del cliente.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - El nuevo cliente creado.
  * @throws {Error} - Devuelve un error si hay un problema al crear el cliente.
  */
@@ -54,7 +55,8 @@ export const crearCliente = async (req, res)=>{
  * Obtiene la lista de todos los clientes.
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
- * @returns {Object} - La lista de todos los clientes.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
+ * @returns {Array<Object>}  - La lista de todos los clientes.
  * @throws {Error} - Devuelve un error si hay un problema al obtener la lista de clientes.
  */
 export const listarClientes = async (req, res) => { 
@@ -73,6 +75,7 @@ export const listarClientes = async (req, res) => {
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
  * @param {number} req.params.id - El ID del cliente.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - El cliente encontrado.
  * @throws {Error} - Devuelve un error si hay un problema al obtener el cliente.
  */
@@ -104,6 +107,7 @@ export const obtenerClienteById= async (req, res)=>{
  * @param {string} req.body.ciudad - La nueva ciudad del cliente.
  * @param {string} req.body.region - La nueva región del cliente.
  * @param {string} req.body.pais - El nuevo país del cliente.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - El cliente actualizado.
  * @throws {Error} - Devuelve un error si hay un problema al editar el cliente.
  */
@@ -133,6 +137,7 @@ export const editarCliente=async (req,res) => {
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
  * @param {number} req.params.id - El ID del cliente a eliminar.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - Un mensaje de confirmación de que el cliente se ha eliminado correctamente.
  * @throws {Error} - Devuelve un error si hay un problema al eliminar el cliente.
  */

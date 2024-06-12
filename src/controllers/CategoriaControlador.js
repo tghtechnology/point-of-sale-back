@@ -8,6 +8,7 @@ import { z } from 'zod';
  * @param {Object} res - La respuesta HTTP.
  * @param {string} req.body.nombre - El nombre de la categoría.
  * @param {string} req.body.color - El color de la categoría.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - La nueva categoría creada.
  * @throws {Error} - Devuelve un error si hay un problema al crear la categoría en la base de datos.
  */
@@ -40,7 +41,8 @@ export const crearCategoria = async (req, res) => {
  * Obtiene una lista de todas las categorías almacenadas en la base de datos.
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
- * @returns {Object} - Una lista de todas las categorías.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
+ * @returns {Array<Object>}  - Una lista de todas las categorías.
  * @throws {Error} - Devuelve un error si hay un problema al obtener la lista de categorías de la base de datos.
  */
 export const listarCategorias = async (req, res) => {
@@ -60,6 +62,7 @@ export const listarCategorias = async (req, res) => {
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
  * @param {number} req.params.id - El ID de la categoría.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - La categoría encontrada.
  * @throws {Error} - Devuelve un error si el ID de la categoría está vacío o si hay un problema al buscar la categoría en la base de datos.
  */
@@ -95,6 +98,7 @@ export const obtenerCategoriaPorId = async (req, res) => {
  * @param {number} req.params.id - El ID de la categoría a actualizar.
  * @param {string} req.body.nombre - El nuevo nombre de la categoría.
  * @param {string} req.body.color - El nuevo color de la categoría.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - La categoría actualizada.
  * @throws {Error} - Devuelve un error si el ID de la categoría está vacío, si el nombre o el color de la categoría están vacíos, si la categoría ya existe o si hay un problema al actualizar la categoría.
  */
@@ -136,6 +140,7 @@ export const actualizarCategoria = async (req, res) => {
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
  * @param {number} req.params.id - El ID de la categoría a eliminar.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - Un mensaje de confirmación de que la categoría se ha eliminado correctamente.
  * @throws {Error} - Devuelve un error si el ID de la categoría está vacío o si hay un problema al eliminar la categoría.
  */
