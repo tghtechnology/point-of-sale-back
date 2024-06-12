@@ -368,6 +368,13 @@ export const ListarReciboByVenta=async(id_venta, usuario_id)=>{
   return recibos
 }
 
+/**
+ * Obtiene el ID del punto de venta asociado a un usuario.
+ *
+ * @param {number|string} usuario_id - El ID del usuario para el que se quiere obtener el ID del punto de venta.
+ * @returns {number} - El ID del punto de venta asociado al usuario.
+ * @throws {Error} - Si no se encuentra el usuario o no está asociado a un punto de venta.
+ */
 const obtenerIdPunto = async (usuario_id) => {
   const usuario = await prisma.usuario.findFirst({
     where: { id: usuario_id

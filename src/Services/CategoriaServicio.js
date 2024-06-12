@@ -241,6 +241,14 @@ const nameToHexMapping = {
   'Gris_claro': '#C0C0C0',
   'Gris_oscuro': '#808080',
 };
+
+/**
+ * Obtiene el ID del punto de venta asociado a un usuario.
+ *
+ * @param {number|string} usuario_id - El ID del usuario para el que se quiere obtener el ID del punto de venta.
+ * @returns {number} - El ID del punto de venta asociado al usuario.
+ * @throws {Error} - Si no se encuentra el usuario o no está asociado a un punto de venta.
+ */
 const obtenerIdPunto = async (usuario_id) => {
   const usuario = await prisma.usuario.findFirst({
     where: { id: usuario_id
@@ -262,31 +270,3 @@ const obtenerIdPunto = async (usuario_id) => {
   return usuarioExistente.id_puntoDeVenta;
 };
 
-
-/*export const buscarCategoria = async (search) => {
-    //const page = parseInt(req.query.page) - 1 || 0;
-
-    const categorias = await prisma.categoria.findMany({
-      where: {
-        nombre: {
-            contains: search
-            //mode: "insensitive"
-        }
-    }
-    })
-
-    const total = categorias.length;
-    /*const total = await prisma.categoria.countDocuments({
-      where: {
-        nombre: {
-            contains: search
-            //mode: "insensitive"
-        }
-    }
-    })
-
-    const result = {
-      total,
-      categorias
-    }
-    return result*/

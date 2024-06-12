@@ -18,6 +18,13 @@ const transporter = nodemailer.createTransport({
 
 const asyncErrorHandler = (promise) => promise.catch((error) => { throw error; });
 
+/**
+ * Crea un usuario administrador con los datos predefinidos.
+ *
+ * @param {string} password - La contraseña para el usuario administrador.
+ * @returns {Object} - Los datos del usuario administrador creado.
+ */
+
 const crearAdmin = async (password) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   const todayISO = new Date().toISOString();
@@ -37,6 +44,26 @@ const crearAdmin = async (password) => {
     },
   });
 };
+
+
+
+/**
+ * Autentica a un usuario y crea una nueva sesión.
+ * Si no hay usuarios existentes, crea un usuario administrador.
+ * 
+ * @param {string} email - El correo electrónico del usuario que intenta iniciar sesión.
+ * @param {string} password - La contraseña asociada a la cuenta del usuario.
+ *
+ * @returns {Object} - Un objeto que contiene el ID del usuario autenticado y un token JWT válido por 24 horas.
+ *
+ * @throws {Error} - Si el correo electrónico no corresponde a ningún usuario en la base de datos.
+ * @throws {Error} - Si la contraseña no coincide con la del usuario encontrado.
+ * @throws {Error} - Si hay algún problema al restaurar la cuenta o al crear una nueva sesión.
+ *
+ * @description Esta función verifica las credenciales proporcionadas por el usuario para iniciar sesión. 
+ * Si las credenciales son válidas, crea un token de sesión JWT que se utilizará para autenticar 
+ * al usuario en futuras solicitudes.
+ **/
 
 export const login = async (email, password) => {
   const usuariosExistentes = await prisma.usuario.count();
@@ -111,6 +138,7 @@ export const logout = async (token) => {
   }));
 };
 
+
 /**
  * Obtiene los datos de un usuario por su ID.
  *
@@ -132,6 +160,7 @@ export const obtenerDatosUsuarioPorId = async (usuarioId, usuario_id) => {
     },
   }));
 };
+
 
 /**
  * Envía un correo electrónico al usuario con un enlace para cambiar la contraseña.
@@ -175,6 +204,7 @@ export const enviarCorreoCambioPass = async (email) => {
     html: getVerificationEmailTemplate(usuario.nombre, resetPasswordLink),
   }));
 };
+
 
 /**
  * Cambia la contraseña del usuario a través de un enlace con un token de restablecimiento.
@@ -226,6 +256,7 @@ export const cambiarPassword = async (token, password) => {
 
   if (activeSessions.length > 0) await logout(activeSessions[0].token);
 };
+
 
 /**
  * Elimina los tokens de sesión expirados y los tokens de cambio de contraseña expirados de la base de datos.

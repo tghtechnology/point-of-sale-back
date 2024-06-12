@@ -218,12 +218,11 @@ const cambiarEstadoDescuento = async (id, nuevoEstado, usuario_id) => {
 };
 
 /**
- * Helper function to obtain the ID of the point of sale.
- * 
- * @param {number|string} usuario_id - The ID of the user.
- * 
- * @returns {number} - The ID of the point of sale.
- * @throws {Error} - If the user or point of sale is not found.
+ * Obtiene el ID del punto de venta asociado a un usuario.
+ *
+ * @param {number|string} usuario_id - El ID del usuario para el que se quiere obtener el ID del punto de venta.
+ * @returns {number} - El ID del punto de venta asociado al usuario.
+ * @throws {Error} - Si no se encuentra el usuario o no está asociado a un punto de venta.
  */
 const obtenerIdPunto = async (usuario_id) => {
   const usuario = await prisma.usuario.findFirst({
