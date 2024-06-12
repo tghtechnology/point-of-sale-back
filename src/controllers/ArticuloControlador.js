@@ -135,7 +135,6 @@ export const actualizarArticulo = async (req, res) => {
     }
 
     const articulo = await ArticuloServicio.modificarArticulo(id, nombre, tipo_venta, precio, representacion, color, imagen, id_categoria, usuario_id);
-    
 
     if (articulo == null) {
       return res.status(400).json({ error: "No se encontró el artículo" });

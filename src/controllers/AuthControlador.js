@@ -110,8 +110,8 @@ export const enviarTokenCambioPassword = async (req, res) => {
  * @param {string} req.body.token - El token de cambio de contraseña.
  * @param {string} req.body.password - La nueva contraseña del usuario.
  * @returns {Object} - Un mensaje indicando que la contraseña ha sido actualizada correctamente.
- * @throws {Error} - Devuelve un error si hay un problema al cambiar la contraseña.
  */
+// Cambiar contraseña
 export const cambiarPassword = async (req, res) => {
   const { token, password } = req.body;
   try {
