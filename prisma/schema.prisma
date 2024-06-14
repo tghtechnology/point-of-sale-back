@@ -96,7 +96,7 @@ model Usuario {
   nombreNegocio            String?    @db.VarChar(255)
   pais                     String?   @db.VarChar(255)
   rol                      Rol
-  estado                   Boolean   @db.Bit(1)
+  estado                   Boolean   
   eliminado_temporal_fecha DateTime?
   fecha_creacion           DateTime
   fecha_modificacion       DateTime?
