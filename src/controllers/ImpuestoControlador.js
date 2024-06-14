@@ -7,6 +7,7 @@ import * as ImpuestoServicio from "../Services/ImpuestoServicio"
  * @param {string} req.body.nombre - El nombre del impuesto.
  * @param {number} req.body.tasa - La tasa del impuesto.
  * @param {string} req.body.tipo_impuesto - El tipo de impuesto.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - El nuevo impuesto creado.
  * @throws {Error} - Devuelve un error si hay un problema al crear el impuesto en la base de datos.
  */
@@ -37,7 +38,8 @@ export const crearImpuesto = async (req, res) => {
  * Obtiene una lista de todos los impuestos almacenados en la base de datos.
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
- * @returns {Object} - Una lista de todos los impuestos.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
+ * @returns {Array<Object>}  - Una lista de todos los impuestos.
  * @throws {Error} - Devuelve un error si hay un problema al obtener la lista de impuestos de la base de datos.
  */
 export const listarImpuestos = async (req, res) => {
@@ -56,6 +58,7 @@ export const listarImpuestos = async (req, res) => {
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
  * @param {number} req.params.id - El ID del impuesto.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - El impuesto encontrado.
  * @throws {Error} - Devuelve un error si el impuesto no se encuentra o si hay un problema al obtenerlo de la base de datos.
  */
@@ -82,6 +85,7 @@ export const listarImpuestoPorId = async (req, res) => {
  * @param {string} req.body.nombre - El nuevo nombre del impuesto.
  * @param {number} req.body.tasa - La nueva tasa del impuesto.
  * @param {string} req.body.tipo_impuesto - El nuevo tipo de impuesto.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - El impuesto actualizado.
  * @throws {Error} - Devuelve un error si hay un problema al actualizar el impuesto en la base de datos.
  */
@@ -120,6 +124,7 @@ export const actualizarImpuesto = async (req, res) => {
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
  * @param {number} req.params.id - El ID del impuesto a eliminar.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - Un mensaje de confirmación de que el impuesto se ha eliminado correctamente.
  * @throws {Error} - Devuelve un error si hay un problema al eliminar el impuesto de la base de datos.
  */

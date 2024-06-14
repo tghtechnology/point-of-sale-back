@@ -361,6 +361,14 @@ export const editarUsuarioPorId = async (id, nombre, email, telefono, pais) => {
       fecha_modificacion: getUTCTime(new Date().toISOString()),
     },
   });
+  const nombrePropietario= await prisma.puntoDeVenta.update({
+    where:{
+      id: usuarioExistente.id_puntoDeVenta
+    },
+    data:{
+      propietario: updatedUsuario.nombre
+    }
+  })
   return updatedUsuario;
 };
 

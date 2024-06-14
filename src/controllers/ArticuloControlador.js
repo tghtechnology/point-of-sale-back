@@ -11,6 +11,7 @@ import { uploadImage, deleteImage } from "../Utils/cloudinary.js";
  * @param {string} req.body.color - El color del artículo.
  * @param {number} req.body.id_categoria - El ID de la categoría del artículo.
  * @param {string} req.body.imagen - La URL de la imagen del artículo.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - El nuevo artículo creado.
  * @throws {Error} - Devuelve un error si falta algún campo obligatorio o si hay un problema al crear el artículo.
  */
@@ -60,7 +61,8 @@ export const crearArticulo = async (req, res) => {
  * Obtiene una lista de todos los artículos almacenados en la base de datos.
  * @param {Object} req - La solicitud HTTP (no utilizado).
  * @param {Object} res - La respuesta HTTP.
- * @returns {Array} - Una lista de todos los artículos.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
+ * @returns {Array<Object>}  - Una lista de todos los artículos.
  * @throws {Error} - Devuelve un error si hay un problema al obtener la lista de artículos de la base de datos.
  */
 export const listarArticulos = async (req, res) => {
@@ -80,6 +82,7 @@ export const listarArticulos = async (req, res) => {
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
  * @param {number} req.params.id - El ID del artículo a buscar.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - El artículo encontrado.
  * @throws {Error} - Devuelve un error si no se encuentra el artículo con el ID especificado.
  */
@@ -111,6 +114,7 @@ export const obtenerArticuloPorId = async (req, res) => {
  * @param {string} req.body.color - El nuevo color del artículo.
  * @param {number} req.body.id_categoria - El nuevo ID de la categoría del artículo.
  * @param {string} req.body.imagen - La nueva URL de la imagen del artículo (opcional).
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - El artículo actualizado.
  * @throws {Error} - Devuelve un error si hay un problema al actualizar el artículo en la base de datos.
  */
@@ -135,7 +139,6 @@ export const actualizarArticulo = async (req, res) => {
     }
 
     const articulo = await ArticuloServicio.modificarArticulo(id, nombre, tipo_venta, precio, representacion, color, imagen, id_categoria, usuario_id);
-    
 
     if (articulo == null) {
       return res.status(400).json({ error: "No se encontró el artículo" });
@@ -168,6 +171,7 @@ export const actualizarArticulo = async (req, res) => {
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
  * @param {number} req.params.id - El ID del artículo a eliminar.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - Un mensaje de confirmación de que el artículo fue eliminado correctamente.
  * @throws {Error} - Devuelve un error si no se encuentra el artículo con el ID especificado o si hay un problema al eliminarlo.
  */
@@ -175,14 +179,6 @@ export const eliminarArticulo = async (req, res) => {
   try {
     const id = req.params.id;
     const usuario_id = req.usuario.id;
-
-    //Eliminar imagen de la nube
-    /*const Articulo = await ArticuloServicio.listarArticuloPorId(id)
-    const secure_url = Articulo.imagen; // Asegúrate de que este campo tenga el `secure_url` de la imagen
-
-    if (secure_url) {
-      await deleteImage(secure_url);
-    }*/
 
     const articulo = await ArticuloServicio.eliminarArticulo(id, usuario_id);
     res.status (200).json({message: 'Artículo eliminado correctamente'})

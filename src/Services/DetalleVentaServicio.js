@@ -11,6 +11,7 @@ const prisma = new PrismaClient();
  * @param {number} cantidad - La cantidad de artículos vendidos.
  * @param {number|string} articuloId - El ID del artículo vendido.
  * @param {number|string} ventaId - El ID de la venta a la que pertenece el detalle.
+ * @param {number} usuario_id - El ID del usuario para el que se está creando el detalle.
  * 
  * @returns {Object} - El objeto representando el nuevo detalle de venta creado, incluyendo el subtotal calculado.
  * @throws {Error} - Si el ID del artículo no es válido o si ocurre un error al crear el detalle.
@@ -61,6 +62,8 @@ const CrearDetalle=async(cantidad, articuloId, ventaId, usuario_id)=>{
 /**
  * Obtiene todos los detalles de venta de la base de datos.
  * 
+ * @param {number} usuario_id - El ID del usuario para el que se está listando los detalles de venta.
+ * 
  * @returns {Array<Object>} - Una lista de objetos representando todos los detalles de venta.
  * @throws {Error} - Si ocurre un error al recuperar los detalles.
  */
@@ -84,6 +87,7 @@ const ListarDetalles=async(usuario_id)=>{
  * Obtiene los detalles de venta asociados a un ID de venta específico.
  * 
  * @param {number|string} ventaId - El ID de la venta para la cual se quieren obtener los detalles.
+ * @param {number} usuario_id - El ID del usuario para el que se está listando el detalle por ID.
  * 
  * @returns {Object|null} - El objeto representando los detalles de venta encontrados o null si no se encuentra ninguno.
  * @throws {Error} - Si el ID de la venta no es válido o si ocurre un error al buscar los detalles.
@@ -102,6 +106,14 @@ const ListarDetallesByVenta=async(ventaId, usuario_id)=>{
 return detallesByVenta
 }
 
+
+/**
+ * Obtiene el ID del punto de venta asociado a un usuario.
+ *
+ * @param {number|string} usuario_id - El ID del usuario para el que se quiere obtener el ID del punto de venta.
+ * @returns {number} - El ID del punto de venta asociado al usuario.
+ * @throws {Error} - Si no se encuentra el usuario o no está asociado a un punto de venta.
+ */
 const obtenerIdPunto = async (usuario_id) => {
   const usuario = await prisma.usuario.findFirst({
     where: { id: usuario_id

@@ -1,6 +1,20 @@
 import * as VentaServicio from "../Services/VentaServicio"
 
-// Controlador para la creación de una venta
+/**
+ * La creación de una venta.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {Object[]} req.body.detalles - Los detalles de la venta.
+ * @param {string} req.body.tipoPago - El tipo de pago de la venta.
+ * @param {number} req.body.impuestoId - El ID del impuesto aplicado a la venta.
+ * @param {number} req.body.descuentoId - El ID del descuento aplicado a la venta.
+ * @param {number} req.body.clienteId - El ID del cliente asociado a la venta.
+ * @param {number} req.body.usuarioId - El ID del usuario que realizó la venta.
+ * @param {float} req.body.dineroRecibido - La cantidad de dinero recibido en la venta.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
+ * @returns {Object} - La nueva venta creada.
+ * @throws {Error} - Devuelve un error si hay un problema al crear la venta.
+ */
 export const CrearVenta = async (req, res) => {
   try {
     const usuario_id = req.usuario.id;
@@ -16,6 +30,15 @@ export const CrearVenta = async (req, res) => {
   }
 };
 
+
+/**
+ * Lista todas las ventas.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
+ * @returns {Array<Object>} - La lista de ventas.
+ * @throws {Error} - Devuelve un error si hay un problema al listar las ventas.
+ */
 export const ListarVentas = async(req, res) => { 
     try {
       const usuario_id = req.usuario.id;
@@ -26,6 +49,16 @@ export const ListarVentas = async(req, res) => {
         res.status(500).json({ mensaje: 'Error al listar las ventas' });
       }
 }
+
+/**
+ * Obtiene una venta por su ID.
+ * @param {Object} req - La solicitud HTTP.
+ * @param {Object} res - La respuesta HTTP.
+ * @param {number} req.params.id - El ID de la venta.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
+ * @returns {Object} - La venta encontrada.
+ * @throws {Error} - Devuelve un error si hay un problema al obtener la venta.
+ */
 export const ObtenerVentaPorId = async(req, res)=>{
   try{
     const usuario_id = req.usuario.id;

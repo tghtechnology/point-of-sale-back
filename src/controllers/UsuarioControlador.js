@@ -118,7 +118,7 @@ export const cambiarContraseña = async (req, res) => {
  * Obtiene la lista de propietarios.
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
- * @returns {Object[]} - La lista de propietarios.
+ * @returns {Array<Object>}  - La lista de propietarios.
  * @throws {Error} - Devuelve un error si hay un problema al obtener la lista de usuarios.
  */
 export const listarUsuarios = async (req, res) => {

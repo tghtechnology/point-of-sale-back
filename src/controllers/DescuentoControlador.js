@@ -6,6 +6,7 @@ import * as DescuentoServicio from "../Services/DescuentoServicio";
  * @param {string} req.body.nombre - El nombre del descuento.
  * @param {string} req.body.tipo_descuento - El tipo de descuento.
  * @param {float} req.body.valor - El valor del descuento.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - El nuevo descuento creado.
  * @throws {Error} - Devuelve un error si hay un problema al crear el descuento.
  */
@@ -29,6 +30,7 @@ export const crearDescuento = async (req, res) => {
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
  * @param {number} req.params.id - El ID del descuento a eliminar.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - Un mensaje de confirmación de que el descuento se ha eliminado correctamente.
  * @throws {Error} - Devuelve un error si hay un problema al eliminar el descuento.
  */
@@ -48,6 +50,7 @@ export const eliminarDescuento = async (req, res) => {
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
  * @param {number} req.params.id - El ID del descuento.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - El descuento encontrado.
  * @throws {Error} - Devuelve un error si hay un problema al obtener el descuento.
  */
@@ -75,6 +78,7 @@ export const obtenerDescuentoById = async (req, res) => {
  * @param {string} req.body.tipo_descuento - El nuevo tipo de descuento.
  * @param {number} req.body.valor - El nuevo valor del descuento.
  * @param {boolean} req.body.estado - El nuevo estado del descuento, si se proporciona.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - El descuento modificado.
  * @throws {Error} - Devuelve un error si hay un problema al modificar el descuento.
  */
@@ -101,7 +105,8 @@ export const modificarDescuento = async (req, res) => {
  * Obtiene todos los descuentos.
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
- * @returns {Object} - La lista de todos los descuentos.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
+ * @returns {Array<Object>}  - La lista de todos los descuentos.
  * @throws {Error} - Devuelve un error si hay un problema al obtener los descuentos.
  */
 export const obtenerDescuentos = async (req, res) => {
@@ -120,6 +125,7 @@ export const obtenerDescuentos = async (req, res) => {
  * @param {Object} res - La respuesta HTTP.
  * @param {number} req.params.id - El ID del descuento.
  * @param {boolean} req.body.estado - El nuevo estado del descuento.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - Un mensaje de confirmación de que el estado del descuento se ha cambiado correctamente.
  * @throws {Error} - Devuelve un error si hay un problema al cambiar el estado del descuento.
  */
@@ -140,7 +146,8 @@ export const cambiarEstadoDescuento = async (req, res) => {
  * Obtiene todos los descuentos eliminados.
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
- * @returns {Object} - Una lista de todos los descuentos eliminados.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
+ * @returns {Array<Object>}  - Una lista de todos los descuentos eliminados.
  * @throws {Error} - Devuelve un error si hay un problema al obtener los descuentos eliminados.
  */
 export const obtenerDescuentosEliminados = async (req, res) => {

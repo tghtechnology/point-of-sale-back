@@ -18,22 +18,14 @@ const getColorName = (hex) => {
  * 
  * @param {string} nombre - El nombre de la categoría. No debe estar vacío.
  * @param {string} color - El color asociado a la categoría. No debe estar vacío.
+ * @param {number} usuario_id - El ID del usuario para el que se está creando la categoría.
  * 
  * @returns {Object} - Objeto que representa la categoría recién creada. Contiene el ID, el nombre y el color de la categoría.
  * 
  * @throws {Error} - Si el nombre o el color están vacíos, o si la categoría ya existe.
  */
 export const crearCategoria = async (nombre, color, usuario_id) => {
-  const categoriaExistente = await prisma.categoria.findFirst({
-    where:{
-      nombre: nombre,
-      estado: true
-    }
-  });
-
-  if (categoriaExistente) {
-    throw new Error("Categoría existente");
-  }
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id);
 
   if (!Object.keys(colorMapping).includes(color)) {
     throw new Error("Color no válido");
@@ -41,7 +33,7 @@ export const crearCategoria = async (nombre, color, usuario_id) => {
 
   const colorHex = colorMapping[color];
 
-  const id_puntoDeVenta = await obtenerIdPunto(usuario_id);
+  
 
   const newCategoria = await prisma.categoria.create({
     data: {
@@ -67,6 +59,8 @@ export const crearCategoria = async (nombre, color, usuario_id) => {
 
 /**
  * Lista todas las categorías activas en la base de datos.
+ * 
+ * @param {number} usuario_id - El ID del usuario para el que se está listando las categorías.
  * 
  * @returns {Array<Object>} - Una lista de objetos, cada uno representando una categoría. Cada objeto contiene el ID, el nombre y el color de la categoría.
  * 
@@ -102,6 +96,7 @@ export const listarCategorias = async (usuario_id)=>{
  * Obtiene la información de una categoría por su ID.
  *
  * @param {number|string} id - El ID de la categoría. No debe estar vacío.
+ * @param {number} usuario_id - El ID del usuario para el que se está listando la categoría por ID.
  * 
  * @returns {Object|null} - Un objeto representando la categoría con sus campos: ID, nombre y color. Devuelve `null` si no se encuentra la categoría.
  * 
@@ -133,6 +128,7 @@ export const listarCategoriaPorId = async (id, usuario_id) => {
  * @param {number|string} id - El ID de la categoría a modificar. No debe estar vacío.
  * @param {string} nombre - El nuevo nombre para la categoría. No debe estar vacío.
  * @param {string} color - El nuevo color para la categoría. No debe estar vacío.
+ * @param {number} usuario_id - El ID del usuario para el que se está modificando la categoría.
  * 
  * @returns {Object|null} - Objeto representando la categoría modificada con sus campos: ID, nombre y color. Devuelve `null` si la categoría no se encuentra.
  * 
@@ -189,6 +185,7 @@ export const modificarCategoria = async (id, nombre, color, usuario_id) => {
  * Elimina (desactiva) una categoría existente en la base de datos cambiando su estado a falso.
  * 
  * @param {number|string} id - El ID de la categoría a eliminar. No debe estar vacío.
+ * @param {number} usuario_id - El ID del usuario para el que se está eliminando la categoría.
  * 
  * @returns {Object|null} - Objeto representando la categoría eliminada. Devuelve `null` si la categoría no se encuentra.
  * 
@@ -250,6 +247,14 @@ const nameToHexMapping = {
   'Gris_claro': '#C0C0C0',
   'Gris_oscuro': '#808080',
 };
+
+/**
+ * Obtiene el ID del punto de venta asociado a un usuario.
+ *
+ * @param {number|string} usuario_id - El ID del usuario para el que se quiere obtener el ID del punto de venta.
+ * @returns {number} - El ID del punto de venta asociado al usuario.
+ * @throws {Error} - Si no se encuentra el usuario o no está asociado a un punto de venta.
+ */
 const obtenerIdPunto = async (usuario_id) => {
   const usuario = await prisma.usuario.findFirst({
     where: { id: usuario_id
@@ -271,31 +276,3 @@ const obtenerIdPunto = async (usuario_id) => {
   return usuarioExistente.id_puntoDeVenta;
 };
 
-
-/*export const buscarCategoria = async (search) => {
-    //const page = parseInt(req.query.page) - 1 || 0;
-
-    const categorias = await prisma.categoria.findMany({
-      where: {
-        nombre: {
-            contains: search
-            //mode: "insensitive"
-        }
-    }
-    })
-
-    const total = categorias.length;
-    /*const total = await prisma.categoria.countDocuments({
-      where: {
-        nombre: {
-            contains: search
-            //mode: "insensitive"
-        }
-    }
-    })
-
-    const result = {
-      total,
-      categorias
-    }
-    return result*/

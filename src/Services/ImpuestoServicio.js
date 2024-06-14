@@ -8,6 +8,7 @@ const prisma = new PrismaClient();
  * @param {string} nombre - El nombre del impuesto. No debe estar vacío.
  * @param {number} tasa - La tasa del impuesto. Debe ser un número válido.
  * @param {string} tipo_impuesto - El tipo de impuesto (Incluido_en_el_precio o Anadido_al_precio).
+ * @param {number} usuario_id - El ID del usuario para el que se está creando el impuesto.
  * 
  * @returns {Object} - Objeto representando el impuesto creado.
  * @throws {Error} - Si algún campo requerido está vacío, si la tasa no es un número válido, o si el tipo de impuesto no es uno de los permitidos.
@@ -69,6 +70,8 @@ export const crearImpuesto = async (usuario_id, nombre, tasa, tipo_impuesto) => 
 /**
  * Obtiene todos los impuestos activos de la base de datos.
  * 
+ * @param {number} usuario_id - El ID del usuario para el que se está listando los impuestos.
+ * 
  * @returns {Array<Object>} - Una lista de objetos representando todos los impuestos activos, con sus detalles relevantes.
  * @throws {Error} - Si ocurre un error al buscar los impuestos.
  */
@@ -93,6 +96,7 @@ export const listarImpuestos = async (usuario_id) => {
  * Obtiene un impuesto por su ID, siempre y cuando esté activo.
  * 
  * @param {number|string} id - El ID del impuesto que se quiere obtener.
+ * @param {number} usuario_id - El ID del usuario para el que se está listando el impuesto por ID.
  * 
  * @returns {Object|null} - El objeto representando el impuesto encontrado, o null si no se encuentra o si está desactivado.
  * @throws {Error} - Si el ID no es válido o si ocurre un error al buscar el impuesto.
@@ -105,7 +109,6 @@ export const listarImpuestoPorId = async (id, usuario_id) => {
     const impuesto = await prisma.impuesto.findUnique({
         where: {
           id: parseInt(id),
-          estado: true,
           id_puntoDeVenta: id_puntoDeVenta
         }
       })
@@ -125,6 +128,7 @@ export const listarImpuestoPorId = async (id, usuario_id) => {
  * @param {string} nombre - El nuevo nombre del impuesto. No debe estar vacío.
  * @param {number} tasa - La nueva tasa del impuesto. Debe ser un número válido.
  * @param {string} tipo_impuesto - El nuevo tipo de impuesto (Incluido_en_el_precio o Anadido_al_precio).
+ * @param {number} usuario_id - El ID del usuario para el que se está modificando el impuesto.
  * 
  * @returns {Object} - El objeto representando el impuesto modificado.
  * @throws {Error} - Si el ID no es válido, si el campo "nombre" está vacío, si la tasa no es un número válido, o si el tipo de impuesto no es uno de los permitidos.
@@ -176,6 +180,7 @@ export const modificarImpuesto = async (id, nombre, tasa, tipo_impuesto, usuario
  * Desactiva un impuesto en la base de datos.
  * 
  * @param {number|string} id - El ID del impuesto a desactivar.
+ * @param {number} usuario_id - El ID del usuario para el que se está eliminando el impuesto.
  * 
  * @returns {Object|null} - El objeto representando el impuesto desactivado, o null si no se encuentra un impuesto activo con el ID especificado.
  * @throws {Error} - Si el ID no es válido o si ocurre un error al desactivar el impuesto.
@@ -209,6 +214,13 @@ export const eliminarImpuesto = async (id, usuario_id ) => {
   })
 }
 
+/**
+ * Obtiene el ID del punto de venta asociado a un usuario.
+ *
+ * @param {number|string} usuario_id - El ID del usuario para el que se quiere obtener el ID del punto de venta.
+ * @returns {number} - El ID del punto de venta asociado al usuario.
+ * @throws {Error} - Si no se encuentra el usuario o no está asociado a un punto de venta.
+ */
 const obtenerIdPunto = async (usuario_id) => {
   const usuario = await prisma.usuario.findFirst({
     where: { id: usuario_id

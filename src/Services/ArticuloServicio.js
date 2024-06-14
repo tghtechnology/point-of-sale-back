@@ -14,7 +14,7 @@ const prisma = new PrismaClient();
  * @param {string|null} color - El color del artículo. Requerido si la representación es por color.
  * @param {string|null} imagen - La URL de la imagen del artículo. Requerido si la representación es por imagen.
  * @param {number|string|null} id_categoria - El ID de la categoría del artículo. Puede estar vacío ya que un artículo puede pertenecer a ninguna categoría.
- * 
+ * @param {number} usuario_id - El ID del usuario para el que se está creando el artículo.
  * @returns {Object} - Objeto representando el artículo creado y formateado (muestra solo los datos necesarios).
  * @throws {Error} - Si algún campo es inválido o está vacío.
  */
@@ -111,6 +111,7 @@ if (id_categoria == "" || categoria == null) {
 /**
  * Lista todos los artículos activos
  * 
+ * @param {number} usuario_id - El ID del usuario para el que se está listando los artículos.
  * @returns {Array} - Una lista de objetos representando los artículos activos y sus detalles necesarios.
  * Cada objeto contiene la siguiente información:
  *  - {number} id - El ID único del artículo.
@@ -177,6 +178,7 @@ export const listarArticulos = async (usuario_id)=>{
  * Obtiene la información detallada de un artículo por su ID.
  * 
  * @param {number|string} id - El ID del artículo a buscar.
+ * @param {number} usuario_id - El ID del usuario para el que se está listando el artículo por ID.
  * @returns {Object|null} - Devuelve un objeto que representa el artículo con su información detallada, o `null` si el artículo no existe o no está activo.
  * @throws {Error} - Si el ID no es válido o no se puede buscar el artículo.
  * 
@@ -201,7 +203,6 @@ export const listarArticuloPorId = async (id, usuario_id) => {
   const articulo = await prisma.articulo.findUnique({
     where: {
       id: parseInt(id),
-      estado: true,
       id_puntoDeVenta: id_puntoDeVenta
     },
     include: {
@@ -248,6 +249,7 @@ export const listarArticuloPorId = async (id, usuario_id) => {
  * @param {string|null} color - El nuevo color del artículo. Puede ser `null` si no es necesario.
  * @param {string|null} imagen - La nueva URL de la imagen del artículo. Puede ser `null` si no es necesario.
  * @param {number|string|null} id_categoria - El nuevo ID de la categoría para el artículo. Puede ser `null` si el artículo no tiene categoría.
+ * @param {number} usuario_id - El ID del usuario para el que se está modificando el artículo.
  * 
  * @returns {Object|null} - Devuelve un objeto representando el artículo modificado, o `null` si el artículo con el ID dado no existe o no está activo.
  * 
@@ -352,6 +354,8 @@ export const modificarArticulo = async (id, nombre, tipo_venta, precio, represen
  * Elimina (desactiva) un artículo existente cambiando su estado a 'false'.
  *
  * @param {number|string} id - El ID del artículo a eliminar. Debe ser un valor numérico.
+ * @param {number} usuario_id - El ID del usuario para el que se está eliminando el artículo.
+ * 
  * @returns {Object|null} - El objeto del artículo actualizado con el estado cambiado a 'false', o `null` si no se encuentra un artículo con el ID dado.
  * @throws {Error} - Si el ID no es válido o no se puede desactivar el artículo.
  *
@@ -392,6 +396,8 @@ export const eliminarArticulo = async (id, usuario_id) => {
  * Busca una categoría por su ID y devuelve sus detalles.
  *
  * @param {number|string} id_categoria - El ID de la categoría a buscar. Debe ser un valor numérico.
+ * @param {number} usuario_id - El ID del usuario para el que se está buscando la categoria.
+ * 
  * @returns {Object|null} - Un objeto que contiene los detalles de la categoría encontrada (ID, nombre, color) o `null` si el ID de la categoría es una cadena vacía.
  * @throws {Error} - Si la categoría con el ID especificado no existe o si el estado de la categoría es `false`.
  * 
@@ -425,6 +431,7 @@ const buscarCategoria = async (id_categoria, usuario_id) => {
  * La referencia se genera tomando el último ID de venta conocido y agregando 1000 a este.
  * El formato final es "#1-{nuevo_id}", donde "nuevo_id" es el último ID de venta más 1000.
  *
+ * @param {number} usuario_id - El ID del usuario para el que se está generando la referencia.
  * @returns {string} - La nueva referencia generada.
  * @throws {Error} - Si hay un problema al obtener el último ID de venta o al generar la referencia.
  */
@@ -463,6 +470,7 @@ const colorMapping = {
   '#C0C0C0': 'Gris_claro',
   '#808080': 'Gris_oscuro',
 };
+// Mapeo inverso de nombres de colores a hexadecimal
 const nameToHexMapping = {
   'Rojo': '#FF0000',
   'Verde_limon': '#00FF00',
@@ -473,6 +481,16 @@ const nameToHexMapping = {
   'Gris_claro': '#C0C0C0',
   'Gris_oscuro': '#808080',
 };
+
+
+
+/**
+ * Obtiene el ID del punto de venta asociado a un usuario.
+ *
+ * @param {number|string} usuario_id - El ID del usuario para el que se quiere obtener el ID del punto de venta.
+ * @returns {number} - El ID del punto de venta asociado al usuario.
+ * @throws {Error} - Si no se encuentra el usuario o no está asociado a un punto de venta.
+ */
 const obtenerIdPunto = async (usuario_id) => {
   const usuario = await prisma.usuario.findFirst({
     where: { id: usuario_id
