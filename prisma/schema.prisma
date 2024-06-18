@@ -88,7 +88,7 @@ enum tipoImpuesto {
 
 model Usuario {
   id                       Int       @id @default(autoincrement())
-  nombre                   String    @db.VarChar(255)
+  nombre                   String   @db.VarChar(255)
   email                    String    @unique @db.VarChar(255)
   cargo                    String?    @db.VarChar(255)
   telefono                 String?    @db.VarChar(255)
