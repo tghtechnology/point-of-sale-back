@@ -196,7 +196,7 @@ export const enviarCorreoCambioPass = async (email) => {
     },
   }));
 
-  const resetPasswordLink = `http://${process.env.URL}/cambiar?token=${token}`;
+  const resetPasswordLink = `https://${process.env.URL}/cambiar?token=${token}`;
 
   await asyncErrorHandler(transporter.sendMail({
     from: process.env.EMAIL_USER,
