@@ -121,7 +121,7 @@ model Articulo {
   id           Int            @id @default(autoincrement())
   nombre       String         @db.VarChar(255)
   tipo_venta   TipoVenta
-  precio       Decimal?       @db.Decimal(10, 2)
+  precio       Decimal       @db.Decimal(10, 2)
   ref          String         @db.VarChar(255)
   representacion String @default("color")
   color        Color?
