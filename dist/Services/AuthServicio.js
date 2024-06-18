@@ -317,7 +317,7 @@ var enviarCorreoCambioPass = exports.enviarCorreoCambioPass = /*#__PURE__*/funct
             }
           }));
         case 11:
-          resetPasswordLink = "https://".concat(process.env.URL, "/cambiar?token=").concat(token);
+          resetPasswordLink = "".concat(process.env.URL_SCHEME, "://").concat(process.env.URL, "/cambiar?token=").concat(token);
           _context5.next = 14;
           return asyncErrorHandler(transporter.sendMail({
             from: process.env.EMAIL_USER,
