@@ -32,13 +32,7 @@ var crearCliente = /*#__PURE__*/function () {
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
-          if ((0, _helperPais.validarNombrePais)(pais)) {
-            _context.next = 2;
-            break;
-          }
-          throw new Error("País inválido");
-        case 2:
-          _context.next = 4;
+          _context.next = 2;
           return prisma.usuario.findFirst({
             where: {
               id: usuario_id
@@ -48,21 +42,21 @@ var crearCliente = /*#__PURE__*/function () {
               id_puntoDeVenta: true
             }
           });
-        case 4:
+        case 2:
           usuario = _context.sent;
           punto = usuario.id_puntoDeVenta;
-          _context.next = 8;
+          _context.next = 6;
           return prisma.puntoDeVenta.findFirst({
             where: {
               id: punto
             }
             // select: { id: true }
           });
-        case 8:
+        case 6:
           id_punto = _context.sent;
           // Asignar id del punto de venta
           id_puntoDeVenta = id_punto.id;
-          _context.next = 12;
+          _context.next = 10;
           return prisma.cliente.findUnique({
             where: {
               email: email,
@@ -70,17 +64,17 @@ var crearCliente = /*#__PURE__*/function () {
               id_puntoDeVenta: id_puntoDeVenta
             }
           });
-        case 12:
+        case 10:
           clienteExistente = _context.sent;
           if (!clienteExistente) {
-            _context.next = 15;
+            _context.next = 13;
             break;
           }
           throw new Error("El correo electrónico ya está en uso");
-        case 15:
+        case 13:
           todayISO = new Date().toISOString();
           fecha_creacion = (0, _Time.getUTCTime)(todayISO);
-          _context.next = 19;
+          _context.next = 17;
           return prisma.cliente.create({
             data: {
               nombre: nombre,
@@ -96,10 +90,10 @@ var crearCliente = /*#__PURE__*/function () {
               id_puntoDeVenta: id_puntoDeVenta
             }
           });
-        case 19:
+        case 17:
           newCliente = _context.sent;
           return _context.abrupt("return", newCliente);
-        case 21:
+        case 19:
         case "end":
           return _context.stop();
       }
@@ -217,17 +211,11 @@ var editarCliente = /*#__PURE__*/function () {
     return _regeneratorRuntime().wrap(function _callee4$(_context4) {
       while (1) switch (_context4.prev = _context4.next) {
         case 0:
-          if ((0, _helperPais.validarNombrePais)(pais)) {
-            _context4.next = 2;
-            break;
-          }
-          throw new Error("País inválido");
-        case 2:
-          _context4.next = 4;
+          _context4.next = 2;
           return obtenerIdPunto(usuario_id);
-        case 4:
+        case 2:
           id_puntoDeVenta = _context4.sent;
-          _context4.next = 7;
+          _context4.next = 5;
           return prisma.cliente.findUnique({
             where: {
               email: email,
@@ -235,17 +223,17 @@ var editarCliente = /*#__PURE__*/function () {
               id: Number(id)
             }
           });
-        case 7:
+        case 5:
           clienteExistente = _context4.sent;
           if (clienteExistente) {
-            _context4.next = 10;
+            _context4.next = 8;
             break;
           }
           throw new Error("Cliente no encontrado");
-        case 10:
+        case 8:
           todayISO = new Date().toISOString();
           fecha_modificacion = (0, _Time.getUTCTime)(todayISO);
-          _context4.next = 14;
+          _context4.next = 12;
           return prisma.cliente.update({
             where: {
               id: Number(id),
@@ -264,7 +252,7 @@ var editarCliente = /*#__PURE__*/function () {
               estado: true
             }
           });
-        case 14:
+        case 12:
           cliente = _context4.sent;
           updatedCliente = {
             nombre: cliente.nombre,
@@ -280,7 +268,7 @@ var editarCliente = /*#__PURE__*/function () {
             id_puntoDeVenta: cliente.id_puntoDeVenta
           };
           return _context4.abrupt("return", updatedCliente);
-        case 17:
+        case 15:
         case "end":
           return _context4.stop();
       }
