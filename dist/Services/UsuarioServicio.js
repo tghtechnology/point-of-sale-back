@@ -612,7 +612,11 @@ var editarUsuarioPorId = exports.editarUsuarioPorId = /*#__PURE__*/function () {
           });
         case 7:
           updatedUsuario = _context10.sent;
-          _context10.next = 10;
+          if (!(usuarioExistente.rol == "Propietario")) {
+            _context10.next = 12;
+            break;
+          }
+          _context10.next = 11;
           return prisma.puntoDeVenta.update({
             where: {
               id: usuarioExistente.id_puntoDeVenta
@@ -621,10 +625,11 @@ var editarUsuarioPorId = exports.editarUsuarioPorId = /*#__PURE__*/function () {
               propietario: updatedUsuario.nombre
             }
           });
-        case 10:
+        case 11:
           nombrePropietario = _context10.sent;
-          return _context10.abrupt("return", updatedUsuario);
         case 12:
+          return _context10.abrupt("return", updatedUsuario);
+        case 13:
         case "end":
           return _context10.stop();
       }
