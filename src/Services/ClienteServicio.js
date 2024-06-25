@@ -25,9 +25,6 @@ const prisma = new PrismaClient();
  */
 
 const crearCliente = async (nombre, email, telefono, direccion, ciudad, region, pais, usuario_id) => {
-    if (!validarNombrePais(pais)) {
-      throw new Error("País inválido");
-    }
 
     const usuario = await prisma.usuario.findFirst({
       where: { id: usuario_id },
@@ -150,9 +147,7 @@ const obtenerClienteById=async (id, usuario_id) => {
  */
 
 const editarCliente = async (id, nombre, email, telefono, direccion, ciudad, region, pais, usuario_id) => {
-  if (!validarNombrePais(pais)) {
-    throw new Error("País inválido");
-  }
+
 
   const id_puntoDeVenta = await obtenerIdPunto(usuario_id);
 
