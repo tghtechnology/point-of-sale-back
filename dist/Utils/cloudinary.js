@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.deleteImage = deleteImage;
 exports.uploadImage = uploadImage;
 var _cloudinary = require("cloudinary");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
@@ -10,7 +11,7 @@ function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyri
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 _cloudinary.v2.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  cloud_name: 'dnwzliif9',
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
   secure: true
@@ -25,7 +26,7 @@ function _uploadImage() {
         case 0:
           _context.next = 2;
           return _cloudinary.v2.uploader.upload(filePath, {
-            folder: 'images'
+            folder: 'articulos'
           });
         case 2:
           return _context.abrupt("return", _context.sent);
@@ -36,4 +37,28 @@ function _uploadImage() {
     }, _callee);
   }));
   return _uploadImage.apply(this, arguments);
+}
+function deleteImage(_x2) {
+  return _deleteImage.apply(this, arguments);
+}
+function _deleteImage() {
+  _deleteImage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(secure_url) {
+    var urlParts, fileNameWithExtension, public_id;
+    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+      while (1) switch (_context2.prev = _context2.next) {
+        case 0:
+          urlParts = secure_url.split('/');
+          fileNameWithExtension = urlParts[urlParts.length - 1];
+          public_id = "articulos/".concat(fileNameWithExtension.split('.')[0]);
+          _context2.next = 5;
+          return _cloudinary.v2.uploader.destroy(public_id);
+        case 5:
+          return _context2.abrupt("return", _context2.sent);
+        case 6:
+        case "end":
+          return _context2.stop();
+      }
+    }, _callee2);
+  }));
+  return _deleteImage.apply(this, arguments);
 }

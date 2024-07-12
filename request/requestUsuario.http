@@ -1,23 +1,23 @@
 
-@api=http://localhost:3000
+@api=https://pos-back-production.up.railway.app/
 
 POST {{api}}/registro
 Content-Type: application/json
 
 {
-  "nombre": "Estefany Torres",
-  "email": "estefytorres8@gmail.com",
+  "nombre": "martin prop",
+  "email": "estf@gmail.com",
   "password": "12345",
-  "nombreNegocio": "Digital",
   "pais": "Perú",
-  "telefono": "92983293"
+  "telefono": "123456789",
+  "cargo": "Manager"
 }
 ### 
 POST {{api}}/login
 Content-Type: application/json
 
 {
-  "email": "estefytorres8@gmail.com",
+  "email": "admin@gmail.com",
   "password": "12345"
 }
 ###P

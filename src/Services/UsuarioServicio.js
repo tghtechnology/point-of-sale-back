@@ -5,6 +5,7 @@ import { logout } from "../Services/AuthServicio";
 import { cuerpoCorreo } from "../helpers/helperEmail";
 import { envioCorreo } from "../Utils/SendEmail";
 import { getUTCTime } from "../Utils/Time";
+import { crearPOS } from "./PuntoDeVentaServicio";
 import { cuerpoPermanente } from "../helpers/helperPermanente";
 import { cuerpoRestaurado } from "../helpers/helperRestaurado";
 const prisma = new PrismaClient();
@@ -22,34 +23,60 @@ const prisma = new PrismaClient();
  * @returns {Object} - El objeto representando el usuario creado.
  * @throws {Error} - Si el país no es válido o si ocurre un error durante la creación del usuario.
  */
-export const crearUsuario = async (nombre, email, password, pais, telefono, nombreNegocio) => {
+export const crearUsuario = async (
+  nombre,
+  email,
+  password,
+  pais,
+  telefono,
+  nombreNegocio
+) => {
+
+  const nombrePOS = nombreNegocio
+  const nombrePropietario = nombre
+  const usuariosExistentes = await prisma.usuario.count();
+
+  let rolAsignado
+  if(usuariosExistentes === 0) {
+    rolAsignado = "Admin"
+  } else if (usuariosExistentes >= 1) {
+    rolAsignado = "Propietario"
+    await crearPOS(nombrePOS, nombrePropietario)
+  }
+
+  const POS = await prisma.puntoDeVenta.findFirst({
+    orderBy: {
+      id: 'desc', // Ordenar por ID de forma descendente
+    },
+    where: {
+      nombre: nombreNegocio
+    },
+    select: {
+      id:true
+    }
+  })
+
   if (!validarNombrePais(pais)) {
     throw new Error("País inválido");
   }
-  const clienteExistente = await prisma.usuario.findUnique({
-    where: {
-        email: email,
-        estado:true
-    }
-    });
-
-    if (clienteExistente) {
-        throw new Error("El correo electrónico ya está en uso");
-    }
   const hashedPassword = await bcrypt.hash(password, 10);
-  const fechaCreacion = getUTCTime(new Date().toISOString());
+
+  const todayISO = new Date().toISOString()
+  const fecha_creacion = getUTCTime(todayISO)
+
   const newUsuario = await prisma.usuario.create({
     data: {
-      nombre,
-      email,
-      pais,
+      nombre: nombre,
+      email: email,
+      pais: pais,
       password: hashedPassword,
       nombreNegocio:nombreNegocio,
-      rol: "Propietario",
-      telefono,
+      rol: rolAsignado,
+      telefono: telefono,
       cargo: "Gerente",
       estado: true,
-      fecha_creacion: fechaCreacion,
+      fecha_creacion: fecha_creacion,
+      id_puntoDeVenta: POS? POS.id : null
     },
   });
   return newUsuario;
@@ -95,7 +122,7 @@ const validarUsuario = async (id, password, token) => {
  * @throws {Error} - Si ocurre un error durante la eliminación de las sesiones.
  */
 
-const eliminarSesionesActivas = async (usuario_id) => {
+export const eliminarSesionesActivas = async (usuario_id) => {
   const activeSessions = await prisma.sesion.findMany({
     where: { usuario_id: usuario_id, expiracion: { gt: new Date() } },
   });
@@ -334,6 +361,16 @@ export const editarUsuarioPorId = async (id, nombre, email, telefono, pais) => {
       fecha_modificacion: getUTCTime(new Date().toISOString()),
     },
   });
+  if(usuarioExistente.rol=="Propietario"){
+  const nombrePropietario= await prisma.puntoDeVenta.update({
+    where:{
+      id: usuarioExistente.id_puntoDeVenta
+    },
+    data:{
+      propietario: updatedUsuario.nombre
+    }
+  })
+}
   return updatedUsuario;
 };
 

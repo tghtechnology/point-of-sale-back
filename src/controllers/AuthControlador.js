@@ -58,18 +58,20 @@ export const logout = async (req, res) => {
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
  * @param {number} req.params.id - El ID del usuario.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - Los datos del usuario encontrado.
  * @throws {Error} - Devuelve un error si el ID de usuario es inválido o si no se encuentra el usuario.
  */
 export const obtenerDatosUsuarioPorId = async (req, res) => {
   const { id } = req.params;
+  const usuario_id = req.usuario.id;
 
   try {
     const usuarioId = parseInt(id);
     if (isNaN(usuarioId)) {
       return res.status(400).json({ error: "ID de usuario inválido" });
     }
-    const usuario = await AuthServicio.obtenerDatosUsuarioPorId(usuarioId);
+    const usuario = await AuthServicio.obtenerDatosUsuarioPorId(usuarioId, usuario_id);
     if (!usuario) {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
@@ -109,7 +111,6 @@ export const enviarTokenCambioPassword = async (req, res) => {
  * @param {string} req.body.token - El token de cambio de contraseña.
  * @param {string} req.body.password - La nueva contraseña del usuario.
  * @returns {Object} - Un mensaje indicando que la contraseña ha sido actualizada correctamente.
- * @throws {Error} - Devuelve un error si hay un problema al cambiar la contraseña.
  */
 export const cambiarPassword = async (req, res) => {
   const { token, password } = req.body;

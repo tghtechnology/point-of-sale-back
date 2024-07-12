@@ -10,18 +10,26 @@ const prisma = new PrismaClient();
 /**
  * Genera una referencia única para un recibo.
  * 
+ * @param {number} usuario_id - El ID del usuario para el que se está generando la referencia.
+ * 
  * @returns {string} - Una referencia única basada en el ID del último recibo encontrado más un valor adicional para hacerla única.
+ * 
  * @throws {Error} - Si ocurre un error al obtener el último recibo o al generar la referencia.
  */
 
-const generarRef = async () => {
+const generarRef = async (usuario_id) => {
   try {
+    const id_puntoDeVenta = await obtenerIdPunto(usuario_id);
+
     const ultimoRecibo = await prisma.recibo.findFirst({
+      where: {
+        id_puntoDeVenta: id_puntoDeVenta
+      },
       orderBy: { id: "desc" },
     });
 
-    const ultimoIdRecibo = ultimoRecibo ? ultimoRecibo.id : 0;
-    const nuevoRef = `#1-${ultimoIdRecibo + 1000}`;
+    const ultimoIdRecibo = ultimoRecibo ? parseInt(ultimoRecibo.ref.split('-')[1]) : 999;
+    const nuevoRef = `#${id_puntoDeVenta}-${ultimoIdRecibo + 1}`;
 
     return nuevoRef;
   } catch (error) {
@@ -34,14 +42,24 @@ const generarRef = async () => {
 
 
 /**
- * Obtiene todos los recibos de la base de datos.
+ * Obtiene todos los recibos de la base de datos asociados a un usuario.
+ * 
+ * @param {number} usuario_id - El ID del usuario para el que se desean obtener los recibos.
  * 
  * @returns {Array<Object>} - Una lista de objetos representando todos los recibos.
+ * 
  * @throws {Error} - Si ocurre un error al buscar los recibos.
  */
 
-export const listarRecibo = async () => {
-  const recibos = await prisma.recibo.findMany();
+export const listarRecibo = async (usuario_id) => {
+
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+
+  const recibos = await prisma.recibo.findMany({
+    where: {
+      id_puntoDeVenta: id_puntoDeVenta,
+    }
+  });
   return recibos
 }
 
@@ -50,16 +68,22 @@ export const listarRecibo = async () => {
 /**
  * Obtiene el nombre de un artículo por su ID.
  * 
- * @param {number|string} articuloId - El ID del artículo para buscar su nombre.
+ * @param {number} articuloId - El ID del artículo para buscar su nombre.
+ * @param {number} usuario_id - El ID del usuario asociado para verificar el acceso al punto de venta.
  * 
  * @returns {string|null} - El nombre del artículo, o null si no se encuentra el artículo.
+ * 
  * @throws {Error} - Si ocurre un error al buscar el artículo por su ID.
  */
 
-async function obtenerNombreArticulo(articuloId) {
+async function obtenerNombreArticulo(articuloId, usuario_id) {
+
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+
   const articulo = await prisma.articulo.findUnique({
       where: {
-          id: articuloId
+        id: articuloId,
+        id_puntoDeVenta: id_puntoDeVenta 
       },
       select: {
           nombre: true
@@ -74,22 +98,44 @@ async function obtenerNombreArticulo(articuloId) {
 /**
  * Crea un nuevo recibo para la última venta en la base de datos.
  * 
+ * @param {number} usuario_id - El ID del usuario para el que se está creando el recibo.
+ * 
  * @returns {Object} - El objeto representando el recibo recién creado, incluyendo la referencia generada y detalles relacionados con la venta.
+ * 
  * @throws {Error} - Si ocurre un error durante la creación del recibo o al obtener datos relacionados con la venta.
  */
-export const CrearRecibo = async () => {
+export const CrearRecibo = async (usuario_id) => {
+
+  //Obtener el nombre de usuario
+  const usuario = await prisma.usuario.findFirst({
+    where: { id: usuario_id },
+    select: { nombre: true, id_puntoDeVenta:true }
+});
+const punto= usuario.id_puntoDeVenta
+
+const id_punto = await prisma.puntoDeVenta.findFirst({
+    where: {
+        id:punto
+    },
+   // select: { id: true }
+});
+
+  //Asignar id del punto de venta
+  const id_puntoDeVenta = id_punto.id
+
   const lastVenta = await prisma.venta.findFirst({
     orderBy: { id: "desc" },
   })
 
   const id_venta = lastVenta.id
 
-  const ref = await generarRef()
+  const ref = await generarRef(usuario_id)
 
   //Buscar venta
   const Rec = await prisma.venta.findFirst({
     where: {
-      id: id_venta
+      id: id_venta,
+      id_puntoDeVenta: id_puntoDeVenta
     },
     include: {
       usuario: true,
@@ -103,7 +149,8 @@ export const CrearRecibo = async () => {
   //Obtener detalle para extraer los articulos asociados a la venta
   const detalles = await prisma.detalleVenta.findMany({
     where: {
-      ventaId: id_venta
+      ventaId: id_venta,
+      id_puntoDeVenta: id_puntoDeVenta,
     },
     select: {
       articuloId: true,
@@ -116,7 +163,7 @@ export const CrearRecibo = async () => {
   //Según el id de artículo se obtiene el nombre
   const nombresArticulos = await Promise.all(detalles.map(async (detalle) => {
   const articuloId = detalle.articuloId;
-  const nombreArticulo = await obtenerNombreArticulo(articuloId);
+  const nombreArticulo = await obtenerNombreArticulo(articuloId, usuario_id);
     return nombreArticulo;
   }));
 
@@ -137,7 +184,8 @@ export const CrearRecibo = async () => {
     data:{
       ref: ref,
       fecha_creacion:fecha_creacion,
-      id_venta: id_venta
+      id_venta: id_venta,
+      id_puntoDeVenta: id_puntoDeVenta
     }
   })
   return newRecibo
@@ -150,16 +198,24 @@ export const CrearRecibo = async () => {
 /**
  * Realiza un reembolso para la última venta registrada y lo guarda en la base de datos.
  * 
+ * @param {number} id - El ID de la venta asociada al recibo original.
+ * @param {Array<Object>} detalles - Los detalles del reembolso.
+ * @param {number} usuario_id - El ID del usuario que realiza el reembolso.
+ * 
  * @returns {Object} - El objeto representando el nuevo recibo, incluyendo la referencia generada y los detalles asociados.
+ * 
  * @throws {Error} - Si ocurre un error durante la creación del recibo o al obtener la información de la venta o sus detalles.
  */
 
-export const Reembolsar = async (id, detalles) => {
-  const ref = await generarRef();
+export const Reembolsar = async (id, detalles, usuario_id) => {
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id);
+
+  const ref = await generarRef(usuario_id);
   // Obtener la venta asociada al recibo
   const ventaAsociada = await prisma.venta.findUnique({
     where: {
       id: id,
+      id_puntoDeVenta: id_puntoDeVenta,
     },
     include: {
       detalles: true,
@@ -176,7 +232,6 @@ export const Reembolsar = async (id, detalles) => {
   let montoReembolsado = 0;
   let valorImpuestoTotal = 0;
   let valorDescuentoTotal = 0;
-
   // Crear el recibo de reembolso
   const todayISO = new Date().toISOString();
   const fecha_creacion = getUTCTime(todayISO);
@@ -188,6 +243,7 @@ export const Reembolsar = async (id, detalles) => {
       monto_reembolsado: montoReembolsado,
       valorDescuentoTotal: valorDescuentoTotal,
       valorImpuestoTotal: valorImpuestoTotal,
+      id_puntoDeVenta: id_puntoDeVenta,
     },
   });
 
@@ -241,12 +297,12 @@ export const Reembolsar = async (id, detalles) => {
       detalle.articuloId,
       reciboReembolsado.id,
       detalle.cantidad,
-      montoArticulo  
+      montoArticulo
     );
   }
 
   // Actualizar recibo con los totales
-  const reembolso=await prisma.recibo.update({
+  const reembolso = await prisma.recibo.update({
     where: { id: reciboReembolsado.id },
     data: {
       monto_reembolsado: montoReembolsado,
@@ -256,40 +312,55 @@ export const Reembolsar = async (id, detalles) => {
   });
 
   if (ventaAsociada.cliente) {
-    const detallesReembolso = await Promise.all(detalles.map(async (detalle) => {
-      const nombreArticulo = await obtenerNombreArticulo(detalle.articuloId);
-      const precioUnitario = await prisma.articulo.findUnique({
-        where: { id: detalle.articuloId },
-        select: { precio: true }
-      });
-      const precio = precioUnitario ? precioUnitario.precio : null;
-      return {
-        nombreArticulo: nombreArticulo,
-        cantidad: detalle.cantidad,
-        precioUnitario: precioUnitario.precio
-      };
-    }));
+    const detallesReembolso = await Promise.all(
+      detalles.map(async (detalle) => {
+        const nombreArticulo = await obtenerNombreArticulo(detalle.articuloId, usuario_id);
+        const precioUnitario = await prisma.articulo.findUnique({
+          where: { id: detalle.articuloId },
+          select: { precio: true },
+        });
+        const precio = precioUnitario ? precioUnitario.precio : null;
+        return {
+          nombreArticulo: nombreArticulo,
+          cantidad: detalle.cantidad,
+          precioUnitario: precio,
+        };
+      })
+    );
 
     const clienteInfo = ventaAsociada.cliente;
-    const cuerpo = cuerpoReembolso(clienteInfo.nombre, detallesReembolso, montoReembolsado, valorDescuentoTotal, valorImpuestoTotal);
-    await envioCorreo(clienteInfo.email, "Reembolso realizado", cuerpo);
+    const cuerpo = cuerpoReembolso(
+      clienteInfo.nombre,
+      detallesReembolso,
+      montoReembolsado,
+      valorDescuentoTotal,
+      valorImpuestoTotal
+    );
+    await envioCorreo(clienteInfo.email, 'Reembolso realizado', cuerpo);
   }
 
   return reembolso;
 };
 
+
+
+
 /**
  * Obtiene un recibo específico por su ID.
  * 
- * @param {number|string} id - El ID del recibo a buscar.
+ * @param {number} id - El ID del recibo a buscar.
+ * @param {number} usuario_id - El ID del usuario para verificar el acceso al recibo.
  * 
  * @returns {Object|null} - El objeto representando el recibo, o null si no se encuentra.
+ * 
  * @throws {Error} - Si ocurre un error al buscar el recibo por su ID.
  */
-export const ListarReciboById=async(id)=>{
+export const ListarReciboById=async(id, usuario_id)=>{
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
   const recibo= await prisma.recibo.findMany({
     where: {
-        id: Number(id)
+        id: Number(id),
+        id_puntoDeVenta: id_puntoDeVenta
     }
 })
 return recibo
@@ -300,15 +371,47 @@ return recibo
  * Obtiene los recibos relacionados a una venta específica por el ID de la venta.
  * 
  * @param {number|string} id_venta - El ID de la venta cuyos recibos se desean buscar.
+ * @param {number|string} usuario_id - El ID del usuario para verificar el acceso a los recibos.
  * 
  * @returns {Array<Object>} - Una lista de objetos representando los recibos relacionados a la venta.
+ * 
  * @throws {Error} - Si ocurre un error al buscar los recibos por el ID de la venta.
  */
-export const ListarReciboByVenta=async(id_venta)=>{
+export const ListarReciboByVenta=async(id_venta, usuario_id)=>{
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
   const recibos= await prisma.recibo.findMany({
     where: {
-        id_venta: Number(id_venta)
+        id_venta: Number(id_venta),
+        id_puntoDeVenta: id_puntoDeVenta
     }
   })
   return recibos
 }
+
+/**
+ * Obtiene el ID del punto de venta asociado a un usuario.
+ *
+ * @param {number|string} usuario_id - El ID del usuario para el que se quiere obtener el ID del punto de venta.
+ * @returns {number} - El ID del punto de venta asociado al usuario.
+ * @throws {Error} - Si no se encuentra el usuario o no está asociado a un punto de venta.
+ */
+const obtenerIdPunto = async (usuario_id) => {
+  const usuario = await prisma.usuario.findFirst({
+    where: { id: usuario_id
+     },
+    select: { id_puntoDeVenta: true }
+  });
+  const punto=usuario.id_puntoDeVenta
+  const usuarioExistente = await prisma.usuario.findFirst({
+    where: { id: usuario_id,
+      id_puntoDeVenta:punto
+     },
+    select: { id_puntoDeVenta: true }
+  });
+
+  if (!usuarioExistente) {
+    throw new Error("Usuario no encontrado");
+  }
+
+  return usuarioExistente.id_puntoDeVenta;
+};

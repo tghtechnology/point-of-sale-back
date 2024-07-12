@@ -19,8 +19,38 @@ const transporter = nodemailer.createTransport({
 const asyncErrorHandler = (promise) => promise.catch((error) => { throw error; });
 
 /**
- * Autentica a un usuario y crea una nueva sesión.
+ * Crea un usuario administrador con los datos predefinidos.
  *
+ * @param {string} password - La contraseña para el usuario administrador.
+ * @returns {Object} - Los datos del usuario administrador creado.
+ */
+
+const crearAdmin = async (password) => {
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const todayISO = new Date().toISOString();
+  const fecha_creacion = getUTCTime(todayISO);
+
+  return prisma.usuario.create({
+    data: {
+      nombre: 'Administrador',
+      email: 'admin@gmail.com',
+      cargo: 'Admin',
+      telefono: '999999999',
+      password: hashedPassword,
+      pais: 'Perú',
+      rol: "Admin",
+      estado: true,
+      fecha_creacion: fecha_creacion,
+    },
+  });
+};
+
+
+
+/**
+ * Autentica a un usuario y crea una nueva sesión.
+ * Si no hay usuarios existentes, crea un usuario administrador.
+ * 
  * @param {string} email - El correo electrónico del usuario que intenta iniciar sesión.
  * @param {string} password - La contraseña asociada a la cuenta del usuario.
  *
@@ -34,16 +64,34 @@ const asyncErrorHandler = (promise) => promise.catch((error) => { throw error; }
  * Si las credenciales son válidas, crea un token de sesión JWT que se utilizará para autenticar 
  * al usuario en futuras solicitudes.
  **/
+
 export const login = async (email, password) => {
+  const usuariosExistentes = await prisma.usuario.count();
+
+  let user;
+
+  if (usuariosExistentes === 0) {
+    user = await crearAdmin(password);
+    email = user.email;
+  }
+
   const usuario = await asyncErrorHandler(prisma.usuario.findUnique({
     where: { email },
   }));
-    // Verificar si el estado es falso y la fecha de eliminación temporal no es null
-    if ( usuario.eliminado_temporal_fecha === null && usuario.estado===false) {
-      throw new Error("La cuenta está eliminada permanentemente");
-    }
+
+  if (!usuario) {
+    throw new Error("Nombre de usuario o contraseña incorrectos");
+  }
+
+  // Verificar si el estado es falso y la fecha de eliminación temporal no es null
+  if (usuario.eliminado_temporal_fecha === null && usuario.estado === false) {
+    throw new Error("La cuenta está eliminada permanentemente");
+  }
+
   const match = await bcrypt.compare(password, usuario.password);
-  if (!match) throw new Error("Nombre de usuario o contraseña incorrectos");
+  if (!match) {
+    throw new Error("Nombre de usuario o contraseña incorrectos");
+  }
 
   await asyncErrorHandler(prisma.sesion.deleteMany({
     where: { usuario_id: usuario.id },
@@ -51,7 +99,11 @@ export const login = async (email, password) => {
 
   await restaurarCuenta(usuario.id);
 
-  const token = jwt.sign({ id: usuario.id, email: usuario.email }, "secreto_del_token", { expiresIn: "24h" });
+  const token = jwt.sign(
+    { id: usuario.id, email: usuario.email, nombreNegocio: usuario.nombreNegocio },
+    "secreto_del_token",
+    { expiresIn: "24h" }
+  );
 
   const todayISO = new Date().toISOString();
   const expiracion = getUTCTime(todayISO);
@@ -65,8 +117,9 @@ export const login = async (email, password) => {
     },
   }));
 
-  return { usuario_id: result.usuario_id, token: result.token };
+  return { usuario_id: result.usuario_id, token: result.token, nombreNegocio: usuario.nombreNegocio };
 };
+
 
 /**
  * Cierra la sesión de un usuario eliminando su token de autenticación.
@@ -85,21 +138,30 @@ export const logout = async (token) => {
   }));
 };
 
+
 /**
  * Obtiene los datos de un usuario por su ID.
  *
  * @param {string} usuarioId - El ID del usuario del que se desean obtener los datos.
+ * @param {number} usuario_id - El ID del usuario para el que se está obteniendo los datos.
  * @returns {Object|null} - Los datos del usuario si se encuentran, de lo contrario, null.
  *
  * @description Esta función busca en la base de datos los datos de un usuario específico 
  * utilizando su ID y los devuelve si se encuentran. Si no se encuentra ningún usuario 
  * con el ID proporcionado, devuelve null.
  **/
-export const obtenerDatosUsuarioPorId = async (usuarioId) => {
+export const obtenerDatosUsuarioPorId = async (usuarioId, usuario_id) => {
+  const id_puntoDeVenta = await obtenerIdPunto(usuario_id)
+  console.log(id_puntoDeVenta)
+
   return await asyncErrorHandler(prisma.usuario.findUnique({
-    where: { id: usuarioId },
+    where: { 
+      id: usuarioId,
+      id_puntoDeVenta: id_puntoDeVenta
+    },
   }));
 };
+
 
 /**
  * Envía un correo electrónico al usuario con un enlace para cambiar la contraseña.
@@ -134,7 +196,7 @@ export const enviarCorreoCambioPass = async (email) => {
     },
   }));
 
-  const resetPasswordLink = `http://${process.env.URL}/cambiar?token=${token}`;
+  const resetPasswordLink = `${process.env.URL_SCHEME}://${process.env.URL}/cambiar?token=${token}`;
 
   await asyncErrorHandler(transporter.sendMail({
     from: process.env.EMAIL_USER,
@@ -143,6 +205,7 @@ export const enviarCorreoCambioPass = async (email) => {
     html: getVerificationEmailTemplate(usuario.nombre, resetPasswordLink),
   }));
 };
+
 
 /**
  * Cambia la contraseña del usuario a través de un enlace con un token de restablecimiento.
@@ -195,6 +258,7 @@ export const cambiarPassword = async (token, password) => {
   if (activeSessions.length > 0) await logout(activeSessions[0].token);
 };
 
+
 /**
  * Elimina los tokens de sesión expirados y los tokens de cambio de contraseña expirados de la base de datos.
  *
@@ -218,4 +282,25 @@ export const eliminarTokensExpirados = async () => {
   if (eliminarTokenSesion.affectedRows > 0 || eliminarTokenPassword.affectedRows > 0) {
     console.log("Tokens expirados eliminados correctamente.");
   }
+};
+
+const obtenerIdPunto = async (usuario_id) => {
+  const usuario = await prisma.usuario.findFirst({
+    where: { id: usuario_id
+     },
+    select: { id_puntoDeVenta: true }
+  });
+  const punto=usuario.id_puntoDeVenta
+  const usuarioExistente = await prisma.usuario.findFirst({
+    where: { id: usuario_id,
+      id_puntoDeVenta:punto
+     },
+    select: { id_puntoDeVenta: true }
+  });
+
+  if (!usuarioExistente) {
+    throw new Error("Usuario no encontrado");
+  }
+
+  return usuarioExistente.id_puntoDeVenta;
 };

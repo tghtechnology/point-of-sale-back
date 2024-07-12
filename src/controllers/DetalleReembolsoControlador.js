@@ -64,7 +64,7 @@ export const ListarDetallesReembolsoByRecibo = async (req, res) => {
  * @param {Object} req - El objeto de solicitud HTTP.
  * @param {Object} res - El objeto de respuesta HTTP.
  * @param {number} req.params.id - El ID del detalle de reembolso que se desea obtener.
- * @returns {Object|null} - El detalle de reembolso encontrado o null si no se encuentra.
+ * @returns {Object} - El detalle de reembolso encontrado o null si no se encuentra.
  * @throws {Error} - Si ocurre un error durante la obtención del detalle de reembolso.
  */
 export const ListarDetallesReembolsoById = async (req, res) => {

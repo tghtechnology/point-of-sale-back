@@ -7,13 +7,15 @@ import * as DetalleVentaServicio from "../Services/DetalleVentaServicio"
  * @param {number} req.body.cantidad - La cantidad del artículo vendido.
  * @param {number} req.body.articuloId - El ID del artículo vendido.
  * @param {number} req.body.ventaId - El ID de la venta a la que pertenece el detalle.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - El nuevo detalle de venta creado.
  * @throws {Error} - Devuelve un error si hay un problema al crear el detalle de venta en la base de datos.
  */
 export const CrearDetalle=async(res, req)=>{
+  const usuario_id = req.usuario.id;
     const { cantidad, articuloId, ventaId } = req.body; 
   try {
-    const nuevoDetalle = await DetalleVentaServicio.CrearDetalle(cantidad, articuloId, ventaId);
+    const nuevoDetalle = await DetalleVentaServicio.CrearDetalle(cantidad, articuloId, ventaId, usuario_id);
     res.status(201).json(nuevoDetalle);
   } catch (error) {
     console.error('Error al crear el detalle de venta:', error);
@@ -25,12 +27,14 @@ export const CrearDetalle=async(res, req)=>{
  * Obtiene una lista de todos los detalles de venta almacenados en la base de datos.
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
- * @returns {Object} - Una lista de todos los detalles de venta.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
+ * @returns {Array<Object>}  - Una lista de todos los detalles de venta.
  * @throws {Error} - Devuelve un error si hay un problema al obtener la lista de detalles de venta de la base de datos.
  */
 export const ListarDetalles = async (req, res) => {
     try {
-        const detalles = await DetalleVentaServicio.ListarDetalles();
+      const usuario_id = req.usuario.id;
+        const detalles = await DetalleVentaServicio.ListarDetalles(usuario_id);
         res.status(200).json(detalles);
       } catch (error) {
         console.error(error);
@@ -43,13 +47,15 @@ export const ListarDetalles = async (req, res) => {
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
  * @param {number} req.params.ventaId - El ID de la venta.
- * @returns {Object} - Una lista de detalles de venta pertenecientes a la venta especificada.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
+ * @returns {Array<Object>}  - Una lista de detalles de venta pertenecientes a la venta especificada.
  * @throws {Error} - Devuelve un error si hay un problema al obtener la lista de detalles de venta de la base de datos.
  */
 export const ListarDetallesByVenta=async(req,res)=>{
   try{
     const { ventaId } = req.params;
-    const detalles = await DetalleVentaServicio.ListarDetallesByVenta(ventaId);
+    const usuario_id = req.usuario.id;
+    const detalles = await DetalleVentaServicio.ListarDetallesByVenta(ventaId, usuario_id);
     res.status(200).json(detalles);
   }
   catch(error){

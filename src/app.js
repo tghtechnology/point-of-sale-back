@@ -11,6 +11,7 @@ import routerEmpleado from "./Routes/EmpleadoRouter"
 import routerImpuesto from "./Routes/ImpuestoRouter"
 import routerDetalleVenta from "./Routes/DetalleVentaRouter"
 import routerVenta from "./Routes/VentaRouter";
+import routerPuntoDeVenta from "./Routes/PuntoDeVentaRouter"
 import routerDetalleReembolso from "./Routes/DetalleReembolsoRoute";
 
 import morgan from "morgan"
@@ -55,6 +56,7 @@ app.use(routerImpuesto);
 app.use(routerDetalleVenta)
 app.use(routerVenta)
 app.use(routerRecibo)
+app.use(routerPuntoDeVenta)
 app.use(routerDetalleReembolso)
 
 app.use('/docs',swaggerui.serve,swaggerui.setup(specs));

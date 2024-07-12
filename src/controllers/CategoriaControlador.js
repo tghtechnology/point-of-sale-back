@@ -8,16 +8,19 @@ import { z } from 'zod';
  * @param {Object} res - La respuesta HTTP.
  * @param {string} req.body.nombre - El nombre de la categoría.
  * @param {string} req.body.color - El color de la categoría.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - La nueva categoría creada.
  * @throws {Error} - Devuelve un error si hay un problema al crear la categoría en la base de datos.
  */
 export const crearCategoria = async (req, res) => {
   try {
+    const usuario_id = req.usuario.id;
     const dv = createCategorySchema.parse(req.body);
 
     const newCategoria = await CategoriaServicio.crearCategoria(
       dv.nombre, 
-      dv.color
+      dv.color,
+      usuario_id
     );
     res.status(201).json(newCategoria)
 
@@ -38,12 +41,14 @@ export const crearCategoria = async (req, res) => {
  * Obtiene una lista de todas las categorías almacenadas en la base de datos.
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
- * @returns {Object} - Una lista de todas las categorías.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
+ * @returns {Array<Object>}  - Una lista de todas las categorías.
  * @throws {Error} - Devuelve un error si hay un problema al obtener la lista de categorías de la base de datos.
  */
 export const listarCategorias = async (req, res) => {
   try {
-    const categorias = await CategoriaServicio.listarCategorias();
+    const usuario_id = req.usuario.id;
+    const categorias = await CategoriaServicio.listarCategorias(usuario_id);
     res.status(200).json(categorias)
 
   } catch (error) {
@@ -57,14 +62,16 @@ export const listarCategorias = async (req, res) => {
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
  * @param {number} req.params.id - El ID de la categoría.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - La categoría encontrada.
  * @throws {Error} - Devuelve un error si el ID de la categoría está vacío o si hay un problema al buscar la categoría en la base de datos.
  */
 export const obtenerCategoriaPorId = async (req, res) => {
   try {
     const dv = idSchema.parse(req.params);
+    const usuario_id = req.usuario.id;
 
-    const categoria = await CategoriaServicio.listarCategoriaPorId(dv.id);
+    const categoria = await CategoriaServicio.listarCategoriaPorId(dv.id, usuario_id);
 
     if (categoria == null) {
       return res.status(400).json({ error: "No se encontró la categoria" });
@@ -91,11 +98,13 @@ export const obtenerCategoriaPorId = async (req, res) => {
  * @param {number} req.params.id - El ID de la categoría a actualizar.
  * @param {string} req.body.nombre - El nuevo nombre de la categoría.
  * @param {string} req.body.color - El nuevo color de la categoría.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - La categoría actualizada.
  * @throws {Error} - Devuelve un error si el ID de la categoría está vacío, si el nombre o el color de la categoría están vacíos, si la categoría ya existe o si hay un problema al actualizar la categoría.
  */
 export const actualizarCategoria = async (req, res) => {
   try {
+    const usuario_id = req.usuario.id;
     const dv = editCategorySchema.parse({
       id: req.params.id,
       nombre: req.body.nombre,
@@ -104,7 +113,9 @@ export const actualizarCategoria = async (req, res) => {
     const categoria = await CategoriaServicio.modificarCategoria(
       dv.id, 
       dv.nombre, 
-      dv.color);
+      dv.color,
+      usuario_id
+    );
 
     if (categoria == null) {
       return res.status(400).json({ error: "No se encontró la categoria" });
@@ -129,14 +140,16 @@ export const actualizarCategoria = async (req, res) => {
  * @param {Object} req - La solicitud HTTP.
  * @param {Object} res - La respuesta HTTP.
  * @param {number} req.params.id - El ID de la categoría a eliminar.
+ * @param {number} req.usuario.id - ID del usuario autenticado.
  * @returns {Object} - Un mensaje de confirmación de que la categoría se ha eliminado correctamente.
  * @throws {Error} - Devuelve un error si el ID de la categoría está vacío o si hay un problema al eliminar la categoría.
  */
 export const eliminarCategoria = async (req, res) => {
   try {
     const dv = idSchema.parse(req.params);
+    const usuario_id = req.usuario.id;
 
-    const categoria = await CategoriaServicio.eliminarCategoria(dv.id);
+    const categoria = await CategoriaServicio.eliminarCategoria(dv.id, usuario_id);
 
     if (categoria == null) {
       return res.status(400).json({ error: "No se encontró la categoria" });
