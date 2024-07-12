@@ -1,5 +1,5 @@
 
-@api=https://pos-back-production.up.railway.app/
+@api=http://localhost:3000
 
 POST {{api}}/registro
 Content-Type: application/json
